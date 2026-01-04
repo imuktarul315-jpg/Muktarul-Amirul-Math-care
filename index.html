@@ -3,166 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>আমিরুল ম্যাথ কেয়ার - ম্যানেজমেন্ট সিস্টেম</title>
+    <title>আমিরুল ম্যাথ কেয়ার - ফুল ম্যানেজমেন্ট</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&display=swap');
-        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f3f4f6; }
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f1f5f9; }
+        .brand-purple { background-color: #6b21a8; }
         .hidden { display: none; }
-        .brand-purple { background-color: #6b21a8; } /* লোগোর বেগুনি রঙের কাছাকাছি */
-        .brand-gold { color: #fbbf24; } /* লোগোর সোনালী বর্ডার */
-        
-        .hero-section {
-            background: linear-gradient(rgba(107, 33, 168, 0.9), rgba(88, 28, 135, 0.9)), 
-                        url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=1000&q=80');
-            background-size: cover;
-            background-position: center;
-        }
-
-        /* প্রিন্ট বা পিডিএফ এর জন্য বিশেষ স্টাইল */
-        @media print {
-            .no-pdf { display: none !important; }
-        }
     </style>
 </head>
 <body>
 
-    <nav class="brand-purple p-3 text-white flex justify-between items-center sticky top-0 z-50 shadow-xl border-b-2 border-yellow-500">
-        <div class="flex items-center gap-2">
+    <nav class="brand-purple p-3 text-white flex justify-between items-center sticky top-0 z-50 shadow-xl">
+        <div class="flex items-center gap-2" onclick="location.reload()" style="cursor: pointer;">
             <img src="https://i.ibb.co/Lhy0W0P/1000018420.jpg" alt="Logo" class="w-10 h-10 rounded-full border border-yellow-400">
-            <h1 class="text-lg font-bold tracking-tight">AMIRUL MATH CARE</h1>
+            <h1 class="text-sm md:text-lg font-bold">AMIRUL MATH CARE</h1>
         </div>
-        <div class="flex gap-3">
-            <button onclick="showSection('studentView')" class="text-xs hover:text-yellow-400 font-semibold">রেজাল্ট</button>
-            <button onclick="showSection('loginSection')" class="bg-yellow-500 text-purple-900 px-4 py-1 rounded-full font-bold text-xs shadow-md">অ্যাডমিন</button>
+        <div class="flex gap-2">
+            <button id="logoutBtn" onclick="logout()" class="hidden bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">লগ আউট</button>
+            <button id="adminLoginBtn" onclick="showSection('loginSection')" class="bg-yellow-500 text-purple-900 px-4 py-1 rounded-full font-bold text-xs shadow-md">অ্যাডমিন লগইন</button>
         </div>
     </nav>
 
-    <div class="hero-section h-44 flex flex-col items-center justify-center text-white text-center px-4 border-b-4 border-yellow-500">
-        <img src="https://i.ibb.co/Lhy0W0P/1000018420.jpg" alt="Amirul Math Care" class="w-16 h-16 rounded-full mb-2 border-2 border-white shadow-lg">
-        <h2 class="text-2xl font-bold">আমিরুল ম্যাথ কেয়ার</h2>
-        <p class="brand-gold text-sm font-semibold tracking-wide">দিনাজপুর সদর</p>
-    </div>
-
-    <div id="studentView" class="container mx-auto -mt-8 p-4 max-w-lg">
+    <div id="studentView" class="container mx-auto mt-6 p-4 max-w-lg">
         <div class="bg-white p-6 rounded-2xl shadow-2xl border-t-4 border-purple-700">
-            <h3 class="text-center font-bold text-gray-700 mb-5">ফলাফল অনুসন্ধান</h3>
+            <h3 class="text-center font-bold text-gray-700 mb-4 tracking-wide uppercase">Student Result Search</h3>
             <div class="space-y-4">
                 <select id="searchClass" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-purple-400">
                     <option value="">শ্রেণী নির্বাচন করুন</option>
                     <option value="৬ষ্ঠ">৬ষ্ঠ শ্রেণী</option>
                     <option value="৭ম">৭ম শ্রেণী</option>
                     <option value="৮ম">৮ম শ্রেণী</option>
-                    <option value="৯ম">৯ম শ্রেণী (পুরাতন কারিকুলাম)</option>
-                    <option value="১০ম">১০ম শ্রেণী (পুরাতন কারিকুলাম)</option>
+                    <option value="৯ম">৯ম শ্রেণী</option>
+                    <option value="১০ম">১০ম শ্রেণী</option>
+                </select>
+                <select id="searchType" class="w-full p-3 border rounded-xl outline-none">
+                    <option value="সাপ্তাহিক">সাপ্তাহিক পরীক্ষা</option>
+                    <option value="মাসিক">মাসিক পরীক্ষা</option>
+                    <option value="বার্ষিক">বার্ষিক পরীক্ষা</option>
                 </select>
                 <input type="text" id="searchRoll" placeholder="রোল নম্বর লিখুন" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-purple-400">
-                <button onclick="checkResult()" class="w-full brand-purple text-white py-3 rounded-xl font-bold hover:bg-purple-800 transition shadow-lg">রেজাল্ট কার্ড দেখুন</button>
+                <button onclick="checkResult()" class="w-full brand-purple text-white py-3 rounded-xl font-bold shadow-lg hover:bg-purple-800 transition">রেজাল্ট দেখুন</button>
             </div>
             <div id="resultDisplay" class="mt-6 hidden"></div>
         </div>
     </div>
 
+    <div id="resultArea" class="container mx-auto p-4 max-w-lg hidden">
+        <div id="marksheetPDF" class="bg-white p-6 rounded-lg shadow-xl border-2 border-purple-900">
+            </div>
+        <button onclick="downloadMarksheet()" class="w-full mt-4 bg-green-600 text-white py-3 rounded-xl font-bold shadow-lg"><i class="fas fa-file-pdf mr-2"></i>PDF মার্কশিট ডাউনলোড</button>
+        <button onclick="location.reload()" class="w-full mt-2 bg-gray-200 text-gray-700 py-2 rounded-xl text-sm font-bold">আবার খুঁজুন</button>
+    </div>
+
     <div id="loginSection" class="container mx-auto mt-10 p-6 max-w-md hidden">
         <div class="bg-white p-8 rounded-2xl shadow-lg text-center border-t-4 border-gray-800">
-            <i class="fas fa-user-shield text-4xl text-gray-400 mb-4"></i>
-            <h2 class="text-xl font-bold mb-4 text-gray-800">অ্যাডমিন প্যানেল লগইন</h2>
-            <input type="password" id="adminPass" placeholder="পাসওয়ার্ড দিন" class="w-full p-3 border rounded-xl mb-4 text-center">
-            <button onclick="adminLogin()" class="w-full bg-gray-800 text-white py-3 rounded-xl font-bold">লগইন করুন</button>
+            <h2 class="text-xl font-bold mb-4">অ্যাডমিন প্রবেশ</h2>
+            <input type="password" id="adminPass" placeholder="পাসওয়ার্ড" class="w-full p-3 border rounded-xl mb-4 text-center outline-none">
+            <button onclick="adminLogin()" class="w-full bg-gray-800 text-white py-3 rounded-xl font-bold hover:bg-black transition">লগইন</button>
         </div>
     </div>
 
     <div id="adminPanel" class="container mx-auto mt-6 p-4 hidden">
-        <div class="flex flex-wrap gap-3 mb-6">
-            <button onclick="downloadPDF()" class="bg-red-600 text-white px-5 py-2 rounded-lg font-bold shadow hover:bg-red-700 flex items-center gap-2">
-                <i class="fas fa-file-pdf"></i> PDF রিপোর্ট
-            </button>
-            <button onclick="exportCSV()" class="bg-emerald-600 text-white px-5 py-2 rounded-lg font-bold shadow hover:bg-emerald-700 flex items-center gap-2">
-                <i class="fas fa-file-excel"></i> এক্সেল ডাটা
+        <div class="bg-white p-6 rounded-2xl shadow-lg mb-8 border-l-4 border-purple-600">
+            <h2 class="text-lg font-bold text-purple-900 mb-4 border-b pb-2"><i class="fas fa-plus-circle mr-2"></i>নতুন রেজাল্ট আপলোড করুন</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div>
+                    <label class="text-xs font-bold text-gray-600">পরীক্ষার ধরণ</label>
+                    <select id="examType" class="w-full p-3 border rounded-xl bg-yellow-50 font-bold outline-none">
+                        <option value="সাপ্তাহিক">সাপ্তাহিক পরীক্ষা</option>
+                        <option value="মাসিক">মাসিক পরীক্ষা</option>
+                        <option value="বার্ষিক">বার্ষিক পরীক্ষা</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-600">তারিখ</label>
+                    <input type="date" id="examDate" class="w-full p-3 border rounded-xl bg-yellow-50 outline-none">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-600">পূর্ণমান (প্রতি বিষয়)</label>
+                    <input type="number" id="fullMarks" placeholder="৫০/১০০" class="w-full p-3 border rounded-xl bg-yellow-50 outline-none font-bold">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-600">ছাত্রের শ্রেণী</label>
+                    <select id="stdClass" onchange="updateSubjectInputs()" class="w-full p-3 border rounded-xl bg-purple-50 font-bold outline-none">
+                        <option value="৬ষ্ঠ">৬ষ্ঠ শ্রেণী</option>
+                        <option value="৭ম">৭ম শ্রেণী</option>
+                        <option value="৮ম">৮ম শ্রেণী</option>
+                        <option value="৯ম">৯ম শ্রেণী</option>
+                        <option value="১০ম">১০ম শ্রেণী</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-600">ছাত্রের নাম</label>
+                    <input type="text" id="stdName" placeholder="ছাত্রের নাম লিখুন" class="w-full p-3 border rounded-xl outline-none">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-600">রোল নম্বর</label>
+                    <input type="number" id="stdRoll" placeholder="রোল নম্বর" class="w-full p-3 border rounded-xl outline-none">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-600">WhatsApp নম্বর (অভিভাবক)</label>
+                    <input type="text" id="stdWhatsApp" placeholder="017xxxxxxxx" class="w-full p-3 border rounded-xl outline-none">
+                </div>
+            </div>
+
+            <div class="bg-gray-50 p-4 rounded-xl border border-dashed border-purple-300">
+                <p class="font-bold text-xs text-purple-800 mb-3 underline">বিষয়ভিত্তিক প্রাপ্ত নম্বর এন্ট্রি:</p>
+                <div id="subjectInputs" class="grid grid-cols-2 md:grid-cols-6 gap-3">
+                    </div>
+            </div>
+
+            <button onclick="saveData()" class="w-full mt-6 brand-purple text-white py-4 rounded-xl font-bold shadow-xl hover:bg-purple-900 transition">
+                <i class="fas fa-save mr-2"></i> ডাটাবেজে সংরক্ষণ করুন
             </button>
         </div>
 
-        <div class="bg-white p-6 rounded-2xl shadow-lg border-l-4 border-purple-600 mb-8">
-            <h2 id="formTitle" class="text-lg font-bold text-purple-900 mb-4 border-b pb-2">নতুন ডাটা এন্ট্রি</h2>
-            <input type="hidden" id="editIndex" value="-1">
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <input type="text" id="stdName" placeholder="ছাত্রের নাম" class="p-3 border rounded-xl">
-                <input type="number" id="stdRoll" placeholder="রোল নম্বর" class="p-3 border rounded-xl">
-                <select id="stdClass" onchange="updateSubjectInputs()" class="p-3 border rounded-xl bg-purple-50 font-semibold">
+        <div class="bg-indigo-900 text-white p-6 rounded-2xl shadow-lg mb-8">
+            <h2 class="font-bold mb-3"><i class="fab fa-whatsapp mr-2 text-green-400"></i>একসাথে সবাইকে মেসেজ পাঠান</h2>
+            <div class="flex flex-col md:flex-row gap-3">
+                <select id="broadcastClass" class="p-3 rounded-xl text-black md:w-1/4">
                     <option value="৬ষ্ঠ">৬ষ্ঠ শ্রেণী</option>
                     <option value="৭ম">৭ম শ্রেণী</option>
                     <option value="৮ম">৮ম শ্রেণী</option>
                     <option value="৯ম">৯ম শ্রেণী</option>
                     <option value="১০ম">১০ম শ্রেণী</option>
                 </select>
-                <input type="text" id="stdPhone" placeholder="মোবাইল নম্বর" class="p-3 border rounded-xl">
-                <input type="text" id="stdBatch" placeholder="ব্যাচ নাম" class="p-3 border rounded-xl">
-            </div>
-
-            <div class="bg-gray-50 p-4 rounded-xl border border-dashed border-purple-300">
-                <p class="font-bold text-xs text-purple-800 mb-3 uppercase tracking-wider">বিষয় ভিত্তিক নম্বর (২০১০ কারিকুলাম):</p>
-                <div id="subjectInputs" class="grid grid-cols-2 md:grid-cols-6 gap-3"></div>
-            </div>
-
-            <div class="mt-6 flex gap-3">
-                <button id="saveBtn" onclick="saveData()" class="flex-1 brand-purple text-white py-3 rounded-xl font-bold hover:bg-purple-900 shadow-lg transition">সেভ করুন</button>
-                <button id="cancelEdit" onclick="resetForm()" class="hidden bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-bold">বাতিল</button>
+                <input type="text" id="broadcastMsg" placeholder="আপনার মেসেজটি এখানে লিখুন (উদা: আগামীকাল কোচিং বন্ধ)" class="p-3 rounded-xl text-black flex-1">
+                <button onclick="sendBroadcast()" class="bg-green-500 hover:bg-green-600 px-6 py-3 rounded-xl font-bold shadow-lg transition">মেসেজ পাঠান</button>
             </div>
         </div>
 
-        <div id="printArea" class="bg-white rounded-2xl shadow-xl overflow-hidden border">
-            <div class="p-6 brand-purple text-white flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <img src="https://i.ibb.co/Lhy0W0P/1000018420.jpg" alt="Logo" class="w-12 h-12 rounded-full border-2 border-white">
-                    <div>
-                        <h2 class="font-bold text-lg">ছাত্রছাত্রীদের তালিকা</h2>
-                        <p class="text-xs text-yellow-300">আমিরুল ম্যাথ কেয়ার, দিনাজপুর</p>
-                    </div>
-                </div>
-                <div class="text-right no-pdf text-xs">
-                    <p>তারিখ: <span id="currentDate"></span></p>
-                </div>
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border">
+            <div class="p-4 brand-purple text-white flex justify-between items-center">
+                <h3 class="font-bold">সংরক্ষিত তথ্যের তালিকা</h3>
+                <button onclick="downloadStudentList()" class="bg-red-500 text-white px-3 py-1 rounded-lg text-xs font-bold shadow hover:bg-red-600">
+                    <i class="fas fa-file-pdf mr-1"></i> তালিকা PDF
+                </button>
             </div>
-            <table class="w-full text-left">
-                <thead>
-                    <tr class="bg-gray-100 text-gray-700 text-xs uppercase">
-                        <th class="p-4 border-b">রোল</th>
-                        <th class="p-4 border-b">নাম</th>
-                        <th class="p-4 border-b">শ্রেণী</th>
-                        <th class="p-4 border-b">মোট নম্বর</th>
-                        <th class="p-4 border-b text-center no-pdf">অ্যাকশন</th>
-                    </tr>
-                </thead>
-                <tbody id="dataTableBody" class="text-sm divide-y"></tbody>
-            </table>
+            <div class="overflow-x-auto" id="studentListArea">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-100 text-xs text-gray-600 uppercase">
+                            <th class="p-4 border-b">তারিখ</th>
+                            <th class="p-4 border-b">রোল</th>
+                            <th class="p-4 border-b">নাম</th>
+                            <th class="p-4 border-b">শ্রেণী</th>
+                            <th class="p-4 border-b">প্রাপ্ত</th>
+                            <th class="p-4 border-b text-center no-pdf">অ্যাকশন</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTableBody" class="divide-y text-sm">
+                        </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <script>
-        // আপনার বিষয়ের তালিকা (কারিকুলাম ২০১০)
         const subjectsConfig = {
             "৬ষ্ঠ": ["বাংলা", "ইংরেজি", "গণিত", "বিজ্ঞান", "সমাজ", "ধর্ম"],
             "৭ম": ["বাংলা", "ইংরেজি", "গণিত", "বিজ্ঞান", "সমাজ", "ধর্ম"],
             "৮ম": ["বাংলা", "ইংরেজি", "গণিত", "বিজ্ঞান", "সমাজ", "ধর্ম"],
-            "৯ম": ["বাংলা", "ইংরেজি", "গণিত", "উচ্চতর গণিত","পদার্থ", "রসায়ন", "জীববিজ্ঞান"],
-            "১০ম": ["বাংলা", "ইংরেজি", "গণিত", "উচ্চতর গণিত","পদার্থ", "রসায়ন", "জীববিজ্ঞান"]
+            "৯ম": ["বাংলা", "ইংরেজি", "গণিত", "উচ্চতর গণিত", "পদার্থ", "রসায়ন", "জীববিজ্ঞান"],
+            "১০ম": ["বাংলা", "ইংরেজি", "গণিত", "উচ্চতর গণিত", "পদার্থ", "রসায়ন", "জীববিজ্ঞান"]
         };
 
         function showSection(id) {
-            ['studentView', 'loginSection', 'adminPanel'].forEach(s => document.getElementById(s).classList.add('hidden'));
+            ['studentView', 'loginSection', 'adminPanel', 'resultArea'].forEach(s => document.getElementById(s).classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
         }
 
         function adminLogin() {
-            if (document.getElementById('adminPass').value === "Muktarul248") {
+            if (document.getElementById('adminPass').value === "1234") {
+                localStorage.setItem('amc_admin', 'true');
                 showSection('adminPanel');
+                document.getElementById('logoutBtn').classList.remove('hidden');
+                document.getElementById('adminLoginBtn').classList.add('hidden');
                 updateSubjectInputs();
                 renderTable();
-                document.getElementById('currentDate').innerText = new Date().toLocaleDateString('bn-BD');
             } else { alert("ভুল পাসওয়ার্ড!"); }
+        }
+
+        function logout() {
+            localStorage.removeItem('amc_admin');
+            location.reload();
         }
 
         function updateSubjectInputs() {
@@ -179,50 +207,48 @@
         }
 
         function saveData() {
+            const date = document.getElementById('examDate').value;
+            const type = document.getElementById('examType').value;
+            const cls = document.getElementById('stdClass').value;
             const name = document.getElementById('stdName').value;
             const roll = document.getElementById('stdRoll').value;
-            const sClass = document.getElementById('stdClass').value;
-            const phone = document.getElementById('stdPhone').value;
-            const batch = document.getElementById('stdBatch').value;
-            const editIndex = parseInt(document.getElementById('editIndex').value);
+            const wa = document.getElementById('stdWhatsApp').value;
+            const fullM = document.getElementById('fullMarks').value || 100;
 
-            if(!name || !roll) return alert("দয়া করে নাম ও রোল দিন!");
+            if(!date || !name || !roll || !wa) return alert("দয়া করে সব তথ্য পূরণ করুন!");
 
             let scores = {};
             document.querySelectorAll('.sub-score').forEach(input => {
                 scores[input.dataset.sub] = input.value || 0;
             });
 
-            let data = JSON.parse(localStorage.getItem('amirul_math_db') || "[]");
-            const studentData = { name, roll, sClass, phone, batch, scores };
+            let data = JSON.parse(localStorage.getItem('amirul_ultimate_db') || "[]");
+            data.push({ date, type, cls, name, roll, wa, fullM, scores });
 
-            if (editIndex === -1) {
-                data.push(studentData);
-            } else {
-                data[editIndex] = studentData;
-            }
-
-            localStorage.setItem('amirul_math_db', JSON.stringify(data));
-            resetForm();
+            localStorage.setItem('amirul_ultimate_db', JSON.stringify(data));
             renderTable();
-            alert("সফলভাবে সেভ হয়েছে!");
+            alert("সফলভাবে ডাটা আপলোড করা হয়েছে!");
+            
+            // Clear inputs
+            document.getElementById('stdName').value = '';
+            document.getElementById('stdRoll').value = '';
+            document.querySelectorAll('.sub-score').forEach(i => i.value = '');
         }
 
         function renderTable() {
             const tbody = document.getElementById('dataTableBody');
-            const data = JSON.parse(localStorage.getItem('amirul_math_db') || "[]");
+            const data = JSON.parse(localStorage.getItem('amirul_ultimate_db') || "[]");
             tbody.innerHTML = '';
-
-            data.forEach((s, index) => {
+            data.reverse().forEach((s, index) => {
                 let total = Object.values(s.scores).reduce((a, b) => Number(a) + Number(b), 0);
                 tbody.innerHTML += `
-                    <tr class="hover:bg-purple-50 transition">
-                        <td class="p-4 font-bold text-purple-700">${s.roll}</td>
-                        <td class="p-4 font-semibold">${s.name}</td>
-                        <td class="p-4">${s.sClass}</td>
-                        <td class="p-4"><span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-bold">${total}</span></td>
-                        <td class="p-4 text-center no-pdf space-x-3">
-                            <button onclick="editData(${index})" class="text-blue-600 hover:text-blue-800"><i class="fas fa-edit"></i></button>
+                    <tr class="hover:bg-purple-50">
+                        <td class="p-4 border-b">${s.date}</td>
+                        <td class="p-4 border-b font-bold">${s.roll}</td>
+                        <td class="p-4 border-b">${s.name}</td>
+                        <td class="p-4 border-b">${s.cls} (${s.type})</td>
+                        <td class="p-4 border-b font-bold text-purple-700">${total}</td>
+                        <td class="p-4 border-b text-center no-pdf">
                             <button onclick="deleteData(${index})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>`;
@@ -232,107 +258,92 @@
         function checkResult() {
             const roll = document.getElementById('searchRoll').value;
             const cls = document.getElementById('searchClass').value;
-            const data = JSON.parse(localStorage.getItem('amirul_math_db') || "[]");
-            const s = data.find(item => item.roll == roll && item.sClass.includes(cls.substring(0,2)));
-            const display = document.getElementById('resultDisplay');
+            const type = document.getElementById('searchType').value;
+            const data = JSON.parse(localStorage.getItem('amirul_ultimate_db') || "[]");
+            
+            const s = data.find(item => item.roll == roll && item.cls == cls && item.type == type);
+            const area = document.getElementById('resultArea');
 
             if (s) {
-                display.classList.remove('hidden');
+                showSection('resultArea');
                 let scoreHtml = '';
-                let total = 0;
+                let totalScore = 0;
+                let subjectsCount = 0;
+
                 for (let sub in s.scores) {
-                    total += Number(s.scores[sub]);
-                    scoreHtml += `
-                        <div class="flex justify-between items-center border-b border-purple-50 py-3">
-                            <span class="text-gray-600 font-medium">${sub}</span>
-                            <span class="font-bold text-purple-700">${s.scores[sub]}</span>
-                        </div>`;
+                    totalScore += Number(s.scores[sub]);
+                    subjectsCount++;
+                    scoreHtml += `<tr><td class="p-2 border font-medium">${sub}</td><td class="p-2 border text-center font-bold text-purple-800">${s.scores[sub]}</td></tr>`;
                 }
-                display.innerHTML = `
-                    <div class="bg-white p-6 rounded-2xl border-2 border-purple-500 shadow-xl relative overflow-hidden">
-                        <div class="absolute -right-8 -top-8 opacity-10">
-                            <img src="https://i.ibb.co/Lhy0W0P/1000018420.jpg" class="w-32">
-                        </div>
-                        <div class="text-center mb-6">
-                            <img src="https://i.ibb.co/Lhy0W0P/1000018420.jpg" class="w-16 h-16 mx-auto rounded-full border-2 border-yellow-500 mb-2">
-                            <h3 class="font-black text-xl text-purple-900">${s.name}</h3>
-                            <p class="text-xs text-gray-500 uppercase tracking-widest font-bold">রোল: ${s.roll} • শ্রেণী: ${s.sClass}</p>
-                        </div>
-                        <div class="space-y-1 mb-6">${scoreHtml}</div>
-                        <div class="bg-purple-900 text-white p-4 rounded-xl flex justify-between items-center shadow-lg">
-                            <span class="font-bold">সর্বমোট নম্বর:</span>
-                            <span class="text-2xl font-black text-yellow-400">${total}</span>
-                        </div>
+
+                document.getElementById('marksheetPDF').innerHTML = `
+                    <div class="text-center mb-6">
+                        <img src="https://i.ibb.co/Lhy0W0P/1000018420.jpg" class="w-20 h-20 mx-auto rounded-full border-2 border-yellow-500 mb-2">
+                        <h2 class="text-2xl font-black text-purple-900">AMIRUL MATH CARE</h2>
+                        <p class="text-xs text-gray-500 font-bold uppercase tracking-widest border-b pb-2">Dinajpur Sadar • Marksheet</p>
+                    </div>
+                    <div class="grid grid-cols-2 text-[11px] mb-4 gap-2 border p-3 rounded bg-purple-50 font-bold text-gray-700">
+                        <div>নাম: ${s.name}</div>
+                        <div>রোল: ${s.roll}</div>
+                        <div>শ্রেণী: ${s.cls}</div>
+                        <div>পরীক্ষা: ${s.type}</div>
+                        <div>তারিখ: ${s.date}</div>
+                    </div>
+                    <table class="w-full text-sm border-collapse border mb-4">
+                        <thead class="bg-gray-100"><tr><th class="p-2 border text-left">বিষয়</th><th class="p-2 border text-center">প্রাপ্ত নম্বর</th></tr></thead>
+                        <tbody>${scoreHtml}</tbody>
+                    </table>
+                    <div class="flex justify-between items-center bg-purple-900 text-white p-3 rounded">
+                        <span class="font-bold">সর্বমোট প্রাপ্ত নম্বর:</span>
+                        <span class="text-xl font-black text-yellow-400">${totalScore} / ${s.fullM * subjectsCount}</span>
+                    </div>
+                    <div class="mt-8 flex justify-between">
+                        <div class="text-center border-t border-black w-24 text-[8px] pt-1 font-bold">অভিভাবকের স্বাক্ষর</div>
+                        <div class="text-center border-t border-black w-24 text-[8px] pt-1 font-bold">শিক্ষকের স্বাক্ষর</div>
                     </div>`;
-            } else { alert("দুঃখিত! এই রোল বা শ্রেণীর কোনো তথ্য পাওয়া যায়নি।"); }
+            } else { alert("দুঃখিত! এই তথ্যটি পাওয়া যায়নি।"); }
         }
 
-        function downloadPDF() {
-            const element = document.getElementById('printArea');
-            const opt = {
-                margin: 0.3,
-                filename: 'Amirul_Math_Care_Students.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 3 },
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-            };
-            document.querySelectorAll('.no-pdf').forEach(e => e.classList.add('hidden'));
-            html2pdf().set(opt).from(element).save().then(() => {
-                document.querySelectorAll('.no-pdf').forEach(e => e.classList.remove('hidden'));
+        function downloadMarksheet() {
+            const element = document.getElementById('marksheetPDF');
+            html2pdf().set({ margin: 0.5, filename: 'Marksheet.pdf', html2canvas: { scale: 3 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }).from(element).save();
+        }
+
+        function downloadStudentList() {
+            const element = document.getElementById('studentListArea');
+            document.querySelectorAll('.no-pdf').forEach(el => el.style.display = 'none');
+            html2pdf().set({ margin: 0.2, filename: 'Student_List.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }).from(element).save().then(() => {
+                document.querySelectorAll('.no-pdf').forEach(el => el.style.display = '');
             });
         }
 
-        function editData(index) {
-            const data = JSON.parse(localStorage.getItem('amirul_math_db'));
-            const s = data[index];
-            document.getElementById('stdName').value = s.name;
-            document.getElementById('stdRoll').value = s.roll;
-            document.getElementById('stdClass').value = s.sClass;
-            document.getElementById('stdPhone').value = s.phone;
-            document.getElementById('stdBatch').value = s.batch;
-            document.getElementById('editIndex').value = index;
-            
-            updateSubjectInputs();
-            const inputs = document.querySelectorAll('.sub-score');
-            inputs.forEach(input => {
-                input.value = s.scores[input.dataset.sub] || 0;
+        function sendBroadcast() {
+            const cls = document.getElementById('broadcastClass').value;
+            const msg = document.getElementById('broadcastMsg').value;
+            const data = JSON.parse(localStorage.getItem('amirul_ultimate_db') || "[]");
+            if(!msg) return alert("মেসেজ লিখুন!");
+            const recipients = [...new Set(data.filter(s => s.cls === cls).map(s => s.wa))];
+            if(recipients.length === 0) return alert("কোনো ছাত্র পাওয়া যায়নি!");
+            recipients.forEach((num, i) => {
+                setTimeout(() => window.open(`https://wa.me/88${num}?text=${encodeURIComponent(msg)}`, '_blank'), i * 1500);
             });
-
-            document.getElementById('saveBtn').innerText = "আপডেট করুন";
-            document.getElementById('cancelEdit').classList.remove('hidden');
-            window.scrollTo({ top: 400, behavior: 'smooth' });
-        }
-
-        function resetForm() {
-            ['stdName', 'stdRoll', 'stdPhone', 'stdBatch'].forEach(id => document.getElementById(id).value = '');
-            document.getElementById('editIndex').value = '-1';
-            document.getElementById('saveBtn').innerText = "সেভ করুন";
-            document.getElementById('cancelEdit').classList.add('hidden');
-            updateSubjectInputs();
         }
 
         function deleteData(index) {
-            if(confirm("আপনি কি নিশ্চিতভাবে এই তথ্যটি মুছে ফেলতে চান?")) {
-                let data = JSON.parse(localStorage.getItem('amirul_math_db'));
-                data.splice(index, 1);
-                localStorage.setItem('amirul_math_db', JSON.stringify(data));
+            if(confirm("মুছে ফেলতে চান?")) {
+                let data = JSON.parse(localStorage.getItem('amirul_ultimate_db'));
+                data.reverse().splice(index, 1);
+                data.reverse();
+                localStorage.setItem('amirul_ultimate_db', JSON.stringify(data));
                 renderTable();
             }
         }
 
-        function exportCSV() {
-            const data = JSON.parse(localStorage.getItem('amirul_math_db') || "[]");
-            let csv = "Roll,Name,Class,Phone,Total\n";
-            data.forEach(s => {
-                let total = Object.values(s.scores).reduce((a, b) => Number(a) + Number(b), 0);
-                csv += `${s.roll},${s.name},${s.sClass},${s.phone},${total}\n`;
-            });
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'amirul_math_students.csv';
-            a.click();
-        }
+        window.onload = () => {
+            if(localStorage.getItem('amc_admin')) {
+                adminLogin();
+            }
+        };
     </script>
 </body>
 </html>
