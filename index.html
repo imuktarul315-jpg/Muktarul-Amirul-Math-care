@@ -12,6 +12,7 @@
         body { font-family: 'Hind Siliguri', sans-serif; background-color: #f3f4f6; }
         .brand-purple { background-color: #6b21a8; }
         .hidden { display: none; }
+        .logo-img { width: 60px; height: 60px; object-fit: cover; border-radius: 50%; border: 2px solid #fbbf24; margin: 0 auto; }
     </style>
 </head>
 <body>
@@ -29,9 +30,16 @@
 
     <div id="studentView" class="container mx-auto mt-6 p-4 max-w-lg">
         <div class="bg-white p-6 rounded-3xl shadow-2xl border-t-8 border-purple-700 text-center">
-            <h3 class="font-bold text-gray-700 mb-6 text-xl uppercase">Result & Admit Card</h3>
+            <h3 class="font-bold text-gray-700 mb-6 text-xl">ফলাফল ও প্রবেশপত্র অনুসন্ধান</h3>
             <div class="space-y-4">
-                <input type="date" id="searchDate" class="w-full p-3 border rounded-xl bg-gray-50 outline-none focus:ring-2 focus:ring-purple-500">
+                <select id="searchExamType" class="w-full p-3 border rounded-xl bg-purple-50 font-bold outline-none">
+                    <option value="">পরীক্ষার ধরণ নির্বাচন করুন</option>
+                    <option value="সাপ্তাহিক">সাপ্তাহিক পরীক্ষা</option>
+                    <option value="মাসিক">মাসিক পরীক্ষা</option>
+                    <option value="বার্ষিক">বার্ষিক পরীক্ষা</option>
+                </select>
+                <input type="date" id="searchDate" class="w-full p-3 border rounded-xl outline-none bg-gray-50" title="পরীক্ষার তারিখ">
+                
                 <select id="searchClass" class="w-full p-3 border rounded-xl outline-none">
                     <option value="">শ্রেণী নির্বাচন করুন</option>
                     <option value="৬ষ্ঠ">৬ষ্ঠ</option><option value="৭ম">৭ম</option><option value="৮ম">৮ম</option><option value="৯ম">৯ম</option><option value="১০ম">১০ম</option>
@@ -52,7 +60,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <select id="broadcastClass" class="p-3 rounded-xl text-black font-bold outline-none">
                     <option value="">শ্রেণী বেছে নিন</option>
-                    <option value="৬ষ্ঠ">৬ষ্ঠ শ্রেণী</option><option value="৭ম">৭ম শ্রেণী</option><option value="৮ম">৮ম শ্রেণী</option><option value="৯ম">৯ম শ্রেণী</option><option value="১০ম">১০ম শ্রেণী</option>
+                    <option value="৬ষ্ঠ">৬ষ্ঠ</option><option value="৭ম">৭ম</option><option value="৮ম">৮ম</option><option value="৯ম">৯ম</option><option value="১০ম">১০ম</option>
                 </select>
                 <textarea id="broadcastMsg" placeholder="মেসেজ লিখুন..." class="p-3 rounded-xl text-black outline-none h-12"></textarea>
             </div>
@@ -61,35 +69,40 @@
 
         <div class="bg-white p-6 rounded-2xl shadow-lg mb-8 border-l-8 border-purple-600">
             <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h2 id="formTitle" class="text-lg font-bold text-purple-900">রেজাল্ট এন্ট্রি</h2>
+                <h2 id="formTitle" class="text-lg font-bold text-purple-900">রেজাল্ট এন্ট্রি ফর্ম</h2>
                 <div class="flex items-center gap-2">
-                    <label class="text-xs font-bold text-red-500">পরীক্ষার পূর্ণমান (প্রতি বিষয়ে):</label>
-                    <input type="number" id="fullMarks" value="100" class="w-16 p-1 border-2 border-red-300 rounded text-center font-bold">
+                    <label class="text-xs font-bold text-red-500">পূর্ণমান:</label>
+                    <input type="number" id="fullMarks" value="100" class="w-16 p-1 border-2 border-red-200 rounded text-center font-bold">
                 </div>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <input type="hidden" id="editIndex" value="-1">
+                <select id="examType" class="p-2 border rounded-lg bg-yellow-50 font-bold">
+                    <option value="সাপ্তাহিক">সাপ্তাহিক পরীক্ষা</option>
+                    <option value="মাসিক">মাসিক পরীক্ষা</option>
+                    <option value="বার্ষিক">বার্ষিক পরীক্ষা</option>
+                </select>
                 <input type="date" id="examDate" class="p-2 border rounded-lg bg-gray-50">
                 <select id="stdClass" onchange="updateSubjectInputs()" class="p-2 border rounded-lg bg-purple-50 font-bold">
                     <option value="৬ষ্ঠ">৬ষ্ঠ</option><option value="৭ম">৭ম</option><option value="৮ম">৮ম</option><option value="৯ম">৯ম</option><option value="১০ম">১০ম</option>
                 </select>
                 <input type="text" id="stdName" placeholder="ছাত্রের নাম" class="p-2 border rounded-lg">
                 <input type="number" id="stdRoll" placeholder="রোল" class="p-2 border rounded-lg">
-                <input type="text" id="stdWhatsApp" placeholder="হোয়াটসঅ্যাপ (০১৭...)" class="p-2 border rounded-lg">
+                <input type="text" id="stdWhatsApp" placeholder="WhatsApp Number" class="p-2 border rounded-lg">
             </div>
             <div id="subjectInputs" class="space-y-2 bg-gray-50 p-4 rounded-xl border mb-6"></div>
-            <button onclick="saveData()" id="saveBtn" class="w-full brand-purple text-white py-4 rounded-xl font-bold shadow-xl">সংরক্ষণ করুন</button>
+            <button onclick="saveData()" id="saveBtn" class="w-full brand-purple text-white py-4 rounded-xl font-bold shadow-xl">তথ্য সংরক্ষণ করুন</button>
             <button onclick="cancelEdit()" id="cancelBtn" class="hidden w-full mt-2 bg-gray-400 text-white py-2 rounded-xl font-bold">বাতিল</button>
         </div>
 
         <div id="listSection" class="bg-white rounded-2xl shadow-xl overflow-hidden border">
             <div class="p-4 brand-purple text-white flex justify-between items-center">
-                <h3 class="font-bold">মেধা তালিকা</h3>
-                <button onclick="downloadPDF('listSection', 'Student_Report')" class="bg-red-500 px-4 py-1 rounded-full text-xs font-bold">PDF রিপোর্ট</button>
+                <h3 class="font-bold">রেজাল্ট ডাটাবেজ</h3>
+                <button onclick="downloadPDF('listSection', 'Full_Report')" class="bg-red-500 px-4 py-1 rounded-full text-xs font-bold">পুরো রিপোর্ট PDF</button>
             </div>
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse text-xs">
-                    <thead><tr class="bg-gray-100 font-bold"><th class="p-3 border">রোল</th><th class="p-3 border">নাম</th><th class="p-3 border">মোট মার্কস</th><th class="p-3 border">GPA</th><th class="p-3 border">মেরিট</th><th class="p-3 border no-pdf">অ্যাকশন</th></tr></thead>
+                <table class="w-full text-left border-collapse text-[10px] md:text-xs">
+                    <thead><tr class="bg-gray-100 font-bold"><th class="p-3 border">রোল</th><th class="p-3 border">নাম</th><th class="p-3 border">ধরণ</th><th class="p-3 border">প্রাপ্ত নম্বর</th><th class="p-3 border">GPA</th><th class="p-3 border">মেরিট</th><th class="p-3 border no-pdf">অ্যাকশন</th></tr></thead>
                     <tbody id="dataTableBody"></tbody>
                 </table>
             </div>
@@ -98,7 +111,7 @@
 
     <div id="loginSection" class="container mx-auto mt-10 p-6 max-w-md hidden">
         <div class="bg-white p-8 rounded-2xl shadow-lg text-center border-t-4 border-purple-700">
-            <input type="password" id="adminPass" placeholder="পাসওয়ার্ড" class="w-full p-3 border rounded-xl mb-4 text-center">
+            <input type="password" id="adminPass" placeholder="অ্যাডমিন পাসওয়ার্ড" class="w-full p-3 border rounded-xl mb-4 text-center">
             <button onclick="adminLogin()" class="w-full bg-slate-800 text-white py-3 rounded-xl font-bold">লগইন</button>
         </div>
     </div>
@@ -107,7 +120,7 @@
         <div id="pdfContent" class="bg-white p-8 rounded-xl shadow-2xl border-4 border-double border-purple-900 w-full max-w-md"></div>
         <div class="flex gap-2 w-full max-w-md mt-4">
             <button onclick="downloadPDF('pdfContent', 'AMC_Document')" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold shadow-lg">ডাউনলোড PDF</button>
-            <button onclick="location.reload()" class="flex-1 bg-gray-400 text-white py-3 rounded-xl font-bold shadow-lg">ফিরে যান</button>
+            <button onclick="location.reload()" class="flex-1 bg-gray-400 text-white py-3 rounded-xl font-bold shadow-lg">হোম পেজ</button>
         </div>
     </div>
 
@@ -120,7 +133,8 @@
             "১০ম": ["গণিত", "পদার্থ", "রসায়ন", "জীববিজ্ঞান", "উচ্চতর গণিত", "বাংলা", "ইংরেজি", "আইসিটি"]
         };
 
-        // অটোমেটিক গ্রেডিং লজিক (পূর্ণমানের ওপর ভিত্তি করে)
+        const LOGO_URL = "https://i.ibb.co/Lhy0W0P/1000018420.jpg";
+
         function getGrade(obtained, full) {
             let percent = (obtained / full) * 100;
             if (percent >= 80) return { g: 'A+', p: 5.0 }; 
@@ -138,7 +152,7 @@
         }
 
         function adminLogin() {
-            if (document.getElementById('adminPass').value === "1617798358mA@") {
+            if (document.getElementById('adminPass').value === "1234") {
                 localStorage.setItem('amc_admin_auth', 'true');
                 showSection('adminPanel');
                 updateSubjectInputs();
@@ -172,15 +186,16 @@
             document.getElementById(`total_${sub}`).innerText = m + c;
         }
 
-        function getMerit(roll, cls, date, total) {
-            let data = JSON.parse(localStorage.getItem('amc_db_v8') || "[]");
-            let filtered = data.filter(s => s.cls === cls && s.date === date);
+        function getMerit(roll, cls, type, date, total) {
+            let data = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
+            let filtered = data.filter(s => s.cls === cls && s.type === type && s.date === date);
             filtered.sort((a, b) => b.grandTotal - a.grandTotal);
             let pos = filtered.findIndex(s => s.roll == roll && s.grandTotal == total) + 1;
             return pos || '-';
         }
 
         function saveData() {
+            const type = document.getElementById('examType').value;
             const date = document.getElementById('examDate').value;
             const cls = document.getElementById('stdClass').value;
             const name = document.getElementById('stdName').value;
@@ -189,7 +204,7 @@
             const fMarks = Number(document.getElementById('fullMarks').value);
             const editIdx = Number(document.getElementById('editIndex').value);
 
-            if(!date || !name || !roll || !wa) return alert("সব তথ্য দিন!");
+            if(!date || !name || !roll || !wa) return alert("তথ্য অসম্পূর্ণ!");
 
             let scores = {}; let grandTotal = 0; let totalP = 0;
             subjectsConfig[cls].forEach(sub => {
@@ -202,24 +217,25 @@
             });
 
             let gpa = (totalP / subjectsConfig[cls].length).toFixed(2);
-            let data = JSON.parse(localStorage.getItem('amc_db_v8') || "[]");
-            const entry = { date, cls, name, roll, wa, scores, grandTotal, gpa, fMarks };
+            let data = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
+            const entry = { type, date, cls, name, roll, wa, scores, grandTotal, gpa, fMarks };
 
             if(editIdx === -1) data.push(entry); else { data[editIdx] = entry; cancelEdit(); }
 
-            localStorage.setItem('amc_db_v8', JSON.stringify(data));
-            renderTable(); alert("সফলভাবে সেভ হয়েছে!"); resetForm();
+            localStorage.setItem('amc_db_final', JSON.stringify(data));
+            renderTable(); alert("সংরক্ষিত হয়েছে!"); resetForm();
         }
 
         function renderTable() {
             const tbody = document.getElementById('dataTableBody');
-            const data = JSON.parse(localStorage.getItem('amc_db_v8') || "[]");
+            const data = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
             tbody.innerHTML = '';
             data.reverse().forEach((s, index) => {
-                let merit = getMerit(s.roll, s.cls, s.date, s.grandTotal);
+                let merit = getMerit(s.roll, s.cls, s.type, s.date, s.grandTotal);
                 tbody.innerHTML += `
                     <tr class="border-b hover:bg-gray-50">
                         <td class="p-3 font-bold">${s.roll}</td><td class="p-3">${s.name}</td>
+                        <td class="p-3"><span class="bg-gray-200 px-2 rounded-full text-[9px] font-bold">${s.type}</span></td>
                         <td class="p-3 font-bold text-purple-700">${s.grandTotal} / ${s.fMarks * subjectsConfig[s.cls].length}</td>
                         <td class="p-3 font-bold text-green-600">${s.gpa}</td>
                         <td class="p-3"><span class="bg-yellow-400 px-2 rounded-full font-bold">#${merit}</span></td>
@@ -231,10 +247,79 @@
             });
         }
 
+        function checkResult() {
+            const type = document.getElementById('searchExamType').value;
+            const date = document.getElementById('searchDate').value;
+            const cls = document.getElementById('searchClass').value;
+            const roll = document.getElementById('searchRoll').value;
+            
+            if(!type || !date || !cls || !roll) return alert("সব অপশন (ধরণ, তারিখ, শ্রেণী, রোল) পূর্ণ করুন!");
+
+            const data = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
+            const s = data.find(item => item.roll == roll && item.cls == cls && item.type == type && item.date == date);
+
+            if (s) {
+                showSection('displayArea');
+                let merit = getMerit(s.roll, s.cls, s.type, s.date, s.grandTotal);
+                let scoreHtml = '';
+                for (let sub in s.scores) {
+                    scoreHtml += `<tr class="border-b text-center text-[10px]"><td class="p-2 border text-left font-bold">${sub}</td><td class="p-2 border">${s.scores[sub].mcq}</td><td class="p-2 border">${s.scores[sub].cq}</td><td class="p-2 border font-bold text-purple-900">${s.scores[sub].t} / ${s.fMarks}</td><td class="p-2 border font-bold">${s.scores[sub].g}</td></tr>`;
+                }
+                document.getElementById('pdfContent').innerHTML = `
+                    <div class="text-center mb-6">
+                        <img src="${LOGO_URL}" class="logo-img mb-2">
+                        <h2 class="text-xl font-black text-purple-900">AMIRUL MATH CARE</h2>
+                        <span class="bg-indigo-900 text-white px-4 py-1 rounded-full text-[9px] font-bold uppercase">${s.type} পরীক্ষা</span>
+                    </div>
+                    <div class="grid grid-cols-2 text-[10px] font-bold mb-4 bg-purple-50 p-3 rounded-lg border">
+                        <div>নাম: ${s.name}</div><div>রোল: ${s.roll}</div><div>শ্রেণী: ${s.cls}</div><div>তারিখ: ${s.date}</div>
+                    </div>
+                    <table class="w-full text-xs border-collapse border mb-6">
+                        <thead class="bg-purple-700 text-white font-bold"><tr><th class="p-2 border">বিষয়</th><th class="p-2 border">MCQ</th><th class="p-2 border">CQ</th><th class="p-2 border">প্রাপ্ত/পূর্ণ</th><th class="p-2 border">গ্রেড</th></tr></thead>
+                        <tbody>${scoreHtml}</tbody>
+                    </table>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="bg-purple-900 text-white p-2 rounded-lg text-center"><p class="text-[8px]">Total Marks</p><p class="text-[10px] font-black text-yellow-400">${s.grandTotal} / ${s.fMarks * subjectsConfig[s.cls].length}</p></div>
+                        <div class="bg-indigo-900 text-white p-2 rounded-lg text-center"><p class="text-[8px]">GPA</p><p class="text-lg font-black">${s.gpa}</p></div>
+                        <div class="bg-amber-500 text-white p-2 rounded-lg text-center"><p class="text-[8px]">Merit Rank</p><p class="text-lg font-black">#${merit}</p></div>
+                    </div>`;
+            } else alert("ঐ নির্দিষ্ট তারিখে রেজাল্ট পাওয়া যায়নি!");
+        }
+
+        function generateAdmit() {
+            const roll = document.getElementById('searchRoll').value;
+            const cls = document.getElementById('searchClass').value;
+            const data = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
+            const s = data.find(item => item.roll == roll && item.cls == cls);
+            if (s) {
+                showSection('displayArea');
+                document.getElementById('pdfContent').innerHTML = `
+                    <div class="border-4 border-double border-purple-800 p-6 bg-white rounded-xl text-center">
+                        <img src="${LOGO_URL}" class="logo-img mb-2 border-2 border-purple-900">
+                        <h2 class="text-xl font-black text-purple-900 uppercase">AMIRUL MATH CARE</h2>
+                        <span class="bg-purple-900 text-white px-6 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Admit Card</span>
+                        <div class="mt-8 space-y-3 text-left font-bold text-gray-700 text-xs">
+                            <p class="border-b flex justify-between uppercase"><span>Student Name:</span> <span>${s.name}</span></p>
+                            <p class="border-b flex justify-between uppercase"><span>Roll Number:</span> <span>${s.roll}</span></p>
+                            <p class="border-b flex justify-between uppercase"><span>Student Class:</span> <span>${s.cls}</span></p>
+                        </div>
+                        <div class="mt-12 flex justify-between items-end italic text-[9px] text-gray-400">
+                            <span>Auto Verified</span><span class="border-t border-black pt-1 px-4 text-black font-bold">Admin Signature</span>
+                        </div>
+                    </div>`;
+            } else alert("ছাত্রের রেকর্ড পাওয়া যায়নি!");
+        }
+
+        function downloadPDF(divId, fileName) {
+            const element = document.getElementById(divId);
+            const opt = { margin: 0.5, filename: fileName + '.pdf', html2canvas: { scale: 3 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
+            html2pdf().set(opt).from(element).save();
+        }
+
         function sendBroadcast() {
             const cls = document.getElementById('broadcastClass').value;
             const msg = document.getElementById('broadcastMsg').value;
-            const data = JSON.parse(localStorage.getItem('amc_db_v8') || "[]");
+            const data = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
             const filteredRecipients = [...new Set(data.filter(s => s.cls === cls).map(s => s.wa))];
             if(filteredRecipients.length === 0) return alert("নম্বর পাওয়া যায়নি!");
             if(confirm(`${filteredRecipients.length} জনকে মেসেজ পাঠানো হবে?`)) {
@@ -244,75 +329,10 @@
             }
         }
 
-        function checkResult() {
-            const date = document.getElementById('searchDate').value;
-            const roll = document.getElementById('searchRoll').value;
-            const cls = document.getElementById('searchClass').value;
-            const data = JSON.parse(localStorage.getItem('amc_db_v8') || "[]");
-            const s = data.find(item => item.roll == roll && item.cls == cls && item.date == date);
-
-            if (s) {
-                showSection('displayArea');
-                let merit = getMerit(s.roll, s.cls, s.date, s.grandTotal);
-                let scoreHtml = '';
-                for (let sub in s.scores) {
-                    scoreHtml += `<tr class="border-b text-center text-[10px]"><td class="p-2 border text-left font-bold">${sub}</td><td class="p-2 border">${s.scores[sub].mcq}</td><td class="p-2 border">${s.scores[sub].cq}</td><td class="p-2 border font-bold text-purple-900">${s.scores[sub].t} / ${s.fMarks}</td><td class="p-2 border font-bold">${s.scores[sub].g}</td></tr>`;
-                }
-                document.getElementById('pdfContent').innerHTML = `
-                    <div class="text-center mb-6">
-                        <img src="https://i.ibb.co/Lhy0W0P/1000018420.jpg" class="w-16 h-16 mx-auto rounded-full border-2 border-yellow-500 mb-2">
-                        <h2 class="text-xl font-black text-purple-900 uppercase">AMIRUL MATH CARE</h2>
-                        <p class="text-[9px] font-bold text-gray-400 border-b pb-2 tracking-widest uppercase">Academic Performance Report</p>
-                    </div>
-                    <div class="grid grid-cols-2 text-[10px] font-bold mb-4 bg-purple-50 p-3 rounded-lg border">
-                        <div>নাম: ${s.name}</div><div>রোল: ${s.roll}</div><div>শ্রেণী: ${s.cls}</div><div>তারিখ: ${s.date}</div>
-                    </div>
-                    <table class="w-full text-xs border-collapse border mb-6">
-                        <thead class="bg-purple-700 text-white font-bold"><tr><th class="p-2 border">বিষয়</th><th class="p-2 border">MCQ</th><th class="p-2 border">CQ</th><th class="p-2 border">প্রাপ্ত / পূর্ণ</th><th class="p-2 border">গ্রেড</th></tr></thead>
-                        <tbody>${scoreHtml}</tbody>
-                    </table>
-                    <div class="grid grid-cols-3 gap-2">
-                        <div class="bg-purple-900 text-white p-2 rounded-lg text-center"><p class="text-[8px]">Total Marks</p><p class="text-sm font-black text-yellow-400">${s.grandTotal} / ${s.fMarks * subjectsConfig[s.cls].length}</p></div>
-                        <div class="bg-indigo-900 text-white p-2 rounded-lg text-center"><p class="text-[8px]">GPA</p><p class="text-lg font-black">${s.gpa}</p></div>
-                        <div class="bg-amber-500 text-white p-2 rounded-lg text-center"><p class="text-[8px]">Merit Rank</p><p class="text-lg font-black">#${merit}</p></div>
-                    </div>`;
-            } else alert("রেজাল্ট পাওয়া যায়নি!");
-        }
-
-        function generateAdmit() {
-            const roll = document.getElementById('searchRoll').value;
-            const cls = document.getElementById('searchClass').value;
-            const data = JSON.parse(localStorage.getItem('amc_db_v8') || "[]");
-            const s = data.find(item => item.roll == roll && item.cls == cls);
-            if (s) {
-                showSection('displayArea');
-                document.getElementById('pdfContent').innerHTML = `
-                    <div class="border-4 border-double border-purple-800 p-6 bg-white rounded-xl text-center">
-                        <img src="https://i.ibb.co/Lhy0W0P/1000018420.jpg" class="w-20 h-20 mx-auto rounded-full mb-2 border-2 border-purple-900">
-                        <h2 class="text-xl font-black text-purple-900 tracking-tighter">AMIRUL MATH CARE</h2>
-                        <span class="bg-purple-900 text-white px-6 py-1 rounded-full text-[10px] font-bold uppercase">Admit Card</span>
-                        <div class="mt-8 space-y-3 text-left font-bold text-gray-700 uppercase text-xs">
-                            <p class="border-b flex justify-between"><span>Name:</span> <span>${s.name}</span></p>
-                            <p class="border-b flex justify-between"><span>Roll:</span> <span>${s.roll}</span></p>
-                            <p class="border-b flex justify-between"><span>Class:</span> <span>${s.cls}</span></p>
-                            <p class="border-b flex justify-between"><span>WhatsApp:</span> <span>${s.wa}</span></p>
-                        </div>
-                        <div class="mt-12 flex justify-between items-end italic text-[9px] text-gray-400">
-                            <span>Auto Generated</span><span class="border-t border-black pt-1 px-4 text-black font-bold">Admin Signature</span>
-                        </div>
-                    </div>`;
-            } else alert("ছাত্র পাওয়া যায়নি!");
-        }
-
-        function downloadPDF(divId, fileName) {
-            const element = document.getElementById(divId);
-            const opt = { margin: 0.5, filename: fileName + '.pdf', html2canvas: { scale: 3 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
-            html2pdf().set(opt).from(element).save();
-        }
-
         function editData(index) {
-            const data = JSON.parse(localStorage.getItem('amc_db_v8'))[index];
+            const data = JSON.parse(localStorage.getItem('amc_db_final'))[index];
             document.getElementById('editIndex').value = index;
+            document.getElementById('examType').value = data.type || "সাপ্তাহিক";
             document.getElementById('examDate').value = data.date;
             document.getElementById('stdClass').value = data.cls;
             document.getElementById('stdName').value = data.name;
@@ -329,18 +349,15 @@
                     }
                 }
             }, 100);
-            document.getElementById('formTitle').innerText = "তথ্য এডিট";
+            document.getElementById('formTitle').innerText = "তথ্য সংশোধন";
             document.getElementById('saveBtn').innerText = "আপডেট করুন";
             document.getElementById('cancelBtn').classList.remove('hidden');
             window.scrollTo(0,0);
         }
 
-        function deleteData(index) { if(confirm("মুছে ফেলবেন?")) { let data = JSON.parse(localStorage.getItem('amc_db_v8')); data.reverse().splice(index, 1); data.reverse(); localStorage.setItem('amc_db_v8', JSON.stringify(data)); renderTable(); } }
-
-        function cancelEdit() { document.getElementById('editIndex').value = "-1"; document.getElementById('formTitle').innerText = "রেজাল্ট এন্ট্রি"; document.getElementById('saveBtn').innerText = "সংরক্ষণ করুন"; document.getElementById('cancelBtn').classList.add('hidden'); resetForm(); }
-
+        function deleteData(index) { if(confirm("মুছে ফেলবেন?")) { let data = JSON.parse(localStorage.getItem('amc_db_final')); data.reverse().splice(index, 1); data.reverse(); localStorage.setItem('amc_db_final', JSON.stringify(data)); renderTable(); } }
+        function cancelEdit() { document.getElementById('editIndex').value = "-1"; document.getElementById('formTitle').innerText = "রেজাল্ট এন্ট্রি ফর্ম"; document.getElementById('saveBtn').innerText = "তথ্য সংরক্ষণ করুন"; document.getElementById('cancelBtn').classList.add('hidden'); resetForm(); }
         function resetForm() { document.getElementById('stdName').value = ''; document.getElementById('stdRoll').value = ''; updateSubjectInputs(); }
-
         window.onload = () => { if(localStorage.getItem('amc_admin_auth')) adminLogin(); };
     </script>
 </body>
