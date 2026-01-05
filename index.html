@@ -203,6 +203,19 @@
         }
 
         function updateSubjectInputs() {
+           <div class="col-span-2"><label class="text-xs font-bold">WhatsApp</label><input type="text" id="stdWhatsApp" class="w-full p-2 border rounded-lg"></div>
+
+<div class="col-span-2">
+    <label class="text-xs font-bold">পরীক্ষার ধরন</label>
+    <select id="examType" class="w-full p-2 border rounded-lg bg-yellow-50 font-bold">
+        <option value="সাপ্তাহিক">সাপ্তাহিক পরীক্ষা</option>
+        <option value="মাসিক">মাসিক পরীক্ষা</option>
+        <option value="বার্ষিক">বার্ষিক পরীক্ষা</option>
+    </select>
+</div>
+
+<div id="subjectInputs" class="bg-purple-50 p-4 rounded-xl mb-6"></div>
+
             const cls = document.getElementById('stdClass').value;
             const container = document.getElementById('subjectInputs');
             container.innerHTML = `<div class="grid grid-cols-4 font-bold text-xs mb-2"><div>বিষয়</div><div>MCQ</div><div>CQ</div><div>মোট</div></div>`;
@@ -233,6 +246,8 @@
         function saveData() {
             const date = document.getElementById('examDate').value;
             const cls = document.getElementById('stdClass').value;
+            const examType = document.getElementById('examType').value;
+
             const name = document.getElementById('stdName').value;
             const roll = document.getElementById('stdRoll').value;
             const wa = document.getElementById('stdWhatsApp').value;
