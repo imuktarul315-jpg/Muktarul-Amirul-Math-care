@@ -16,9 +16,12 @@
     </style>
 </head>
 <body>
-<li><a href="your-notes-link.html" class="notes-btn">📝 Notes</a>
-    ">Notes</a></li>
-
+<div class="bg-yellow-100 border-b border-yellow-200 py-2">
+    <div class="container mx-auto px-4 flex items-center">
+        <span class="bg-red-600 text-white text-[10px] font-black px-2 py-1 rounded mr-3 animate-pulse uppercase">Notice</span>
+        <marquee id="mainNotice">আমিরুল ম্যাথ কেয়ারে আপনাকে স্বাগতম। পরীক্ষার ফলাফল ও নতুন ব্যাচে ভর্তির তথ্য এখানে পাবেন।</marquee>
+    </div>
+</div>
     <nav class="brand-purple p-3 text-white flex justify-between items-center sticky top-0 z-50 shadow-xl border-b-2 border-yellow-500">
         <div class="flex items-center gap-2" onclick="location.reload()" style="cursor: pointer;">
             <img src="https://i.ibb.co/Lhy0W0P/1000018420.jpg" alt="Logo" class="w-10 h-10 rounded-full border border-yellow-400">
@@ -360,7 +363,25 @@
         function deleteData(index) { if(confirm("মুছে ফেলবেন?")) { let data = JSON.parse(localStorage.getItem('amc_db_final')); data.reverse().splice(index, 1); data.reverse(); localStorage.setItem('amc_db_final', JSON.stringify(data)); renderTable(); } }
         function cancelEdit() { document.getElementById('editIndex').value = "-1"; document.getElementById('formTitle').innerText = "রেজাল্ট এন্ট্রি ফর্ম"; document.getElementById('saveBtn').innerText = "তথ্য সংরক্ষণ করুন"; document.getElementById('cancelBtn').classList.add('hidden'); resetForm(); }
         function resetForm() { document.getElementById('stdName').value = ''; document.getElementById('stdRoll').value = ''; updateSubjectInputs(); }
-        window.onload = () => { if(localStorage.getItem('amc_admin_auth')) adminLogin(); };
-    </script>
+ window.onload = () => { if(localStorage.getItem('amc_admin_auth')) adminLogin(); };
+   <div id="admin-panel" style="margin: 20px; padding: 15px; border: 2px dashed #ccc; background: #f9f9f9; border-radius: 8px;">
+    <h4 style="margin-bottom: 10px; font-family: sans-serif;">Update Scrolling Text:</h4>
+    <input type="text" id="userInput" placeholder="নতুন লেখা লিখুন..." style="padding: 8px; width: 250px; border: 1px solid #ddd; border-radius: 4px;">
+    <button onclick="updateNotice()" style="padding: 8px 15px; background: #1D4ED8; color: white; border: none; border-radius: 4px; cursor: pointer;">Update</button>
+</div>
+
+<script>
+    function updateNotice() {
+        // ইনপুট থেকে লেখা নেওয়া
+        var newText = document.getElementById("userInput").value;
+        // মারকুই ট্যাগের আইডি ধরে লেখা পরিবর্তন করা
+        if(newText.trim() !== "") {
+            document.getElementById("mainNotice").innerHTML = newText;
+            document.getElementById("userInput").value = ""; // বক্স খালি করা
+        } else {
+            alert("দয়া করে কিছু লিখুন!");
+        }
+    }
+</script>
 </body>
 </html>
