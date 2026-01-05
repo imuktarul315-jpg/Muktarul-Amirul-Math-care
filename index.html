@@ -48,6 +48,11 @@
                     <option value="">শ্রেণী নির্বাচন করুন</option>
                     <option value="৬ষ্ঠ">৬ষ্ঠ</option><option value="৭ম">৭ম</option><option value="৮ম">৮ম</option><option value="৯ম">৯ম</option><option value="১০ম">১০ম</option>
                 </select>
+                <select id="searchExamType" class="w-full p-3 border-2 border-gray-100 rounded-xl outline-none bg-gray-50">
+                    <option value="সাপ্তাহিক">সাপ্তাহিক পরীক্ষা</option>
+                    <option value="মাসিক">মাসিক পরীক্ষা</option>
+                    <option value="বার্ষিক">বার্ষিক পরীক্ষা</option>
+                </select>
                 <input type="text" id="searchRoll" placeholder="রোল নম্বর লিখুন" class="w-full p-3 border-2 border-gray-100 rounded-xl outline-none bg-gray-50">
                 <div class="grid grid-cols-2 gap-4 pt-4">
                     <button onclick="checkResult()" class="brand-purple text-white py-4 rounded-2xl font-bold shadow-lg">রেজাল্ট</button>
@@ -66,7 +71,24 @@
     </div>
 
     <div id="adminPanel" class="container mx-auto mt-6 p-4 hidden">
-        
+        <div class="mb-6 flex gap-4">
+            <button onclick="toggleStudentManager()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg"><i class="fas fa-users-cog mr-2"></i>স্টুডেন্ট লিস্ট ম্যানেজ করুন</button>
+        </div>
+
+        <div id="studentManager" class="bg-white p-6 rounded-2xl shadow-xl mb-8 border-t-4 border-blue-600 hidden">
+            <h2 class="font-bold text-xl mb-4 text-blue-800">শিক্ষার্থী ডাটাবেজ (একবার সেভ করুন)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
+                <input type="number" id="newRoll" placeholder="রোল" class="p-2 border rounded">
+                <input type="text" id="newName" placeholder="নাম" class="p-2 border rounded">
+                <select id="newClass" class="p-2 border rounded">
+                    <option value="৬ষ্ঠ">৬ষ্ঠ</option><option value="৭ম">৭ম</option><option value="৮ম">৮ম</option><option value="৯ম">৯ম</option><option value="১০ম">১০ম</option>
+                </select>
+                <input type="text" id="newWa" placeholder="হোয়াটসঅ্যাপ" class="p-2 border rounded">
+                <button onclick="addStudentToDB()" class="md:col-span-4 bg-green-600 text-white font-bold py-2 rounded">সংরক্ষণ করুন</button>
+            </div>
+            <div class="max-h-40 overflow-y-auto border-t pt-4" id="dbList"></div>
+        </div>
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div class="bg-green-600 text-white p-6 rounded-2xl shadow-lg border-b-4 border-green-800">
                 <h2 class="font-bold mb-4 text-xl flex items-center gap-2"><i class="fab fa-whatsapp"></i> হোয়াটসঅ্যাপ গ্রুপ মেসেজ</h2>
@@ -127,14 +149,15 @@
 
         <div class="bg-white p-8 rounded-2xl shadow-lg mb-8 border-l-8 border-purple-600">
             <h2 class="text-xl font-bold mb-6 text-purple-900">রেজাল্ট এন্ট্রি ফর্ম</h2>
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+            <div class="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
                 <div><label class="text-xs font-bold">তারিখ</label><input type="date" id="examDate" class="w-full p-2 border rounded-lg"></div>
-                <div><label class="text-xs font-bold">শ্রেণী</label><select id="stdClass" onchange="updateSubjectInputs()" class="w-full p-2 border rounded-lg">
-                    <option value="৬ষ্ঠ">৬ষ্ঠ</option><option value="৭ম">৭ম</option><option value="৮ম">৮ম</option><option value="৯ম">৯ম</option><option value="১০ম">১০ম</option>
+                <div><label class="text-xs font-bold">রোল (অটো ফেচ)</label><input type="number" id="stdRoll" oninput="fetchStudentInfo()" class="w-full p-2 border-2 border-blue-400 rounded-lg outline-none"></div>
+                <div class="col-span-1"><label class="text-xs font-bold">শ্রেণী</label><input type="text" id="stdClass" class="w-full p-2 border rounded-lg bg-gray-100" readonly></div>
+                <div><label class="text-xs font-bold">পরীক্ষার ধরন</label><select id="stdExamType" class="w-full p-2 border rounded-lg font-bold bg-yellow-50">
+                    <option value="সাপ্তাহিক">সাপ্তাহিক</option><option value="মাসিক">মাসিক</option><option value="বার্ষিক">বার্ষিক</option>
                 </select></div>
-                <div><label class="text-xs font-bold">রোল</label><input type="number" id="stdRoll" class="w-full p-2 border rounded-lg"></div>
-                <div class="col-span-2"><label class="text-xs font-bold">নাম</label><input type="text" id="stdName" class="w-full p-2 border rounded-lg"></div>
-                <div class="col-span-2"><label class="text-xs font-bold">WhatsApp</label><input type="text" id="stdWhatsApp" class="w-full p-2 border rounded-lg"></div>
+                <div class="col-span-2"><label class="text-xs font-bold">নাম</label><input type="text" id="stdName" class="w-full p-2 border rounded-lg bg-gray-100" readonly></div>
+                <div class="col-span-2"><label class="text-xs font-bold">WhatsApp</label><input type="text" id="stdWhatsApp" class="w-full p-2 border rounded-lg bg-gray-100" readonly></div>
             </div>
             <div id="subjectInputs" class="bg-purple-50 p-4 rounded-xl mb-6"></div>
             <button onclick="saveData()" class="w-full brand-purple text-white py-3 rounded-xl font-bold shadow-xl">সেভ ও রেজাল্ট মেসেজ</button>
@@ -155,7 +178,7 @@
             <div id="adminTableArea" class="overflow-x-auto">
                 <table class="w-full text-left text-sm">
                     <thead class="bg-gray-100 border-b">
-                        <tr><th class="p-4">তারিখ</th><th class="p-4">রোল</th><th class="p-4">নাম</th><th class="p-4">শ্রেণী</th><th class="p-4">মোট</th><th class="p-4">মেরিট</th><th class="p-4">GPA</th><th class="p-4 text-center">অ্যাকশন</th></tr>
+                        <tr><th class="p-4">তারিখ</th><th class="p-4">রোল</th><th class="p-4">নাম</th><th class="p-4">শ্রেণী</th><th class="p-4">মোট</th><th class="p-4">মেরিট</th><th class="p-4 text-center">অ্যাকশন</th></tr>
                     </thead>
                     <tbody id="dataTableBody"></tbody>
                 </table>
@@ -181,6 +204,69 @@
             "১০ম": ["গণিত", "পদার্থ", "রসায়ন", "জীববিজ্ঞান", "উচ্চতর গণিত", "বাংলা", "ইংরেজি"]
         };
 
+        // --- Student List Management (Smart Manager) ---
+        function toggleStudentManager() {
+            const manager = document.getElementById('studentManager');
+            manager.classList.toggle('hidden');
+            loadStudentList();
+        }
+
+        function addStudentToDB() {
+            const roll = document.getElementById('newRoll').value;
+            const name = document.getElementById('newName').value;
+            const cls = document.getElementById('newClass').value;
+            const wa = document.getElementById('newWa').value;
+
+            if(!roll || !name) return alert("রোল এবং নাম আবশ্যক!");
+
+            let db = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
+            db[roll] = { name, cls, wa };
+            localStorage.setItem('amc_student_db', JSON.stringify(db));
+            
+            loadStudentList();
+            alert("সংরক্ষিত হয়েছে!");
+            document.getElementById('newRoll').value = '';
+            document.getElementById('newName').value = '';
+        }
+
+        function loadStudentList() {
+            let db = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
+            const listDiv = document.getElementById('dbList');
+            listDiv.innerHTML = Object.keys(db).map(roll => `
+                <div class="flex justify-between items-center p-2 border-b text-xs">
+                    <span><b>রোল: ${roll}</b> - ${db[roll].name} (${db[roll].cls})</span>
+                    <button onclick="deleteStudentFromDB('${roll}')" class="text-red-500 font-bold">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        function deleteStudentFromDB(roll) {
+            if(confirm("Delete this student?")) {
+                let db = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
+                delete db[roll];
+                localStorage.setItem('amc_student_db', JSON.stringify(db));
+                loadStudentList();
+            }
+        }
+
+        // --- Auto Fetch Feature ---
+        function fetchStudentInfo() {
+            const roll = document.getElementById('stdRoll').value;
+            let db = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
+            
+            if(db[roll]) {
+                document.getElementById('stdName').value = db[roll].name;
+                document.getElementById('stdClass').value = db[roll].cls;
+                document.getElementById('stdWhatsApp').value = db[roll].wa;
+                updateSubjectInputs(); // শ্রেণী লোড হওয়ার পর সাবজেক্ট ইনপুট আপডেট হবে
+            } else {
+                document.getElementById('stdName').value = "";
+                document.getElementById('stdClass').value = "";
+                document.getElementById('stdWhatsApp').value = "";
+            }
+        }
+
+        // --- Common Logic ---
         function showSection(id) {
             ['studentView', 'loginSection', 'adminPanel', 'displayArea'].forEach(s => document.getElementById(s).classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
@@ -190,7 +276,7 @@
             if (document.getElementById('adminPass').value === "1617798358Ma@1") {
                 sessionStorage.setItem('is_admin', 'true');
                 showSection('adminPanel');
-                renderTable(); loadAttTable(); loadFeeTable(); updateSubjectInputs();
+                renderTable(); loadAttTable(); loadFeeTable();
                 document.getElementById('logoutBtn').classList.remove('hidden');
             } else alert("ভুল পাসওয়ার্ড!");
         }
@@ -203,21 +289,10 @@
         }
 
         function updateSubjectInputs() {
-           <div class="col-span-2"><label class="text-xs font-bold">WhatsApp</label><input type="text" id="stdWhatsApp" class="w-full p-2 border rounded-lg"></div>
-
-<div class="col-span-2">
-    <label class="text-xs font-bold">পরীক্ষার ধরন</label>
-    <select id="examType" class="w-full p-2 border rounded-lg bg-yellow-50 font-bold">
-        <option value="সাপ্তাহিক">সাপ্তাহিক পরীক্ষা</option>
-        <option value="মাসিক">মাসিক পরীক্ষা</option>
-        <option value="বার্ষিক">বার্ষিক পরীক্ষা</option>
-    </select>
-</div>
-
-<div id="subjectInputs" class="bg-purple-50 p-4 rounded-xl mb-6"></div>
-
             const cls = document.getElementById('stdClass').value;
             const container = document.getElementById('subjectInputs');
+            if(!cls) { container.innerHTML = ""; return; }
+            
             container.innerHTML = `<div class="grid grid-cols-4 font-bold text-xs mb-2"><div>বিষয়</div><div>MCQ</div><div>CQ</div><div>মোট</div></div>`;
             subjectsConfig[cls].forEach(sub => {
                 container.innerHTML += `<div class="grid grid-cols-4 gap-2 mb-2 items-center">
@@ -246,11 +321,11 @@
         function saveData() {
             const date = document.getElementById('examDate').value;
             const cls = document.getElementById('stdClass').value;
-            const examType = document.getElementById('examType').value;
-
             const name = document.getElementById('stdName').value;
             const roll = document.getElementById('stdRoll').value;
             const wa = document.getElementById('stdWhatsApp').value;
+            const examType = document.getElementById('stdExamType').value;
+
             if(!date || !name || !roll) return alert("সব তথ্য দিন!");
 
             let scores = {}; let grandTotal = 0; let totalP = 0;
@@ -262,22 +337,10 @@
             });
 
             let data = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
-            data.push({ date, cls, name, roll, wa, scores, grandTotal, gpa: (totalP/subjectsConfig[cls].length).toFixed(2) });
+            data.push({ date, cls, name, roll, wa, examType, scores, grandTotal, gpa: (totalP/subjectsConfig[cls].length).toFixed(2) });
             localStorage.setItem('amc_db_final', JSON.stringify(data));
             renderTable(); alert("সেভ হয়েছে!");
-            window.open(`https://wa.me/88${wa}?text=*Result*%0AName: ${name}%0ATotal: ${grandTotal}`, '_blank');
-        }
-
-        function sendBulkWhatsApp() {
-            const cls = document.getElementById('bulkClass').value;
-            if(!cls) return alert("শ্রেণী সিলেক্ট করুন");
-            let data = JSON.parse(localStorage.getItem('amc_db_final') || "[]").filter(s => s.cls === cls);
-            data.forEach((s, i) => {
-                setTimeout(() => {
-                    const msg = `*AMIRUL MATH CARE*%0AName: ${s.name}%0ARoll: ${s.roll}%0ATotal: ${s.grandTotal}%0AGPA: ${s.gpa}%0AMerit: ${getMerit(s.roll, s.cls, s.date)}`;
-                    window.open(`https://wa.me/88${s.wa}?text=${msg}`, '_blank');
-                }, i * 2000);
-            });
+            window.open(`https://wa.me/88${wa}?text=*Result (${examType})*%0AName: ${name}%0ATotal: ${grandTotal}`, '_blank');
         }
 
         function renderTable() {
@@ -290,9 +353,8 @@
             tbody.innerHTML = data.reverse().map(s => `
                 <tr class="border-b">
                     <td class="p-4">${s.date}</td><td class="p-4">${s.roll}</td><td class="p-4">${s.name}</td>
-                    <td class="p-4">${s.cls}</td><td class="p-4 font-bold">${s.grandTotal}</td>
+                    <td class="p-4">${s.cls} (${s.examType || 'N/A'})</td><td class="p-4 font-bold">${s.grandTotal}</td>
                     <td class="p-4 text-blue-600 font-bold">${getMerit(s.roll, s.cls, s.date)}</td>
-                    <td class="p-4"><span class="bg-green-100 p-1 rounded font-bold">${s.gpa}</span></td>
                     <td class="p-4 text-center"><button onclick="deleteData('${s.date}','${s.roll}','${s.cls}')" class="text-red-500"><i class="fas fa-trash"></i></button></td>
                 </tr>`).join('');
         }
@@ -331,26 +393,47 @@
         }
 
         function checkResult() {
-            const roll = document.getElementById('searchRoll').value, cls = document.getElementById('searchClass').value, date = document.getElementById('searchDate').value;
-            const data = JSON.parse(localStorage.getItem('amc_db_final') || "[]").find(i => i.roll == roll && i.cls == cls && i.date == date);
+            const roll = document.getElementById('searchRoll').value, 
+                  cls = document.getElementById('searchClass').value, 
+                  date = document.getElementById('searchDate').value,
+                  examType = document.getElementById('searchExamType').value;
+
+            const data = JSON.parse(localStorage.getItem('amc_db_final') || "[]").find(i => i.roll == roll && i.cls == cls && i.date == date && i.examType == examType);
+            
             if (data) {
                 showSection('displayArea');
                 let rows = ''; for(let sub in data.scores) rows += `<tr class="border-b"><td>${sub}</td><td>${data.scores[sub].t}</td><td>${data.scores[sub].g}</td></tr>`;
                 document.getElementById('pdfContent').innerHTML = `
-                    <div class="text-center mb-4"><img src="${LOGO_URL}" class="logo-img mb-2"><h2 class="text-xl font-bold uppercase">AMIRUL MATH CARE</h2><p class="text-xs">Academic Result Card</p></div>
+                    <div class="text-center mb-4"><img src="${LOGO_URL}" class="logo-img mb-2"><h2 class="text-xl font-bold uppercase">AMIRUL MATH CARE</h2><p class="text-xs">${data.examType || ''} Result Card</p></div>
                     <div class="grid grid-cols-2 text-sm bg-gray-100 p-3 rounded mb-4">
                         <p>Name: <b>${data.name}</b></p><p>Roll: <b>${data.roll}</b></p><p>Class: <b>${data.cls}</b></p><p>Merit: <b>${getMerit(data.roll, data.cls, data.date)}</b></p>
                     </div>
                     <table class="w-full text-center border text-sm mb-4"><thead><tr class="bg-gray-200"><th>Subject</th><th>Marks</th><th>Grade</th></tr></thead><tbody>${rows}</tbody></table>
                     <div class="flex justify-around font-bold text-lg"><p>Total: ${data.grandTotal}</p><p>GPA: ${data.gpa}</p></div>`;
-            } else alert("Not Found");
+            } else alert("ফলাফল পাওয়া যায়নি। তথ্যগুলো আবার চেক করুন।");
         }
 
         function generateAdmit() {
-            const roll = document.getElementById('searchRoll').value, cls = document.getElementById('searchClass').value;
-            if(!roll || !cls) return alert("Error");
+            const roll = document.getElementById('searchRoll').value, 
+                  cls = document.getElementById('searchClass').value,
+                  examType = document.getElementById('searchExamType').value;
+            if(!roll || !cls) return alert("রোল এবং শ্রেণী প্রদান করুন");
             showSection('displayArea');
-            document.getElementById('pdfContent').innerHTML = `<div class="border-4 border-purple-900 p-6 rounded-2xl text-center"><img src="${LOGO_URL}" class="logo-img mb-2"><h2 class="text-xl font-bold">AMIRUL MATH CARE</h2><div class="bg-yellow-400 py-1 font-bold my-4 rounded">ADMIT CARD</div><p class="text-left mt-4 border-b">Roll: <b>${roll}</b></p><p class="text-left mt-2 border-b">Class: <b>${cls}</b></p><p class="text-[10px] mt-10 opacity-50 text-left">Note: Please bring this card to the exam hall.</p></div>`;
+            document.getElementById('pdfContent').innerHTML = `
+                <div class="border-4 border-purple-900 p-6 rounded-2xl text-center relative">
+                    <img src="${LOGO_URL}" class="logo-img mb-2">
+                    <h2 class="text-xl font-bold">AMIRUL MATH CARE</h2>
+                    <div class="bg-yellow-400 py-1 font-bold my-4 rounded uppercase">${examType} ADMIT CARD</div>
+                    <div class="text-left space-y-2 mt-4">
+                        <p class="border-b pb-1">Roll: <b class="ml-2">${roll}</b></p>
+                        <p class="border-b pb-1">Class: <b class="ml-2">${cls}</b></p>
+                        <p class="border-b pb-1">Exam: <b class="ml-2">${examType}</b></p>
+                    </div>
+                    <div class="mt-8 flex justify-between items-end">
+                        <div class="text-center"><div class="w-20 border-t border-black"></div><p class="text-[10px]">Student Sign</p></div>
+                        <div class="text-center"><div class="w-20 border-t border-black"></div><p class="text-[10px]">Director Sign</p></div>
+                    </div>
+                </div>`;
         }
 
         function downloadPDF(id, name) {
