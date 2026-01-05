@@ -16,12 +16,14 @@
     </style>
 </head>
 <body>
-<div class="bg-yellow-100 border-b border-yellow-200 py-2">
-    <div class="container mx-auto px-4 flex items-center">
-        <span class="bg-red-600 text-white text-[10px] font-black px-2 py-1 rounded mr-3 animate-pulse uppercase">Notice</span>
-        <marquee id="mainNotice">আমিরুল ম্যাথ কেয়ারে আপনাকে স্বাগতম। পরীক্ষার ফলাফল ও নতুন ব্যাচে ভর্তির তথ্য এখানে পাবেন।</marquee>
+
+    <div class="bg-yellow-100 border-b border-yellow-200 py-2">
+        <div class="container mx-auto px-4 flex items-center">
+            <span class="bg-red-600 text-white text-[10px] font-black px-2 py-1 rounded mr-3 animate-pulse uppercase">Notice</span>
+            <marquee id="mainNotice">আমিরুল ম্যাথ কেয়ারে আপনাকে স্বাগতম। পরীক্ষার ফলাফল ও নতুন ব্যাচে ভর্তির তথ্য এখানে পাবেন।</marquee>
+        </div>
     </div>
-</div>
+
     <nav class="brand-purple p-3 text-white flex justify-between items-center sticky top-0 z-50 shadow-xl border-b-2 border-yellow-500">
         <div class="flex items-center gap-2" onclick="location.reload()" style="cursor: pointer;">
             <img src="https://i.ibb.co/Lhy0W0P/1000018420.jpg" alt="Logo" class="w-10 h-10 rounded-full border border-yellow-400">
@@ -43,8 +45,7 @@
                     <option value="মাসিক">মাসিক পরীক্ষা</option>
                     <option value="বার্ষিক">বার্ষিক পরীক্ষা</option>
                 </select>
-                <input type="date" id="searchDate" class="w-full p-3 border rounded-xl outline-none bg-gray-50" title="পরীক্ষার তারিখ">
-                
+                <input type="date" id="searchDate" class="w-full p-3 border rounded-xl outline-none bg-gray-50">
                 <select id="searchClass" class="w-full p-3 border rounded-xl outline-none">
                     <option value="">শ্রেণী নির্বাচন করুন</option>
                     <option value="৬ষ্ঠ">৬ষ্ঠ</option><option value="৭ম">৭ম</option><option value="৮ম">৮ম</option><option value="৯ম">৯ম</option><option value="১০ম">১০ম</option>
@@ -58,18 +59,22 @@
         </div>
     </div>
 
+    <div id="loginSection" class="container mx-auto mt-10 p-6 max-w-md hidden">
+        <div class="bg-white p-8 rounded-2xl shadow-lg text-center border-t-4 border-purple-700">
+            <h2 class="font-bold mb-4 text-purple-900">অ্যাডমিন লগইন</h2>
+            <input type="password" id="adminPass" placeholder="অ্যাডমিন পাসওয়ার্ড" class="w-full p-3 border rounded-xl mb-4 text-center">
+            <button onclick="adminLogin()" class="w-full bg-slate-800 text-white py-3 rounded-xl font-bold">লগইন</button>
+        </div>
+    </div>
+
     <div id="adminPanel" class="container mx-auto mt-6 p-4 hidden">
         
-        <div class="bg-indigo-900 text-white p-6 rounded-2xl shadow-xl mb-6 border-b-4 border-green-500">
-            <h2 class="font-bold mb-4 flex items-center gap-2 text-green-400"><i class="fab fa-whatsapp"></i> হোয়াটসঅ্যাপ ব্রডকাস্ট</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <select id="broadcastClass" class="p-3 rounded-xl text-black font-bold outline-none">
-                    <option value="">শ্রেণী বেছে নিন</option>
-                    <option value="৬ষ্ঠ">৬ষ্ঠ</option><option value="৭ম">৭ম</option><option value="৮ম">৮ম</option><option value="৯ম">৯ম</option><option value="১০ম">১০ম</option>
-                </select>
-                <textarea id="broadcastMsg" placeholder="মেসেজ লিখুন..." class="p-3 rounded-xl text-black outline-none h-12"></textarea>
+        <div class="bg-white p-6 rounded-2xl shadow-lg mb-6 border-l-8 border-yellow-500">
+            <h2 class="font-bold mb-4 text-purple-900">স্ক্রলিং নোটিশ পরিবর্তন করুন</h2>
+            <div class="flex gap-2">
+                <input type="text" id="userInput" placeholder="নতুন নোটিশ এখানে লিখুন..." class="flex-1 p-3 border rounded-xl outline-none">
+                <button onclick="updateNotice()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold">Update</button>
             </div>
-            <button onclick="sendBroadcast()" class="w-full mt-4 bg-green-500 hover:bg-green-600 py-3 rounded-xl font-bold transition">মেসেজ পাঠান</button>
         </div>
 
         <div class="bg-white p-6 rounded-2xl shadow-lg mb-8 border-l-8 border-purple-600">
@@ -96,7 +101,7 @@
                 <input type="text" id="stdWhatsApp" placeholder="WhatsApp Number" class="p-2 border rounded-lg">
             </div>
             <div id="subjectInputs" class="space-y-2 bg-gray-50 p-4 rounded-xl border mb-6"></div>
-            <button onclick="saveData()" id="saveBtn" class="w-full brand-purple text-white py-4 rounded-xl font-bold shadow-xl">তথ্য সংরক্ষণ করুন</button>
+            <button onclick="saveData()" id="saveBtn" class="w-full brand-purple text-white py-4 rounded-xl font-bold shadow-xl">তথ্য সংরক্ষণ করুন ও মেসেজ পাঠান</button>
             <button onclick="cancelEdit()" id="cancelBtn" class="hidden w-full mt-2 bg-gray-400 text-white py-2 rounded-xl font-bold">বাতিল</button>
         </div>
 
@@ -107,17 +112,10 @@
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-[10px] md:text-xs">
-                    <thead><tr class="bg-gray-100 font-bold"><th class="p-3 border">রোল</th><th class="p-3 border">নাম</th><th class="p-3 border">ধরণ</th><th class="p-3 border">প্রাপ্ত নম্বর</th><th class="p-3 border">GPA</th><th class="p-3 border">মেরিট</th><th class="p-3 border no-pdf">অ্যাকশন</th></tr></thead>
+                    <thead><tr class="bg-gray-100 font-bold"><th class="p-3 border">রোল</th><th class="p-3 border">নাম</th><th class="p-3 border">ধরণ</th><th class="p-3 border">প্রাপ্ত নম্বর</th><th class="p-3 border">GPA</th><th class="p-3 border">মেরিট (র‍্যাঙ্ক)</th><th class="p-3 border">অ্যাকশন</th></tr></thead>
                     <tbody id="dataTableBody"></tbody>
                 </table>
             </div>
-        </div>
-    </div>
-
-    <div id="loginSection" class="container mx-auto mt-10 p-6 max-w-md hidden">
-        <div class="bg-white p-8 rounded-2xl shadow-lg text-center border-t-4 border-purple-700">
-            <input type="password" id="adminPass" placeholder="অ্যাডমিন পাসওয়ার্ড" class="w-full p-3 border rounded-xl mb-4 text-center">
-            <button onclick="adminLogin()" class="w-full bg-slate-800 text-white py-3 rounded-xl font-bold">লগইন</button>
         </div>
     </div>
 
@@ -140,6 +138,40 @@
 
         const LOGO_URL = "https://i.ibb.co/Lhy0W0P/1000018420.jpg";
 
+        function showSection(id) {
+            ['studentView', 'loginSection', 'adminPanel', 'displayArea'].forEach(s => {
+                document.getElementById(s).classList.add('hidden');
+            });
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function adminLogin() {
+            const pass = document.getElementById('adminPass').value;
+            if (pass === "1617798358Ma@" || localStorage.getItem('amc_admin_auth') === 'true') {
+                localStorage.setItem('amc_admin_auth', 'true');
+                showSection('adminPanel');
+                updateSubjectInputs();
+                renderTable();
+                document.getElementById('logoutBtn').classList.remove('hidden');
+            } else {
+                alert("ভুল পাসওয়ার্ড!");
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('amc_admin_auth');
+            location.reload();
+        }
+
+        function updateNotice() {
+            var newText = document.getElementById("userInput").value;
+            if(newText.trim() !== "") {
+                document.getElementById("mainNotice").innerHTML = newText;
+                document.getElementById("userInput").value = "";
+                alert("নোটিশ আপডেট হয়েছে!");
+            }
+        }
+
         function getGrade(obtained, full) {
             let percent = (obtained / full) * 100;
             if (percent >= 80) return { g: 'A+', p: 5.0 }; 
@@ -151,26 +183,22 @@
             return { g: 'F', p: 0.0 };
         }
 
-        function showSection(id) {
-            ['studentView', 'loginSection', 'adminPanel', 'displayArea'].forEach(s => document.getElementById(s).classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
+        // --- মেরিট ক্যালকুলেশন ফাংশন ---
+        function calculateMerit(score, examDate, examType, stdClass) {
+            const data = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
+            // একই ক্যাটাগরির ছাত্রছাত্রীদের ফিল্টার করা
+            const peers = data.filter(s => s.date === examDate && s.type === examType && s.cls === stdClass);
+            // মোট নম্বরের ভিত্তিতে বড় থেকে ছোট ক্রমে সাজানো
+            peers.sort((a, b) => b.grandTotal - a.grandTotal);
+            // মেরিট পজিশন খুঁজে বের করা
+            const rank = peers.findIndex(p => p.grandTotal === score) + 1;
+            return rank || '-';
         }
-
-        function adminLogin() {
-            if (document.getElementById('adminPass').value === "1617798358Ma@") {
-                localStorage.setItem('amc_admin_auth', 'true');
-                showSection('adminPanel');
-                updateSubjectInputs();
-                renderTable();
-                document.getElementById('logoutBtn').classList.remove('hidden');
-            } else alert("ভুল পাসওয়ার্ড!");
-        }
-
-        function logout() { localStorage.removeItem('amc_admin_auth'); location.reload(); }
 
         function updateSubjectInputs() {
             const cls = document.getElementById('stdClass').value;
             const container = document.getElementById('subjectInputs');
+            if(!subjectsConfig[cls]) return;
             container.innerHTML = `<div class="grid grid-cols-5 gap-2 font-bold text-[10px] text-gray-500 mb-2">
                                     <div class="col-span-2">বিষয়</div><div>MCQ</div><div>CQ</div><div>মোট</div>
                                    </div>`;
@@ -191,14 +219,6 @@
             document.getElementById(`total_${sub}`).innerText = m + c;
         }
 
-        function getMerit(roll, cls, type, date, total) {
-            let data = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
-            let filtered = data.filter(s => s.cls === cls && s.type === type && s.date === date);
-            filtered.sort((a, b) => b.grandTotal - a.grandTotal);
-            let pos = filtered.findIndex(s => s.roll == roll && s.grandTotal == total) + 1;
-            return pos || '-';
-        }
-
         function saveData() {
             const type = document.getElementById('examType').value;
             const date = document.getElementById('examDate').value;
@@ -212,6 +232,8 @@
             if(!date || !name || !roll || !wa) return alert("তথ্য অসম্পূর্ণ!");
 
             let scores = {}; let grandTotal = 0; let totalP = 0;
+            let subMsg = "";
+
             subjectsConfig[cls].forEach(sub => {
                 const mcq = Number(document.getElementById(`mcq_${sub}`).value || 0);
                 const cq = Number(document.getElementById(`cq_${sub}`).value || 0);
@@ -219,6 +241,7 @@
                 const {g, p} = getGrade(t, fMarks);
                 scores[sub] = { mcq, cq, t, g, p };
                 grandTotal += t; totalP += p;
+                subMsg += `%0A- ${sub}: ${t}`;
             });
 
             let gpa = (totalP / subjectsConfig[cls].length).toFixed(2);
@@ -228,25 +251,32 @@
             if(editIdx === -1) data.push(entry); else { data[editIdx] = entry; cancelEdit(); }
 
             localStorage.setItem('amc_db_final', JSON.stringify(data));
-            renderTable(); alert("সংরক্ষিত হয়েছে!"); resetForm();
+            renderTable(); 
+            
+            // মেরিটসহ হোয়াটসঅ্যাপ মেসেজ
+            const merit = calculateMerit(grandTotal, date, type, cls);
+            const msg = `*ফলাফল: আমিরুল ম্যাথ কেয়ার*%0A---------------------------%0Aনাম: ${name}%0Aরোল: ${roll} | শ্রেণী: ${cls}%0Aপরীক্ষা: ${type} (${date})%0A---------------------------%0Aপ্রাপ্ত নম্বর:${subMsg}%0A---------------------------%0A*GPA: ${gpa}*%0A*Total: ${grandTotal}*%0A*র‍্যাঙ্ক/মেরিট: ${merit}*%0A---------------------------%0Aধন্যবাদ।`;
+            window.open(`https://wa.me/88${wa}?text=${msg}`, '_blank');
+
+            alert("তথ্য সংরক্ষিত হয়েছে!"); 
+            resetForm();
         }
 
         function renderTable() {
             const tbody = document.getElementById('dataTableBody');
             const data = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
             tbody.innerHTML = '';
-            data.reverse().forEach((s, index) => {
-                let merit = getMerit(s.roll, s.cls, s.type, s.date, s.grandTotal);
+            data.slice().reverse().forEach((s, index) => {
+                const merit = calculateMerit(s.grandTotal, s.date, s.type, s.cls);
                 tbody.innerHTML += `
-                    <tr class="border-b hover:bg-gray-50">
+                    <tr class="border-b">
                         <td class="p-3 font-bold">${s.roll}</td><td class="p-3">${s.name}</td>
-                        <td class="p-3"><span class="bg-gray-200 px-2 rounded-full text-[9px] font-bold">${s.type}</span></td>
-                        <td class="p-3 font-bold text-purple-700">${s.grandTotal} / ${s.fMarks * subjectsConfig[s.cls].length}</td>
-                        <td class="p-3 font-bold text-green-600">${s.gpa}</td>
-                        <td class="p-3"><span class="bg-yellow-400 px-2 rounded-full font-bold">#${merit}</span></td>
-                        <td class="p-3 text-center flex gap-2 no-pdf">
-                            <button onclick="editData(${index})" class="text-blue-500"><i class="fas fa-edit"></i></button>
-                            <button onclick="deleteData(${index})" class="text-red-500"><i class="fas fa-trash"></i></button>
+                        <td class="p-3 text-[9px]">${s.type}</td><td class="p-3 font-bold">${s.grandTotal}</td>
+                        <td class="p-3 text-green-600 font-bold">${s.gpa}</td>
+                        <td class="p-3"><span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-bold">#${merit}</span></td>
+                        <td class="p-3 flex gap-2">
+                            <button onclick="editData(${data.length - 1 - index})" class="text-blue-500"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteData(${data.length - 1 - index})" class="text-red-500"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>`;
             });
@@ -258,37 +288,35 @@
             const cls = document.getElementById('searchClass').value;
             const roll = document.getElementById('searchRoll').value;
             
-            if(!type || !date || !cls || !roll) return alert("সব অপশন (ধরণ, তারিখ, শ্রেণী, রোল) পূর্ণ করুন!");
-
             const data = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
             const s = data.find(item => item.roll == roll && item.cls == cls && item.type == type && item.date == date);
 
             if (s) {
                 showSection('displayArea');
-                let merit = getMerit(s.roll, s.cls, s.type, s.date, s.grandTotal);
+                const merit = calculateMerit(s.grandTotal, s.date, s.type, s.cls);
                 let scoreHtml = '';
                 for (let sub in s.scores) {
-                    scoreHtml += `<tr class="border-b text-center text-[10px]"><td class="p-2 border text-left font-bold">${sub}</td><td class="p-2 border">${s.scores[sub].mcq}</td><td class="p-2 border">${s.scores[sub].cq}</td><td class="p-2 border font-bold text-purple-900">${s.scores[sub].t} / ${s.fMarks}</td><td class="p-2 border font-bold">${s.scores[sub].g}</td></tr>`;
+                    scoreHtml += `<tr class="border-b text-center text-[10px]"><td class="p-2 border text-left font-bold">${sub}</td><td class="p-2 border font-bold">${s.scores[sub].t}</td><td class="p-2 border">${s.scores[sub].g}</td></tr>`;
                 }
                 document.getElementById('pdfContent').innerHTML = `
                     <div class="text-center mb-6">
                         <img src="${LOGO_URL}" class="logo-img mb-2">
                         <h2 class="text-xl font-black text-purple-900">AMIRUL MATH CARE</h2>
-                        <span class="bg-indigo-900 text-white px-4 py-1 rounded-full text-[9px] font-bold uppercase">${s.type} পরীক্ষা</span>
+                        <span class="bg-indigo-900 text-white px-4 py-1 rounded-full text-[9px] font-bold uppercase">${s.type}</span>
                     </div>
-                    <div class="grid grid-cols-2 text-[10px] font-bold mb-4 bg-purple-50 p-3 rounded-lg border">
+                    <div class="grid grid-cols-2 text-[10px] font-bold mb-4 bg-purple-50 p-2 rounded border">
                         <div>নাম: ${s.name}</div><div>রোল: ${s.roll}</div><div>শ্রেণী: ${s.cls}</div><div>তারিখ: ${s.date}</div>
                     </div>
-                    <table class="w-full text-xs border-collapse border mb-6">
-                        <thead class="bg-purple-700 text-white font-bold"><tr><th class="p-2 border">বিষয়</th><th class="p-2 border">MCQ</th><th class="p-2 border">CQ</th><th class="p-2 border">প্রাপ্ত/পূর্ণ</th><th class="p-2 border">গ্রেড</th></tr></thead>
+                    <table class="w-full text-xs border-collapse border mb-4">
+                        <thead class="bg-purple-700 text-white"><tr><th class="p-1 border">বিষয়</th><th class="p-1 border">মোট</th><th class="p-1 border">গ্রেড</th></tr></thead>
                         <tbody>${scoreHtml}</tbody>
                     </table>
                     <div class="grid grid-cols-3 gap-2">
-                        <div class="bg-purple-900 text-white p-2 rounded-lg text-center"><p class="text-[8px]">Total Marks</p><p class="text-[10px] font-black text-yellow-400">${s.grandTotal} / ${s.fMarks * subjectsConfig[s.cls].length}</p></div>
-                        <div class="bg-indigo-900 text-white p-2 rounded-lg text-center"><p class="text-[8px]">GPA</p><p class="text-lg font-black">${s.gpa}</p></div>
-                        <div class="bg-amber-500 text-white p-2 rounded-lg text-center"><p class="text-[8px]">Merit Rank</p><p class="text-lg font-black">#${merit}</p></div>
+                        <div class="bg-purple-900 text-white p-2 rounded text-center"><p class="text-[8px]">GPA</p><p class="text-md font-black">${s.gpa}</p></div>
+                        <div class="bg-amber-500 text-white p-2 rounded text-center"><p class="text-[8px]">Total</p><p class="text-md font-black">${s.grandTotal}</p></div>
+                        <div class="bg-green-600 text-white p-2 rounded text-center"><p class="text-[8px]">Merit</p><p class="text-md font-black">#${merit}</p></div>
                     </div>`;
-            } else alert("ঐ নির্দিষ্ট তারিখে রেজাল্ট পাওয়া যায়নি!");
+            } else alert("রেজাল্ট পাওয়া যায়নি!");
         }
 
         function generateAdmit() {
@@ -300,88 +328,59 @@
                 showSection('displayArea');
                 document.getElementById('pdfContent').innerHTML = `
                     <div class="border-4 border-double border-purple-800 p-6 bg-white rounded-xl text-center">
-                        <img src="${LOGO_URL}" class="logo-img mb-2 border-2 border-purple-900">
+                        <img src="${LOGO_URL}" class="logo-img mb-2">
                         <h2 class="text-xl font-black text-purple-900 uppercase">AMIRUL MATH CARE</h2>
-                        <span class="bg-purple-900 text-white px-6 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Admit Card</span>
-                        <div class="mt-8 space-y-3 text-left font-bold text-gray-700 text-xs">
-                            <p class="border-b flex justify-between uppercase"><span>Student Name:</span> <span>${s.name}</span></p>
-                            <p class="border-b flex justify-between uppercase"><span>Roll Number:</span> <span>${s.roll}</span></p>
-                            <p class="border-b flex justify-between uppercase"><span>Student Class:</span> <span>${s.cls}</span></p>
-                        </div>
-                        <div class="mt-12 flex justify-between items-end italic text-[9px] text-gray-400">
-                            <span>Auto Verified</span><span class="border-t border-black pt-1 px-4 text-black font-bold">Admin Signature</span>
-                        </div>
+                        <p class="mt-4 font-bold uppercase">Admit Card</p>
+                        <p class="mt-2 font-bold text-left">নাম: ${s.name}<br>রোল: ${s.roll}<br>শ্রেণী: ${s.cls}</p>
+                        <div class="mt-10 border-t border-black pt-1 inline-block px-4">অধ্যক্ষ স্বাক্ষর</div>
                     </div>`;
-            } else alert("ছাত্রের রেকর্ড পাওয়া যায়নি!");
+            } else alert("ছাত্র পাওয়া যায়নি!");
         }
 
         function downloadPDF(divId, fileName) {
             const element = document.getElementById(divId);
-            const opt = { margin: 0.5, filename: fileName + '.pdf', html2canvas: { scale: 3 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
-            html2pdf().set(opt).from(element).save();
-        }
-
-        function sendBroadcast() {
-            const cls = document.getElementById('broadcastClass').value;
-            const msg = document.getElementById('broadcastMsg').value;
-            const data = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
-            const filteredRecipients = [...new Set(data.filter(s => s.cls === cls).map(s => s.wa))];
-            if(filteredRecipients.length === 0) return alert("নম্বর পাওয়া যায়নি!");
-            if(confirm(`${filteredRecipients.length} জনকে মেসেজ পাঠানো হবে?`)) {
-                filteredRecipients.forEach((num, i) => {
-                    setTimeout(() => { window.open(`https://wa.me/88${num}?text=${encodeURIComponent(msg)}`, '_blank'); }, i * 2000);
-                });
-            }
+            html2pdf().set({ margin: 0.5, filename: fileName + '.pdf', html2canvas: { scale: 3 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } }).from(element).save();
         }
 
         function editData(index) {
             const data = JSON.parse(localStorage.getItem('amc_db_final'))[index];
             document.getElementById('editIndex').value = index;
-            document.getElementById('examType').value = data.type || "সাপ্তাহিক";
             document.getElementById('examDate').value = data.date;
             document.getElementById('stdClass').value = data.cls;
             document.getElementById('stdName').value = data.name;
             document.getElementById('stdRoll').value = data.roll;
             document.getElementById('stdWhatsApp').value = data.wa;
-            document.getElementById('fullMarks').value = data.fMarks || 100;
             updateSubjectInputs();
-            setTimeout(() => {
-                for(let sub in data.scores) {
-                    if(document.getElementById(`mcq_${sub}`)) {
-                        document.getElementById(`mcq_${sub}`).value = data.scores[sub].mcq;
-                        document.getElementById(`cq_${sub}`).value = data.scores[sub].cq;
-                        document.getElementById(`total_${sub}`).innerText = data.scores[sub].t;
-                    }
-                }
-            }, 100);
-            document.getElementById('formTitle').innerText = "তথ্য সংশোধন";
             document.getElementById('saveBtn').innerText = "আপডেট করুন";
             document.getElementById('cancelBtn').classList.remove('hidden');
-            window.scrollTo(0,0);
         }
 
-        function deleteData(index) { if(confirm("মুছে ফেলবেন?")) { let data = JSON.parse(localStorage.getItem('amc_db_final')); data.reverse().splice(index, 1); data.reverse(); localStorage.setItem('amc_db_final', JSON.stringify(data)); renderTable(); } }
-        function cancelEdit() { document.getElementById('editIndex').value = "-1"; document.getElementById('formTitle').innerText = "রেজাল্ট এন্ট্রি ফর্ম"; document.getElementById('saveBtn').innerText = "তথ্য সংরক্ষণ করুন"; document.getElementById('cancelBtn').classList.add('hidden'); resetForm(); }
-        function resetForm() { document.getElementById('stdName').value = ''; document.getElementById('stdRoll').value = ''; updateSubjectInputs(); }
- window.onload = () => { if(localStorage.getItem('amc_admin_auth')) adminLogin(); };
-   <div id="admin-panel" style="margin: 20px; padding: 15px; border: 2px dashed #ccc; background: #f9f9f9; border-radius: 8px;">
-    <h4 style="margin-bottom: 10px; font-family: sans-serif;">Update Scrolling Text:</h4>
-    <input type="text" id="userInput" placeholder="নতুন লেখা লিখুন..." style="padding: 8px; width: 250px; border: 1px solid #ddd; border-radius: 4px;">
-    <button onclick="updateNotice()" style="padding: 8px 15px; background: #1D4ED8; color: white; border: none; border-radius: 4px; cursor: pointer;">Update</button>
-</div>
-       </script>
-<script>
-    function updateNotice() {
-        // ইনপুট থেকে লেখা নেওয়া
-        var newText = document.getElementById("userInput").value;
-        // মারকুই ট্যাগের আইডি ধরে লেখা পরিবর্তন করা
-        if(newText.trim() !== "") {
-            document.getElementById("mainNotice").innerHTML = newText;
-            document.getElementById("userInput").value = ""; // বক্স খালি করা
-        } else {
-            alert("দয়া করে কিছু লিখুন!");
+        function deleteData(index) {
+            if(confirm("মুছে ফেলবেন?")) {
+                let data = JSON.parse(localStorage.getItem('amc_db_final'));
+                data.splice(index, 1);
+                localStorage.setItem('amc_db_final', JSON.stringify(data));
+                renderTable();
+            }
         }
-    }
-</script>
+
+        function cancelEdit() {
+            document.getElementById('editIndex').value = "-1";
+            document.getElementById('saveBtn').innerText = "তথ্য সংরক্ষণ করুন ও মেসেজ পাঠান";
+            document.getElementById('cancelBtn').classList.add('hidden');
+            resetForm();
+        }
+
+        function resetForm() {
+            document.getElementById('stdName').value = '';
+            document.getElementById('stdRoll').value = '';
+            document.getElementById('stdWhatsApp').value = '';
+            updateSubjectInputs();
+        }
+
+        window.onload = () => { 
+            if(localStorage.getItem('amc_admin_auth') === 'true') adminLogin(); 
+        };
+    </script>
 </body>
 </html>
