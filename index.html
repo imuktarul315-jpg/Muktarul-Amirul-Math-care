@@ -301,4 +301,168 @@
                     <div id="total_${sub}" class="text-center font-bold text-purple-700">0</div>
                 </div>`;
             });
-    
+        }
+
+        function calcT(s) {
+            const m = Number(document.getElementById(`mcq_${s}`).value || 0);
+            const c = Number(document.getElementById(`cq_${s}`).value || 0);
+            document.getElementById(`total_${s}`).innerText = m + c;
+        }
+
+        function getMerit(roll, cls, date) {
+            let data = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
+            let group = data.filter(s => s.cls === cls && s.date === date);
+            group.sort((a, b) => b.grandTotal - a.grandTotal);
+            const index = group.findIndex(s => s.roll == roll);
+            return index !== -1 ? index + 1 : '-';
+        }
+
+        // --- আপডেট করা saveData ফাংশন ---
+        function saveData() {
+            const date = document.getElementById('examDate').value;
+            const cls = document.getElementById('stdClass').value;
+            const name = document.getElementById('stdName').value;
+            const roll = document.getElementById('stdRoll').value;
+            const wa = document.getElementById('stdWhatsApp').value;
+            const examType = document.getElementById('stdExamType').value;
+
+            if(!date || !name || !roll) return alert("সব তথ্য দিন!");
+
+            let scores = {}; let grandTotal = 0; let totalP = 0;
+            subjectsConfig[cls].forEach(sub => {
+                const t = Number(document.getElementById(`total_${sub}`).innerText);
+                const p = t >= 80 ? 5.0 : t >= 70 ? 4.0 : t >= 60 ? 3.5 : t >= 50 ? 3.0 : t >= 40 ? 2.0 : t >= 33 ? 1.0 : 0;
+                scores[sub] = { t, g: p>=5?'A+':p>=4?'A':p>=3.5?'A-':p>=3?'B':p>=2?'C':p>=1?'D':'F' };
+                grandTotal += t; totalP += p;
+            });
+
+            const gpa = (totalP/subjectsConfig[cls].length).toFixed(2);
+            let data = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
+            data.push({ date, cls, name, roll, wa, examType, scores, grandTotal, gpa });
+            localStorage.setItem('amc_db_final', JSON.stringify(data));
+            
+            const merit = getMerit(roll, cls, date);
+            renderTable(); 
+            alert("সেভ হয়েছে!");
+
+            // হোয়াটসঅ্যাপ মেসেজ ফরম্যাট
+            const waMessage = `*AMIRUL MATH CARE - RESULT*
+--------------------------
+নাম: ${name} 
+শ্রেণী: ${cls} (রোল: ${roll})
+পরীক্ষা: ${examType} (${date})
+প্রাপ্ত নম্বর: ${grandTotal}
+জিপিএ: ${gpa}
+মেধা স্থান: #${merit}
+--------------------------
+ধন্যবাদ - আমিরুল স্যার।`;
+
+            const encodedMsg = encodeURIComponent(waMessage);
+            window.open(`https://wa.me/88${wa}?text=${encodedMsg}`, '_blank');
+        }
+
+        function renderTable() {
+            const fCls = document.getElementById('filterClass').value;
+            const fDate = document.getElementById('filterDate').value;
+            const tbody = document.getElementById('dataTableBody');
+            let data = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
+            if(fCls !== "সব") data = data.filter(s => s.cls === fCls);
+            if(fDate) data = data.filter(s => s.date === fDate);
+            tbody.innerHTML = data.reverse().map(s => `
+                <tr class="border-b">
+                    <td class="p-4">${s.date}</td><td class="p-4">${s.roll}</td><td class="p-4">${s.name}</td>
+                    <td class="p-4">${s.cls} (${s.examType || 'N/A'})</td><td class="p-4 font-bold">${s.grandTotal}</td>
+                    <td class="p-4 text-blue-600 font-bold">${getMerit(s.roll, s.cls, s.date)}</td>
+                    <td class="p-4 text-center"><button onclick="deleteData('${s.date}','${s.roll}','${s.cls}')" class="text-red-500"><i class="fas fa-trash"></i></button></td>
+                </tr>`).join('');
+        }
+
+        function deleteData(d, r, c) {
+            if(confirm("Delete?")) {
+                let data = JSON.parse(localStorage.getItem('amc_db_final')).filter(i => !(i.date === d && i.roll === r && i.cls === c));
+                localStorage.setItem('amc_db_final', JSON.stringify(data)); renderTable();
+            }
+        }
+
+        function saveAttendance() {
+            const date = document.getElementById('attDate').value, cls = document.getElementById('attClass').value, roll = document.getElementById('attRoll').value, status = document.getElementById('attStatus').value;
+            if(!date || !roll) return alert("Error");
+            let db = JSON.parse(localStorage.getItem('amc_att_db') || "[]");
+            db.push({ date, cls, roll, status }); localStorage.setItem('amc_att_db', JSON.stringify(db));
+            loadAttTable(); alert("Saved");
+        }
+
+        function loadAttTable() {
+            let db = JSON.parse(localStorage.getItem('amc_att_db') || "[]");
+            document.getElementById('attTable').innerHTML = db.reverse().slice(0,10).map(i => `<div class="text-[10px] border-b py-1 flex justify-between"><span>${i.date} | R: ${i.roll}</span><b class="${i.status==='Present'?'text-green-600':'text-red-600'}">${i.status}</b></div>`).join('');
+        }
+
+        function saveFee() {
+            const roll = document.getElementById('feeRoll').value, month = document.getElementById('feeMonth').value, amount = document.getElementById('feeAmount').value;
+            if(!roll || !amount) return alert("Error");
+            let db = JSON.parse(localStorage.getItem('amc_fee_db') || "[]");
+            db.push({ roll, month, amount, date: new Date().toLocaleDateString() }); localStorage.setItem('amc_fee_db', JSON.stringify(db));
+            loadFeeTable(); alert("Saved");
+        }
+
+        function loadFeeTable() {
+            let db = JSON.parse(localStorage.getItem('amc_fee_db') || "[]");
+            document.getElementById('feeTable').innerHTML = db.reverse().slice(0,10).map(i => `<div class="text-[10px] border-b py-1 flex justify-between"><span>R: ${i.roll} | ${i.month}</span><b>৳${i.amount}</b></div>`).join('');
+        }
+
+        function checkResult() {
+            const roll = document.getElementById('searchRoll').value, 
+                  cls = document.getElementById('searchClass').value, 
+                  date = document.getElementById('searchDate').value,
+                  examType = document.getElementById('searchExamType').value;
+
+            const data = JSON.parse(localStorage.getItem('amc_db_final') || "[]").find(i => i.roll == roll && i.cls == cls && i.date == date && i.examType == examType);
+            
+            if (data) {
+                showSection('displayArea');
+                let rows = ''; for(let sub in data.scores) rows += `<tr class="border-b"><td>${sub}</td><td>${data.scores[sub].t}</td><td>${data.scores[sub].g}</td></tr>`;
+                document.getElementById('pdfContent').innerHTML = `
+                    <div class="text-center mb-4"><img src="${LOGO_URL}" class="logo-img mb-2"><h2 class="text-xl font-bold uppercase">AMIRUL MATH CARE</h2><p class="text-xs">${data.examType || ''} Result Card</p></div>
+                    <div class="grid grid-cols-2 text-sm bg-gray-100 p-3 rounded mb-4">
+                        <p>Name: <b>${data.name}</b></p><p>Roll: <b>${data.roll}</b></p><p>Class: <b>${data.cls}</b></p><p>Merit: <b>${getMerit(data.roll, data.cls, data.date)}</b></p>
+                    </div>
+                    <table class="w-full text-center border text-sm mb-4"><thead><tr class="bg-gray-200"><th>Subject</th><th>Marks</th><th>Grade</th></tr></thead><tbody>${rows}</tbody></table>
+                    <div class="flex justify-around font-bold text-lg"><p>Total: ${data.grandTotal}</p><p>GPA: ${data.gpa}</p></div>`;
+            } else alert("ফলাফল পাওয়া যায়নি। তথ্যগুলো আবার চেক করুন।");
+        }
+
+        function generateAdmit() {
+            const roll = document.getElementById('searchRoll').value, 
+                  cls = document.getElementById('searchClass').value,
+                  examType = document.getElementById('searchExamType').value;
+            if(!roll || !cls) return alert("রোল এবং শ্রেণী প্রদান করুন");
+            showSection('displayArea');
+            document.getElementById('pdfContent').innerHTML = `
+                <div class="border-4 border-purple-900 p-6 rounded-2xl text-center relative">
+                    <img src="${LOGO_URL}" class="logo-img mb-2">
+                    <h2 class="text-xl font-bold">AMIRUL MATH CARE</h2>
+                    <div class="bg-yellow-400 py-1 font-bold my-4 rounded uppercase">${examType} ADMIT CARD</div>
+                    <div class="text-left space-y-2 mt-4">
+                        <p class="border-b pb-1">Roll: <b class="ml-2">${roll}</b></p>
+                        <p class="border-b pb-1">Class: <b class="ml-2">${cls}</b></p>
+                        <p class="border-b pb-1">Exam: <b class="ml-2">${examType}</b></p>
+                    </div>
+                    <div class="mt-8 flex justify-between items-end">
+                        <div class="text-center"><div class="w-20 border-t border-black"></div><p class="text-[10px]">Student Sign</p></div>
+                        <div class="text-center"><div class="w-20 border-t border-black"></div><p class="text-[10px]">Director Sign</p></div>
+                    </div>
+                </div>`;
+        }
+
+        function downloadPDF(id, name) {
+            const el = document.getElementById(id);
+            html2pdf().set({ margin: 0.5, filename: name+'.pdf', html2canvas: { scale: 3 }, jsPDF: { format: 'a4' } }).from(el).save();
+        }
+
+        window.onload = () => {
+            showSection('studentView');
+            const sn = localStorage.getItem('amc_notice'); if(sn) document.getElementById("mainNotice").innerText = sn;
+        };
+    </script>
+</body>
+</html>
