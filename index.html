@@ -46,12 +46,13 @@
                 <input type="date" id="searchDate" class="w-full p-3 border-2 border-gray-100 rounded-xl outline-none bg-gray-50">
                 <select id="searchClass" class="w-full p-3 border-2 border-gray-100 rounded-xl outline-none bg-gray-50">
                     <option value="">শ্রেণী নির্বাচন করুন</option>
-                    <option value="৬ষ্ঠ">৬ষ্ঠ</option><option value="৭ম">৭ম</option><option value="৮ম">৮ম</option><option value="৯ম">৯ম</option><option value="১০ম">১০ম</option>
+                    <option value="৬ষ্ঠ">৬ষ্ঠ</option><option value="৭ম">৭ম</option><option value="৮ম">৮ম</option><option value="৯ম">৯ম</option><option value="১০ম">১০ম</option><option value="SSC">SSC</option>
                 </select>
                 <select id="searchExamType" class="w-full p-3 border-2 border-gray-100 rounded-xl outline-none bg-gray-50">
                     <option value="সাপ্তাহিক">সাপ্তাহিক পরীক্ষা</option>
                     <option value="মাসিক">মাসিক পরীক্ষা</option>
                     <option value="বার্ষিক">বার্ষিক পরীক্ষা</option>
+              <Option Value="দৈনিক">দৈনিক পরীক্ষা</Option>
                 </select>
                 <input type="text" id="searchRoll" placeholder="রোল নম্বর লিখুন" class="w-full p-3 border-2 border-gray-100 rounded-xl outline-none bg-gray-50">
                 <div class="grid grid-cols-2 gap-4 pt-4">
@@ -98,7 +99,7 @@
                 <div class="space-y-3">
                     <select id="bulkClass" class="w-full p-3 rounded-xl text-black font-bold outline-none">
                         <option value="">শ্রেণী সিলেক্ট করুন</option>
-                        <option value="৬ষ্ঠ">৬ষ্ঠ</option><option value="৭ম">৭ম</option><option value="৮ম">৮ম</option><option value="৯ম">৯ম</option><option value="১০ম">১০ম</option>
+                        <option value="৬ষ্ঠ">৬ষ্ঠ</option><option value="৭ম">৭ম</option><option value="৮ম">৮ম</option><option value="৯ম">৯ম</option><option value="১০ম">১০ম</option><Option Value="SSC">SSC</Option>
                     </select>
                     <textarea id="bulkMessage" placeholder="আপনার মেসেজটি লিখুন..." class="w-full p-3 rounded-xl text-black outline-none h-20"></textarea>
                     <button onclick="sendBulkWhatsApp()" class="w-full bg-white text-green-700 py-3 rounded-xl font-black transition shadow-md">মেসেজ পাঠান</button>
@@ -119,7 +120,7 @@
                     <div class="grid grid-cols-2 gap-2">
                         <input type="date" id="attDate" class="p-2 border rounded-lg bg-gray-50 text-sm">
                         <select id="attClass" class="p-2 border rounded-lg bg-gray-50 text-sm">
-                            <option value="৬ষ্ঠ">৬ষ্ঠ</option><option value="৭ম">৭ম</option><option value="৮ম">৮ম</option><option value="৯ম">৯ম</option><option value="১০ম">১০ম</option>
+                            <option value="৬ষ্ঠ">৬ষ্ঠ</option><option value="৭ম">৭ম</option><option value="৮ম">৮ম</option><option value="৯ম">৯ম</option><option value="১০ম">১০ম</option><option Value="SSC">SSC</option>
                         </select>
                     </div>
                     <input type="number" id="attRoll" placeholder="রোল নম্বর" class="w-full p-2 border rounded-lg text-sm">
@@ -160,11 +161,11 @@
                     <label class="text-xs font-bold">শ্রেণী</label>
                     <select id="stdClass" onchange="updateSubjectInputs()" class="w-full p-2 border rounded-lg bg-white">
                         <option value="">সিলেক্ট</option>
-                        <option value="৬ষ্ঠ">৬ষ্ঠ</option><option value="৭ম">৭ম</option><option value="৮ম">৮ম</option><option value="৯ম">৯ম</option><option value="১০ম">১০ম</option>
+                        <option value="৬ষ্ঠ">৬ষ্ঠ</option><option value="৭ম">৭ম</option><option value="৮ম">৮ম</option><option value="৯ম">৯ম</option><option value="১০ম">১০ম</option><Option Value="SSC">SSC</Option>
                     </select>
                 </div>
                 <div><label class="text-xs font-bold">পরীক্ষার ধরন</label><select id="stdExamType" class="w-full p-2 border rounded-lg font-bold bg-yellow-50">
-                    <option value="সাপ্তাহিক">সাপ্তাহিক</option><option value="মাসিক">মাসিক</option><option value="বার্ষিক">বার্ষিক</option>
+                    <option value="সাপ্তাহিক">সাপ্তাহিক</option><option value="মাসিক">মাসিক</option><option value="বার্ষিক">বার্ষিক</option><Option Value=দৈনিক">দৈনিক পরীক্ষা</Option>
                 </select></div>
                 <div class="col-span-2"><label class="text-xs font-bold">নাম</label><input type="text" id="stdName" class="w-full p-2 border rounded-lg bg-gray-100" readonly></div>
                 <div class="col-span-2"><label class="text-xs font-bold">WhatsApp</label><input type="text" id="stdWhatsApp" class="w-full p-2 border rounded-lg bg-gray-100" readonly></div>
@@ -184,7 +185,7 @@
                     <input type="date" id="filterDate" onchange="renderTable()" class="text-black p-1 rounded text-xs">
                     <select id="filterClass" onchange="renderTable()" class="text-black p-1 rounded text-xs font-bold">
                         <option value="সব">সব শ্রেণী</option>
-                        <option value="৬ষ্ঠ">৬ষ্ঠ</option><option value="৭ম">৭ম</option><option value="৮ম">৮ম</option><option value="৯ম">৯ম</option><option value="১০ম">১০ম</option>
+                        <option value="৬ষ্ঠ">৬ষ্ঠ</option><option value="৭ম">৭ম</option><option value="৮ম">৮ম</option><option value="৯ম">৯ম</option><option value="১০ম">১০ম</option><Option Value="SSC">SSC</Option>
                     </select>
                     <button onclick="downloadPDF('adminTableArea', 'Records')" class="bg-red-500 px-3 py-1 rounded-full text-xs">PDF</button>
                 </div>
@@ -216,6 +217,7 @@
             "৮ম": ["বাংলা", "ইংরেজি", "গণিত", "বিজ্ঞান", "সমাজ", "ধর্ম", "আইসিটি"],
             "৯ম": ["গণিত", "পদার্থ", "রসায়ন", "জীববিজ্ঞান", "উচ্চতর গণিত", "বাংলা", "ইংরেজি"],
             "১০ম": ["গণিত", "পদার্থ", "রসায়ন", "জীববিজ্ঞান", "উচ্চতর গণিত", "বাংলা", "ইংরেজি"]
+     "SSC":["সাধারণ গণিত","উচ্চতর গণিত""ICT"
         };
 
         // Student DB Management
