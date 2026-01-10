@@ -48,8 +48,7 @@
 
     <div id="studentView" class="container mx-auto mt-6 p-4 max-w-lg no-print">
         <div id="heroSlider" class="slider-container mb-6">
-            <div id="sliderTrack" class="slider-track">
-                </div>
+            <div id="sliderTrack" class="slider-track"></div>
             <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2" id="sliderDots"></div>
         </div>
 
@@ -113,14 +112,14 @@
                 <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-xl">
                     <img id="adminLogoPreview" src="" class="w-16 h-16 rounded-full border-2 border-yellow-400 object-cover">
                     <div class="flex-1">
-                        <input type="file" id="logoUpload" accept="image/*" class="hidden">
+                        <input type="file" id="logoUpload" accept="image/*" class="hidden" onchange="uploadToImgBB(this, 'logo')">
                         <label for="logoUpload" class="bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm font-bold cursor-pointer hover:bg-yellow-600 block text-center">নতুন লোগো আপলোড</label>
                     </div>
                 </div>
             </div>
             <div class="bg-white p-6 rounded-2xl shadow-lg border-l-8 border-cyan-500 text-black">
                 <h2 class="font-bold text-xl text-cyan-900 mb-4 flex items-center gap-2"><i class="fas fa-images"></i> ব্যানার স্লাইডার</h2>
-                <input type="file" id="imageUpload" accept="image/*" class="hidden">
+                <input type="file" id="imageUpload" accept="image/*" class="hidden" onchange="uploadToImgBB(this, 'slider')">
                 <label for="imageUpload" class="block border-2 border-dashed border-cyan-200 rounded-xl p-4 text-center cursor-pointer mb-2">
                     <i class="fas fa-cloud-upload-alt text-2xl text-cyan-500"></i>
                     <p class="text-xs font-bold text-gray-600">স্লাইডারের জন্য ছবি যোগ করুন</p>
@@ -129,9 +128,12 @@
             </div>
         </div>
 
-        <div class="mb-6 flex flex-wrap gap-4">
+        <div class="mb-6 flex flex-wrap gap-2">
             <button onclick="toggleStudentManager()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition hover:bg-blue-700">
-                <i class="fas fa-users-cog mr-2"></i>স্টুডেন্ট ডাটাবেজ ম্যানেজ
+                <i class="fas fa-users-cog mr-2"></i>স্টুডেন্ট ডাটাবেজ
+            </button>
+            <button onclick="downloadMeritListPDF()" class="bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition hover:bg-indigo-800">
+                <i class="fas fa-trophy mr-2"></i>মেধা তালিকা PDF
             </button>
         </div>
 
@@ -146,7 +148,7 @@
                 <select id="newClass" class="p-2 border rounded">
                     <option value="৬ষ্ঠ">৬ষ্ঠ</option><option value="৭ম">৭ম</option><option value="৮ম">৮ম</option><option value="৯ম">৯ম</option><option value="১০ম">১০ম</option><option value="SSC">SSC</option>
                 </select>
-                <input type="text" id="newWa" placeholder="হোয়াটসঅ্যাপ" class="p-2 border rounded">
+                <input type="text" id="newWa" placeholder="হোয়াটসঅ্যাপ (Ex: 88017...)" class="p-2 border rounded">
                 <button onclick="addStudentToDB()" id="saveStudentBtn" class="md:col-span-4 bg-green-600 text-white font-bold py-2 rounded">সংরক্ষণ করুন</button>
             </div>
             <div class="max-h-80 overflow-y-auto border-t pt-4" id="dbList"></div>
@@ -157,7 +159,7 @@
                 <h2 class="font-bold mb-4 text-xl flex items-center gap-2"><i class="fab fa-whatsapp"></i> হোয়াটসঅ্যাপ গ্রুপ মেসেজ</h2>
                 <div class="space-y-3">
                     <select id="bulkClass" class="w-full p-3 rounded-xl text-black font-bold outline-none">
-                        <option value="">শ্রেণী সিলেক্ট করুন</option>
+                        <option value="">শ্রেণী সিলেক্ট করুন (সবাইকে পাঠাতে খালি রাখুন)</option>
                         <option value="৬ষ্ঠ">৬ষ্ঠ</option><option value="৭ম">৭ম</option><option value="৮ম">৮ম</option><option value="৯ম">৯ম</option><option value="১০ম">১০ম</option><option value="SSC">SSC</option>
                     </select>
                     <textarea id="bulkMessage" placeholder="আপনার মেসেজটি লিখুন..." class="w-full p-3 rounded-xl text-black outline-none h-20"></textarea>
@@ -177,11 +179,14 @@
                 <div class="space-y-2">
                     <div class="grid grid-cols-2 gap-2">
                         <input type="date" id="attDate" class="p-2 border rounded-lg bg-gray-50 text-sm">
-                        <select id="attClass" class="p-2 border rounded-lg bg-gray-50 text-sm">
+                        <select id="attClass" class="p-2 border rounded-lg bg-gray-50 text-sm" onchange="loadRollsForAtt()">
+                            <option value="">শ্রেণী</option>
                             <option value="৬ষ্ঠ">৬ষ্ঠ</option><option value="৭ম">৭ম</option><option value="৮ম">৮ম</option><option value="৯ম">৯ম</option><option value="১০ম">১০ম</option><option value="SSC">SSC</option>
                         </select>
                     </div>
-                    <input type="number" id="attRoll" placeholder="রোল নম্বর" class="w-full p-2 border rounded-lg text-sm">
+                    <select id="attRollSelect" class="w-full p-2 border rounded-lg text-sm">
+                        <option value="">রোল নির্বাচন করুন</option>
+                    </select>
                     <select id="attStatus" class="w-full p-2 border rounded-lg text-sm font-bold">
                         <option value="Present" class="text-green-600">উপস্থিত (Present)</option>
                         <option value="Absent" class="text-red-600">অনুপস্থিত (Absent)</option>
@@ -225,7 +230,7 @@
                 <div class="col-span-2"><label class="text-xs font-bold">নাম</label><input type="text" id="stdName" class="w-full p-2 border rounded-lg bg-gray-100" readonly></div>
             </div>
             <div id="subjectInputs" class="bg-purple-50 p-4 rounded-xl mb-6 min-h-[50px] overflow-x-auto"></div>
-            <button onclick="saveData()" class="w-full brand-purple text-white py-4 rounded-xl font-bold shadow-xl transition hover:opacity-90">সেভ ও রেজাল্ট মেসেজ পাঠান</button>
+            <button onclick="saveData()" class="w-full brand-purple text-white py-4 rounded-xl font-bold shadow-xl transition hover:opacity-90">সেভ করুন</button>
         </div>
 
         <div class="bg-white rounded-2xl shadow-xl overflow-hidden border text-black">
@@ -237,7 +242,6 @@
                         <option value="সব">সব শ্রেণী</option>
                         <option value="৬ষ্ঠ">৬ষ্ঠ</option><option value="৭ম">৭ম</option><option value="৮ম">৮ম</option><option value="৯ম">৯ম</option><option value="১০ম">১০ম</option><option value="SSC">SSC</option>
                     </select>
-                    <button onclick="downloadFullMeritList()" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs font-bold shadow"><i class="fas fa-file-pdf mr-1"></i> মেধাক্রম PDF</button>
                 </div>
             </div>
             <div id="adminTableArea" class="overflow-x-auto">
@@ -277,29 +281,16 @@
 
         let myChart = null;
         let sliderImages = JSON.parse(localStorage.getItem('amc_slider_imgs') || "[]");
-        let coachingServices = [
-            { img: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1000", title: "আধুনিক ডিজিটাল ক্লাস রুম" },
-            { img: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=1000", title: "সাপ্তাহিক ও মাসিক মূল্যায়ন পরীক্ষা" },
-            { img: "https://images.unsplash.com/photo-1513258496099-48168024aec0?q=80&w=1000", title: "অভিজ্ঞ শিক্ষক মন্ডলী দ্বারা পরিচালিত" },
-            { img: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?q=80&w=1000", title: "গণিতের বিশেষ যত্ন ও শর্টকাট টেকনিক" }
-        ];
-
         let currentSlide = 0;
         let siteLogo = localStorage.getItem('amc_site_logo') || DEFAULT_LOGO;
         let editingStudentId = null;
 
-        function updateAllLogos() {
-            document.getElementById('navLogo').src = siteLogo;
-            const adminPreview = document.getElementById('adminLogoPreview');
-            if(adminPreview) adminPreview.src = siteLogo;
-        }
-
+        // --- Core Functions ---
         function toggleDarkMode() { document.getElementById('body').classList.toggle('dark-mode'); }
         
         function showSection(id) {
             ['studentView', 'loginSection', 'adminPanel', 'displayArea'].forEach(s => {
-                const el = document.getElementById(s);
-                if(el) el.classList.add('hidden');
+                document.getElementById(s).classList.add('hidden');
             });
             document.getElementById(id).classList.remove('hidden');
         }
@@ -310,43 +301,93 @@
                 showSection('adminPanel');
                 updateDashboardStats(); renderTable(); loadAttTable(); loadFeeTable(); renderAdminSlider(); updateAllLogos();
                 document.getElementById('logoutBtn').classList.remove('hidden');
+                document.getElementById('adminLoginBtn').classList.add('hidden');
             } else { alert("ভুল পাসওয়ার্ড!"); }
         }
         function logout() { sessionStorage.removeItem('is_admin'); location.reload(); }
 
-        // Updated Slider for Services
+        // --- Logo & Branding ---
+        function updateAllLogos() {
+            document.getElementById('navLogo').src = siteLogo;
+            const preview = document.getElementById('adminLogoPreview');
+            if(preview) preview.src = siteLogo;
+        }
+
+        async function uploadToImgBB(input, type) {
+            if (!input.files || !input.files[0]) return;
+            const file = input.files[0];
+            const formData = new FormData();
+            formData.append("image", file);
+
+            try {
+                const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                    method: "POST",
+                    body: formData
+                });
+                const result = await response.json();
+                if (result.success) {
+                    const url = result.data.url;
+                    if (type === 'logo') {
+                        siteLogo = url;
+                        localStorage.setItem('amc_site_logo', url);
+                        updateAllLogos();
+                    } else {
+                        sliderImages.push(url);
+                        localStorage.setItem('amc_slider_imgs', JSON.stringify(sliderImages));
+                        renderAdminSlider();
+                        renderSlider();
+                    }
+                    alert("আপলোড সফল হয়েছে!");
+                }
+            } catch (e) { alert("আপলোড ব্যর্থ হয়েছে!"); }
+        }
+
+        function renderAdminSlider() {
+            const container = document.getElementById('adminSliderPreview');
+            container.innerHTML = sliderImages.map((url, i) => `
+                <div class="relative min-w-[80px]">
+                    <img src="${url}" class="w-20 h-20 object-cover rounded">
+                    <button onclick="removeSliderImg(${i})" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs">×</button>
+                </div>
+            `).join('');
+        }
+
+        function removeSliderImg(i) {
+            sliderImages.splice(i, 1);
+            localStorage.setItem('amc_slider_imgs', JSON.stringify(sliderImages));
+            renderAdminSlider(); renderSlider();
+        }
+
+        // --- Slider Logic ---
         function renderSlider() {
             const track = document.getElementById('sliderTrack');
             const dots = document.getElementById('sliderDots');
-            if(!track || !dots) return;
+            let imgs = sliderImages.length > 0 ? sliderImages : ["https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1000"];
             
-            // Combine default services with admin uploaded images
-            let displayImgs = sliderImages.length > 0 ? sliderImages.map(url => ({img: url, title: "আমাদের গ্যালারি"})) : coachingServices;
-            
-            track.innerHTML = displayImgs.map(item => `
+            track.innerHTML = imgs.map(url => `
                 <div class="slide">
-                    <img src="${item.img}">
-                    <div class="slide-overlay">${item.title}</div>
+                    <img src="${url}">
+                    <div class="slide-overlay">স্বাগতম আমিরুল ম্যাথ কেয়ারে</div>
                 </div>`).join('');
             
-            dots.innerHTML = displayImgs.map((_, i) => `
+            dots.innerHTML = imgs.map((_, i) => `
                 <div class="w-2 h-2 rounded-full ${i===currentSlide?'bg-yellow-400':'bg-white/40'}"></div>
             `).join('');
         }
 
         function startAutoSlider() {
             setInterval(() => {
-                let displayImgs = sliderImages.length > 0 ? sliderImages : coachingServices;
-                if(displayImgs.length > 1) {
-                    currentSlide = (currentSlide + 1) % displayImgs.length;
+                let imgs = sliderImages.length > 0 ? sliderImages : [1];
+                if(imgs.length > 1) {
+                    currentSlide = (currentSlide + 1) % imgs.length;
                     const track = document.getElementById('sliderTrack');
-                    if(track) track.style.transform = `translateX(-${currentSlide * 100}%)`;
-                    renderSlider(); 
+                    track.style.transform = `translateX(-${currentSlide * 100}%)`;
+                    renderSlider();
                 }
             }, 5000);
         }
 
-        // Student Database Logic with Edit Support
+        // --- Database Logic ---
         function addStudentToDB() {
             const roll = document.getElementById('newRoll').value;
             const name = document.getElementById('newName').value;
@@ -355,41 +396,27 @@
             if(!roll || !name || !cls) return alert("রোল, নাম এবং শ্রেণী নিশ্চিত করুন!");
             
             let db = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
+            if (editingStudentId) delete db[editingStudentId];
             
-            // If editing, remove old entry first
-            if (editingStudentId) {
-                delete db[editingStudentId];
-                editingStudentId = null;
-                document.getElementById('saveStudentBtn').innerText = "সংরক্ষণ করুন";
-            }
-            
-            const studentID = `${cls}_${roll}`;
-            db[studentID] = { roll, name, cls, wa };
+            const id = `${cls}_${roll}`;
+            db[id] = { roll, name, cls, wa };
             localStorage.setItem('amc_student_db', JSON.stringify(db));
             
-            // Clear inputs
-            document.getElementById('newRoll').value = '';
-            document.getElementById('newName').value = '';
-            document.getElementById('newWa').value = '';
-            loadStudentList(); 
-            updateDashboardStats(); 
-            alert("সফলভাবে সংরক্ষিত!");
+            alert("সংরক্ষিত হয়েছে!");
+            editingStudentId = null;
+            document.getElementById('saveStudentBtn').innerText = "সংরক্ষণ করুন";
+            location.reload();
         }
 
         function loadStudentList() {
             let db = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
             const listDiv = document.getElementById('dbList');
-            if(!listDiv) return;
             listDiv.innerHTML = Object.keys(db).map(id => `
-                <div class="flex justify-between items-center p-3 border-b hover:bg-gray-50 transition">
-                    <div class="text-xs">
-                        <b class="text-blue-600">[${db[id].cls}]</b> 
-                        <b class="text-gray-800">রোল: ${db[id].roll}</b> - ${db[id].name} 
-                        <span class="text-green-600 ml-2"><i class="fab fa-whatsapp"></i> ${db[id].wa || '-'}</span>
-                    </div>
-                    <div class="flex gap-3">
-                        <button onclick="editStudent('${id}')" class="text-blue-500 hover:scale-110 p-1"><i class="fas fa-edit"></i></button>
-                        <button onclick="deleteStudentFromDB('${id}')" class="text-red-500 hover:scale-110 p-1"><i class="fas fa-trash"></i></button>
+                <div class="flex justify-between items-center p-3 border-b">
+                    <div class="text-xs"><b>[${db[id].cls}]</b> Roll: ${db[id].roll} - ${db[id].name}</div>
+                    <div class="flex gap-2">
+                        <button onclick="editStudent('${id}')" class="text-blue-500"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteStudent('${id}')" class="text-red-500"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
             `).join('');
@@ -397,132 +424,339 @@
 
         function editStudent(id) {
             let db = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
-            const student = db[id];
-            if(!student) return;
-            document.getElementById('newRoll').value = student.roll;
-            document.getElementById('newName').value = student.name;
-            document.getElementById('newClass').value = student.cls;
-            document.getElementById('newWa').value = student.wa || '';
+            const s = db[id];
+            document.getElementById('newRoll').value = s.roll;
+            document.getElementById('newName').value = s.name;
+            document.getElementById('newClass').value = s.cls;
+            document.getElementById('newWa').value = s.wa || '';
             editingStudentId = id;
-            document.getElementById('saveStudentBtn').innerText = "আপডেট করুন (Update)";
-            document.getElementById('studentManager').scrollIntoView({behavior: 'smooth'});
+            document.getElementById('saveStudentBtn').innerText = "আপডেট করুন";
         }
 
-        function deleteStudentFromDB(id) { 
-            if(!confirm("আপনি কি নিশ্চিতভাবে এই শিক্ষার্থীকে ডিলিট করতে চান?")) return;
+        function deleteStudent(id) {
+            if(!confirm("মুছতে চান?")) return;
             let db = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
-            delete db[id]; 
+            delete db[id];
             localStorage.setItem('amc_student_db', JSON.stringify(db));
-            loadStudentList(); 
-            updateDashboardStats();
+            loadStudentList(); updateDashboardStats();
         }
 
-        function fetchStudentInfo() {
-            const r = document.getElementById('stdRoll').value;
-            const c = document.getElementById('stdClass').value;
-            if(!r || !c) return;
-            const studentID = `${c}_${r}`;
-            let db = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
-            if(db[studentID]) document.getElementById('stdName').value = db[studentID].name;
-            else document.getElementById('stdName').value = "";
+        // --- Result Entry System ---
+        function updateSubjectInputs() {
+            const cls = document.getElementById('stdClass').value;
+            const container = document.getElementById('subjectInputs');
+            if(!subjectsConfig[cls]) return;
+            let html = `<div class="grid grid-cols-5 gap-2 text-[10px] font-bold mb-2 border-b pb-2"><div>বিষয়</div><div>FM</div><div>MCQ</div><div>CQ</div><div>Grade</div></div>`;
+            subjectsConfig[cls].forEach(sub => {
+                html += `
+                <div class="grid grid-cols-5 gap-2 mb-2 items-center">
+                    <div class="text-[10px] font-bold">${sub}</div>
+                    <input type="number" id="full_${sub}" value="100" class="border p-1 rounded text-center text-xs">
+                    <input type="number" id="mcq_${sub}" oninput="calcGrade('${sub}')" class="border p-1 rounded text-center text-xs">
+                    <input type="number" id="cq_${sub}" oninput="calcGrade('${sub}')" class="border p-1 rounded text-center text-xs">
+                    <div id="grade_${sub}" class="text-center font-bold text-purple-700 text-xs">-</div>
+                </div>`;
+            });
+            container.innerHTML = html;
         }
 
-        // Updated Result Check with Payment Notification
+        function calcGrade(sub) {
+            const f = Number(document.getElementById(`full_${sub}`).value) || 100;
+            const m = Number(document.getElementById(`mcq_${sub}`).value) || 0;
+            const c = Number(document.getElementById(`cq_${sub}`).value) || 0;
+            const total = m + c;
+            const p = (total / f) * 100;
+            let g = 'F';
+            if(p >= 80) g = 'A+'; else if(p >= 70) g = 'A'; else if(p >= 60) g = 'A-';
+            else if(p >= 50) g = 'B'; else if(p >= 40) g = 'C'; else if(p >= 33) g = 'D';
+            document.getElementById(`grade_${sub}`).innerText = g;
+        }
+
+        function saveData() {
+            const date = document.getElementById('examDate').value;
+            const cls = document.getElementById('stdClass').value;
+            const roll = document.getElementById('stdRoll').value;
+            const name = document.getElementById('stdName').value;
+            const type = document.getElementById('stdExamType').value;
+            if(!date || !cls || !roll) return alert("তথ্য পূরণ করুন");
+
+            let scores = {}; let grandTotal = 0;
+            subjectsConfig[cls].forEach(sub => {
+                const f = Number(document.getElementById(`full_${sub}`).value);
+                const m = Number(document.getElementById(`mcq_${sub}`).value);
+                const c = Number(document.getElementById(`cq_${sub}`).value);
+                const t = m + c;
+                scores[sub] = { f, m, c, t, g: document.getElementById(`grade_${sub}`).innerText };
+                grandTotal += t;
+            });
+
+            let data = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
+            data.push({ date, cls, roll, name, examType: type, scores, grandTotal });
+            localStorage.setItem('amc_db_final', JSON.stringify(data));
+            alert("সফলভাবে সেভ হয়েছে!");
+            renderTable(); updateDashboardStats();
+        }
+
+        // --- View & PDF Logic ---
         function checkResult() {
             const roll = document.getElementById('searchRoll').value;
             const cls = document.getElementById('searchClass').value;
             const date = document.getElementById('searchDate').value;
             const type = document.getElementById('searchExamType').value;
             
-            if(!roll || !cls || !date) return alert("অনুগ্রহ করে সকল তথ্য পূরণ করুন।");
-
-            // Payment check
-            const fees = JSON.parse(localStorage.getItem('amc_fee_db') || "[]");
-            const hasPaid = fees.some(f => f.roll == roll);
-            
-            if(!hasPaid) {
-                alert("দুঃখিত! আপনার চলতি মাসের বেতন পরিশোধ করা হয়নি। রেজাল্ট দেখতে অনুগ্রহ করে অফিসে যোগাযোগ করুন অথবা বকেয়া পরিশোধ করুন।");
-                // return; // Uncomment this line if you want to block result access
-            }
-
-            const data = JSON.parse(localStorage.getItem('amc_db_final') || "[]").find(i => i.roll == roll && i.cls == cls && i.date == date && i.examType == type);
+            const db = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
+            const data = db.find(i => i.roll == roll && i.cls == cls && i.date == date && i.examType == type);
             
             if (data) {
                 showSection('displayArea');
-                document.getElementById('chartContainer').classList.remove('hidden');
                 let rows = ''; let lbls = []; let mrks = [];
                 for(let s in data.scores) {
-                    rows += `<tr class="border-b text-[12px]"><td class="py-2 text-left px-2">${s} (${data.scores[s].f})</td><td class="py-2">${data.scores[s].m}</td><td class="py-2">${data.scores[s].c}</td><td class="py-2 font-bold">${data.scores[s].t}</td><td class="py-2 font-bold text-purple-700">${data.scores[s].g}</td></tr>`;
+                    rows += `<tr class="border-b text-[12px]"><td class="py-2 px-2 text-left">${s} (${data.scores[s].f})</td><td>${data.scores[s].m}</td><td>${data.scores[s].c}</td><td class="font-bold">${data.scores[s].t}</td><td class="font-bold text-purple-700">${data.scores[s].g}</td></tr>`;
                     lbls.push(s); mrks.push(data.scores[s].t);
                 }
-                document.getElementById('pdfContent').innerHTML = `<div style="text-align:center;"><img src="${siteLogo}" style="width:70px; height:70px; border-radius:50%; margin:auto;"><h1 style="color:#4c1d95;">AMIRUL MATH CARE</h1><p>${data.examType} রেজাল্ট শিট</p></div><div style="background:#f3f4f6; padding:10px; border-radius:10px; margin:15px 0; display:grid; grid-template-columns: 1fr 1fr; font-size:13px;"><p>নাম: <b>${data.name}</b></p><p>রোল: <b>${data.roll}</b></p><p>শ্রেণী: <b>${data.cls}</b></p><p>তারিখ: <b>${data.date}</b></p></div><table style="width:100%; border-collapse: collapse; text-align:center;"><thead><tr style="background:#4c1d95; color:white;"><th>বিষয়(FM)</th><th>MCQ</th><th>CQ</th><th>Total</th><th>Grade</th></tr></thead><tbody>${rows}</tbody></table><div style="text-align:right; margin-top:10px;"><b>মোট নম্বর: ${data.grandTotal}</b></div>`;
+                document.getElementById('pdfContent').innerHTML = `
+                <div style="text-align:center;">
+                    <img src="${siteLogo}" style="width:70px; height:70px; border-radius:50%; margin:auto;">
+                    <h1 style="color:#4c1d95; margin:0;">AMIRUL MATH CARE</h1>
+                    <p style="font-size:12px;">${data.examType} রেজাল্ট শিট</p>
+                </div>
+                <div style="background:#f3f4f6; padding:10px; border-radius:10px; margin:15px 0; display:grid; grid-template-columns: 1fr 1fr; font-size:12px;">
+                    <p>নাম: <b>${data.name}</b></p><p>রোল: <b>${data.roll}</b></p>
+                    <p>শ্রেণী: <b>${data.cls}</b></p><p>তারিখ: <b>${data.date}</b></p>
+                </div>
+                <table style="width:100%; border-collapse: collapse; text-align:center; font-size:13px;">
+                    <thead><tr style="background:#4c1d95; color:white;"><th>বিষয়</th><th>MCQ</th><th>CQ</th><th>Total</th><th>Grade</th></tr></thead>
+                    <tbody>${rows}</tbody>
+                </table>
+                <div style="text-align:right; margin-top:10px;"><b>মোট প্রাপ্ত নম্বর: ${data.grandTotal}</b></div>`;
                 renderResultChart(lbls, mrks);
-            } else alert("দুঃখিত, এই তথ্যে কোনো রেজাল্ট পাওয়া যায়নি!");
+            } else alert("রেজাল্ট পাওয়া যায়নি!");
         }
 
-        // Additional Logic (Merit, Save, Stats, etc.)
-        function updateSubjectInputs() {
-            const cls = document.getElementById('stdClass').value;
-            const container = document.getElementById('subjectInputs');
-            if(!cls || !subjectsConfig[cls]) return;
-            let html = `<div class="grid grid-cols-5 gap-2 text-[10px] font-bold mb-2 border-b pb-2"><div class="col-span-1">বিষয়</div><div class="text-center">FM</div><div class="text-center">MCQ</div><div class="text-center">CQ</div><div class="text-center">Grade</div></div>`;
-            subjectsConfig[cls].forEach(sub => {
-                html += `<div class="grid grid-cols-5 gap-2 mb-2 items-center"><div class="text-[10px] font-bold">${sub}</div><input type="number" id="full_${sub}" value="100" class="border p-1 rounded text-center text-xs w-full"><input type="number" id="mcq_${sub}" placeholder="MCQ" oninput="calcTotalGrade('${sub}')" class="border p-1 rounded text-center text-xs w-full"><input type="number" id="cq_${sub}" placeholder="CQ" oninput="calcTotalGrade('${sub}')" class="border p-1 rounded text-center text-xs w-full"><div id="grade_${sub}" class="text-center font-bold text-purple-700 text-xs">-</div></div>`;
-            });
-            container.innerHTML = html;
+        function generateAdmit() {
+            const roll = document.getElementById('searchRoll').value;
+            const cls = document.getElementById('searchClass').value;
+            const type = document.getElementById('searchExamType').value;
+            const db = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
+            const student = db[`${cls}_${roll}`];
+            
+            if(!student) return alert("শিক্ষার্থী ডাটাবেজে নেই!");
+            
+            showSection('displayArea');
+            document.getElementById('chartContainer').classList.add('hidden');
+            document.getElementById('pdfContent').innerHTML = `
+                <div style="border: 4px solid #4c1d95; padding: 25px; border-radius: 15px;">
+                    <div style="text-align: center; border-bottom: 2px solid #fbbf24; padding-bottom: 10px; margin-bottom: 20px;">
+                        <img src="${siteLogo}" style="width:60px; height:60px; border-radius:50%;">
+                        <h1 style="font-size: 20px; color: #4c1d95;">AMIRUL MATH CARE</h1>
+                        <p>অ্যাডমিট কার্ড - ${type}</p>
+                    </div>
+                    <p>নাম: <b>${student.name}</b></p>
+                    <p>রোল: <b>${student.roll}</b></p>
+                    <p>শ্রেণী: <b>${student.cls}</b></p>
+                    <div style="margin-top:40px; display:flex; justify-content:space-between; font-size:12px;">
+                        <span style="border-top:1px solid #000;">অভিভাবক</span><span style="border-top:1px solid #000;">পরিচালক</span>
+                    </div>
+                </div>`;
         }
 
-        function calcTotalGrade(sub) {
-            const full = Number(document.getElementById(`full_${sub}`).value) || 100;
-            const mcq = Number(document.getElementById(`mcq_${sub}`).value) || 0;
-            const cq = Number(document.getElementById(`cq_${sub}`).value) || 0;
-            const total = mcq + cq;
-            const percentage = (total / full) * 100;
-            let g = 'F';
-            if (percentage >= 80) g = 'A+'; else if (percentage >= 70) g = 'A'; else if (percentage >= 60) g = 'A-';
-            else if (percentage >= 50) g = 'B'; else if (percentage >= 40) g = 'C'; else if (percentage >= 33) g = 'D';
-            document.getElementById(`grade_${sub}`).innerText = g;
-        }
+        // --- Merit List PDF Function ---
+        function downloadMeritListPDF() {
+            const fCls = document.getElementById('filterClass').value;
+            const fDate = document.getElementById('filterDate').value;
 
-        function saveData() {
-            const date = document.getElementById('examDate').value, cls = document.getElementById('stdClass').value, name = document.getElementById('stdName').value, roll = document.getElementById('stdRoll').value, examType = document.getElementById('stdExamType').value;
-            if(!date || !roll || !cls) return alert("তথ্য দিন");
-            let scores = {}; let grandTotal = 0;
-            subjectsConfig[cls].forEach(sub => {
-                const f = Number(document.getElementById(`full_${sub}`).value || 100);
-                const m = Number(document.getElementById(`mcq_${sub}`).value || 0);
-                const c = Number(document.getElementById(`cq_${sub}`).value || 0);
-                const t = m + c;
-                scores[sub] = { f, m, c, t, g: document.getElementById(`grade_${sub}`).innerText };
-                grandTotal += t;
-            });
+            if (!fDate || fCls === "সব") {
+                alert("অনুগ্রহ করে 'রেজাল্ট ডাটাবেজ' থেকে একটি নির্দিষ্ট তারিখ এবং শ্রেণী ফিল্টার করুন।");
+                return;
+            }
+
             let data = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
-            data.push({ date, cls, name, roll, examType, scores, grandTotal });
-            localStorage.setItem('amc_db_final', JSON.stringify(data));
-            renderTable(); updateDashboardStats(); alert("রেজাল্ট সেভ হয়েছে!");
+            let filteredData = data.filter(s => s.cls === fCls && s.date === fDate);
+            
+            if (filteredData.length === 0) {
+                alert("এই তারিখ ও শ্রেণীর কোনো রেজাল্ট পাওয়া যায়নি!");
+                return;
+            }
+
+            // Sort by grandTotal descending
+            filteredData.sort((a, b) => b.grandTotal - a.grandTotal);
+
+            const printElement = document.createElement('div');
+            printElement.style.padding = "30px";
+            printElement.style.color = "black";
+            printElement.style.background = "white";
+
+            let rows = filteredData.map((s, index) => `
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 10px; text-align: center;">${index + 1}</td>
+                    <td style="padding: 10px; text-align: center;">${s.roll}</td>
+                    <td style="padding: 10px;">${s.name}</td>
+                    <td style="padding: 10px; text-align: center; font-weight: bold;">${s.grandTotal}</td>
+                </tr>`).join('');
+
+            printElement.innerHTML = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img src="${siteLogo}" style="width: 70px; height: 70px; border-radius: 50%;">
+                    <h1 style="color: #4c1d95; margin: 5px 0; font-size: 24px;">AMIRUL MATH CARE</h1>
+                    <h2 style="margin: 0; font-size: 18px; text-decoration: underline;">মেধা তালিকা (Merit List)</h2>
+                    <p style="margin: 5px 0; font-weight: bold;">শ্রেণী: ${fCls} | তারিখ: ${fDate}</p>
+                </div>
+                <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                    <thead>
+                        <tr style="background-color: #4c1d95; color: white;">
+                            <th style="padding: 12px; border: 1px solid #4c1d95;">অবস্থান</th>
+                            <th style="padding: 12px; border: 1px solid #4c1d95;">রোল</th>
+                            <th style="padding: 12px; border: 1px solid #4c1d95; text-align: left;">শিক্ষার্থীর নাম</th>
+                            <th style="padding: 12px; border: 1px solid #4c1d95;">মোট নম্বর</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+                <div style="margin-top: 50px; display: flex; justify-content: space-between;">
+                    <div style="text-align: center; width: 150px; border-top: 1px solid black; padding-top: 5px;">প্রস্তুতকারক</div>
+                    <div style="text-align: center; width: 150px; border-top: 1px solid black; padding-top: 5px;">পরিচালক স্বাক্ষর</div>
+                </div>
+            `;
+
+            const opt = {
+                margin: 0.3,
+                filename: `MeritList_${fCls}_${fDate}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, logging: true },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(printElement).save();
         }
 
+        // --- Helper Functions ---
         function renderTable() {
             let data = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
-            const fCls = document.getElementById('filterClass').value, fDate = document.getElementById('filterDate').value;
+            const fCls = document.getElementById('filterClass').value;
+            const fDate = document.getElementById('filterDate').value;
             if(fCls !== "সব") data = data.filter(s => s.cls === fCls);
             if(fDate) data = data.filter(s => s.date === fDate);
-            document.getElementById('dataTableBody').innerHTML = data.reverse().map(s => `<tr class="border-b"><td class="p-4">${s.date}</td><td class="p-4">${s.roll}</td><td class="p-4">${s.name}</td><td class="p-4">${s.cls}</td><td class="p-4 font-bold">${s.grandTotal}</td><td class="p-4 text-blue-600 font-bold">#${getMerit(s.roll, s.cls, s.date)}</td><td class="p-4 text-center"><button onclick="deleteData('${s.date}','${s.roll}')" class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`).join('');
+            
+            document.getElementById('dataTableBody').innerHTML = data.reverse().map(s => `
+                <tr class="border-b">
+                    <td class="p-4">${s.date}</td><td class="p-4">${s.roll}</td>
+                    <td class="p-4">${s.name}</td><td class="p-4">${s.cls}</td>
+                    <td class="p-4 font-bold">${s.grandTotal}</td>
+                    <td class="p-4 text-blue-600 font-bold">#${getMerit(s.roll, s.cls, s.date)}</td>
+                    <td class="p-4 text-center"><button onclick="deleteData('${s.date}','${s.roll}')" class="text-red-500"><i class="fas fa-trash"></i></button></td>
+                </tr>`).join('');
         }
 
         function getMerit(roll, cls, date) {
             let data = JSON.parse(localStorage.getItem('amc_db_final') || "[]").filter(s => s.cls === cls && s.date === date);
             data.sort((a, b) => b.grandTotal - a.grandTotal);
-            const rank = data.findIndex(s => s.roll == roll) + 1;
-            return rank > 0 ? rank : '-';
+            return data.findIndex(s => s.roll == roll) + 1;
+        }
+
+        function fetchStudentInfo() {
+            const r = document.getElementById('stdRoll').value;
+            const c = document.getElementById('stdClass').value;
+            const db = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
+            const s = db[`${c}_${r}`];
+            document.getElementById('stdName').value = s ? s.name : "";
+        }
+
+        function updateDashboardStats() {
+            const students = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
+            const results = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
+            const fees = JSON.parse(localStorage.getItem('amc_fee_db') || "[]");
+            document.getElementById('statTotalStudent').innerText = Object.keys(students).length;
+            document.getElementById('statTotalResult').innerText = results.length;
+            document.getElementById('statTotalFee').innerText = '৳' + fees.reduce((a, c) => a + Number(c.amount), 0);
+        }
+
+        function updateNotice() {
+            const txt = document.getElementById('userInput').value;
+            localStorage.setItem('amc_notice', txt);
+            document.getElementById('mainNotice').innerText = txt;
+            alert("নোটিশ আপডেট হয়েছে!");
         }
 
         function renderResultChart(l, d) {
-            const canvas = document.getElementById('resultChart');
-            if(!canvas) return;
-            const ctx = canvas.getContext('2d');
+            const ctx = document.getElementById('resultChart').getContext('2d');
             if(myChart) myChart.destroy();
-            myChart = new Chart(ctx, { type: 'bar', data: { labels: l, datasets: [{ label: 'নম্বর', data: d, backgroundColor: '#4c1d95' }] }, options: { scales: { y: { beginAtZero: true } } } });
+            myChart = new Chart(ctx, { type: 'bar', data: { labels: l, datasets: [{ label: 'নম্বর', data: d, backgroundColor: '#4c1d95' }] } });
+        }
+
+        function downloadDocument() { 
+            const opt = {
+                margin: 0.5,
+                filename: 'AMC_Result.pdf',
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(document.getElementById('pdfContent')).save(); 
+        }
+
+        function downloadStudentListPDF() {
+            let db = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
+            let students = Object.values(db);
+            if (students.length === 0) return alert("ছাত্রছাত্রী নেই!");
+            
+            const element = document.createElement('div');
+            element.style.padding = "20px";
+            let rows = students.map(s => `<tr><td style="border:1px solid #ddd;padding:8px">${s.cls}</td><td style="border:1px solid #ddd;padding:8px">${s.roll}</td><td style="border:1px solid #ddd;padding:8px">${s.name}</td><td style="border:1px solid #ddd;padding:8px">${s.wa || '-'}</td></tr>`).join('');
+            element.innerHTML = `<h2 style="text-align:center">শিক্ষার্থী তালিকা</h2><table style="width:100%; border-collapse:collapse;"><thead><tr style="background:#f2f2f2"><th>শ্রেণী</th><th>রোল</th><th>নাম</th><th>হোয়াটসঅ্যাপ</th></tr></thead><tbody>${rows}</tbody></table>`;
+            html2pdf().from(element).save('StudentList.pdf');
+        }
+
+        function toggleStudentManager() { document.getElementById('studentManager').classList.toggle('hidden'); loadStudentList(); }
+
+        // --- Attendance & Fees System ---
+        function loadRollsForAtt() {
+            const cls = document.getElementById('attClass').value;
+            const db = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
+            const rolls = Object.values(db).filter(s => s.cls === cls);
+            document.getElementById('attRollSelect').innerHTML = rolls.map(s => `<option value="${s.roll}">${s.roll} - ${s.name}</option>`).join('');
+        }
+
+        function saveAttendance() {
+            const date = document.getElementById('attDate').value;
+            const roll = document.getElementById('attRollSelect').value;
+            const status = document.getElementById('attStatus').value;
+            if(!date || !roll) return alert("তথ্য দিন");
+            let db = JSON.parse(localStorage.getItem('amc_att_db') || "[]");
+            db.push({ date, roll, status });
+            localStorage.setItem('amc_att_db', JSON.stringify(db));
+            loadAttTable(); updateDashboardStats();
+        }
+
+        function loadAttTable() {
+            let db = JSON.parse(localStorage.getItem('amc_att_db') || "[]");
+            document.getElementById('attTable').innerHTML = db.reverse().slice(0,10).map(i => `<div class="text-[10px] border-b py-1 flex justify-between"><span>${i.date} | Roll: ${i.roll}</span><b>${i.status}</b></div>`).join('');
+        }
+
+        function saveFee() {
+            const roll = document.getElementById('feeRoll').value;
+            const amount = document.getElementById('feeAmount').value;
+            const month = document.getElementById('feeMonth').value;
+            if(!roll || !amount) return alert("তথ্য দিন");
+            let db = JSON.parse(localStorage.getItem('amc_fee_db') || "[]");
+            db.push({ roll, amount, month, date: new Date().toLocaleDateString() });
+            localStorage.setItem('amc_fee_db', JSON.stringify(db));
+            loadFeeTable(); updateDashboardStats();
+        }
+
+        function loadFeeTable() {
+            let db = JSON.parse(localStorage.getItem('amc_fee_db') || "[]");
+            document.getElementById('feeTable').innerHTML = db.reverse().slice(0,10).map(i => `<div class="text-[10px] border-b py-1 flex justify-between"><span>Roll: ${i.roll} | ${i.month}</span><b>৳${i.amount}</b></div>`).join('');
+        }
+
+        function sendBulkWhatsApp() {
+            const cls = document.getElementById('bulkClass').value;
+            const msg = encodeURIComponent(document.getElementById('bulkMessage').value);
+            const db = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
+            let students = Object.values(db);
+            if(cls) students = students.filter(s => s.cls === cls);
+            
+            students.forEach(s => {
+                if(s.wa) window.open(`https://wa.me/${s.wa}?text=${msg}`, '_blank');
+            });
         }
 
         function deleteData(d, r) {
@@ -530,61 +764,6 @@
             let data = JSON.parse(localStorage.getItem('amc_db_final')).filter(i => !(i.date === d && i.roll === r));
             localStorage.setItem('amc_db_final', JSON.stringify(data)); renderTable();
         }
-
-        function updateDashboardStats() {
-            const students = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
-            const results = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
-            const att = JSON.parse(localStorage.getItem('amc_att_db') || "[]");
-            const fees = JSON.parse(localStorage.getItem('amc_fee_db') || "[]");
-            document.getElementById('statTotalStudent').innerText = Object.keys(students).length;
-            document.getElementById('statTotalResult').innerText = results.length;
-            document.getElementById('statTodayAtt').innerText = att.filter(a => a.date === new Date().toISOString().split('T')[0]).length;
-            document.getElementById('statTotalFee').innerText = '৳' + fees.reduce((a, c) => a + Number(c.amount), 0);
-        }
-
-        function saveAttendance() {
-            const date = document.getElementById('attDate').value, roll = document.getElementById('attRoll').value, status = document.getElementById('attStatus').value;
-            if(!date || !roll) return alert("তথ্য দিন");
-            let db = JSON.parse(localStorage.getItem('amc_att_db') || "[]");
-            db.push({ date, roll, status });
-            localStorage.setItem('amc_att_db', JSON.stringify(db));
-            loadAttTable(); updateDashboardStats(); alert("হাজিরা সংরক্ষিত!");
-        }
-
-        function loadAttTable() {
-            let db = JSON.parse(localStorage.getItem('amc_att_db') || "[]");
-            document.getElementById('attTable').innerHTML = db.reverse().slice(0,5).map(i => `<div class="text-[10px] border-b py-1 flex justify-between"><span>${i.date} | Roll: ${i.roll}</span><b>${i.status}</b></div>`).join('');
-        }
-
-        function saveFee() {
-            const roll = document.getElementById('feeRoll').value, amount = document.getElementById('feeAmount').value, month = document.getElementById('feeMonth').value;
-            if(!roll || !amount) return alert("তথ্য দিন");
-            let db = JSON.parse(localStorage.getItem('amc_fee_db') || "[]");
-            db.push({ roll, amount, month, date: new Date().toLocaleDateString() });
-            localStorage.setItem('amc_fee_db', JSON.stringify(db));
-            loadFeeTable(); updateDashboardStats(); alert("পেমেন্ট সেভ হয়েছে!");
-        }
-
-        function loadFeeTable() {
-            let db = JSON.parse(localStorage.getItem('amc_fee_db') || "[]");
-            document.getElementById('feeTable').innerHTML = db.reverse().slice(0,5).map(i => `<div class="text-[10px] border-b py-1 flex justify-between"><span>Roll: ${i.roll} | ${i.month}</span><b>৳${i.amount}</b></div>`).join('');
-        }
-
-        function generateAdmit() {
-            const roll = document.getElementById('searchRoll').value;
-            const cls = document.getElementById('searchClass').value;
-            const type = document.getElementById('searchExamType').value;
-            const studentID = `${cls}_${roll}`;
-            const db = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
-            const student = db[studentID];
-            if(!student) return alert("ডাটাবেজে তথ্য পাওয়া যায়নি!");
-            showSection('displayArea');
-            document.getElementById('chartContainer').classList.add('hidden');
-            document.getElementById('pdfContent').innerHTML = `<div style="border: 4px solid #4c1d95; padding: 25px; border-radius: 15px; text-align:left;"><div style="text-align: center; border-bottom: 2px solid #fbbf24; padding-bottom: 10px; margin-bottom: 20px;"><img src="${siteLogo}" style="width:60px; height:60px; border-radius:50%; margin-bottom:5px;"><h1 style="font-size: 22px; font-weight: bold; color: #4c1d95;">AMIRUL MATH CARE</h1><div style="background:#fbbf24; color:#000; font-weight:bold; padding:3px; margin:10px auto; border-radius:5px; width:150px; text-align:center;">অ্যাডমিট কার্ড</div></div><p>শিক্ষার্থীর নাম: <b>${student.name}</b></p><p>রোল নম্বর: <b>${student.roll}</b></p><p>শ্রেণী: <b>${student.cls}</b></p><p>পরীক্ষার ধরন: <b>${type}</b></p><div style="margin-top:40px; display:flex; justify-content:space-between; font-size:12px;"><span style="border-top:1px solid #000; padding-top:5px;">অভিভাবকের স্বাক্ষর</span><span style="border-top:1px solid #000; padding-top:5px;">পরিচালকের স্বাক্ষর</span></div></div>`;
-        }
-
-        function downloadDocument() { html2pdf().from(document.getElementById('pdfContent')).save('AMC_Document.pdf'); }
-        function toggleStudentManager() { document.getElementById('studentManager').classList.toggle('hidden'); loadStudentList(); }
 
         window.onload = () => {
             showSection('studentView');
