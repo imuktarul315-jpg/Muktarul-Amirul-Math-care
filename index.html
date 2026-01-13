@@ -580,6 +580,7 @@
                 </div>`;
         }
 
+        // রেজাল্ট ডাটাবেজে হোয়াটসঅ্যাপ বাটন যোগ করা হয়েছে
         function renderTable() {
             let data = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
             const fCls = document.getElementById('filterClass').value;
@@ -592,8 +593,46 @@
                     <td class="p-4 font-bold text-xs">${s.name}</td><td class="p-4">${s.cls}</td>
                     <td class="p-4 font-bold">${s.grandTotal}</td>
                     <td class="p-4 text-blue-600 font-bold">#${getMerit(s.roll, s.cls, s.date)}</td>
-                    <td class="p-4 text-center"><button onclick="deleteData('${s.date}','${s.roll}')" class="text-red-500"><i class="fas fa-trash"></i></button></td>
+                    <td class="p-4 text-center">
+                        <button onclick="sendSingleResultWhatsApp('${s.date}', '${s.roll}', '${s.cls}')" class="text-green-600 mr-3 text-lg" title="WhatsApp রেজাল্ট পাঠান"><i class="fab fa-whatsapp"></i></button>
+                        <button onclick="deleteData('${s.date}','${s.roll}')" class="text-red-500"><i class="fas fa-trash"></i></button>
+                    </td>
                 </tr>`).join('');
+        }
+
+        // হোয়াটসঅ্যাপে রেজাল্ট পাঠানোর মূল ফাংশন
+        function sendSingleResultWhatsApp(date, roll, cls) {
+            const results = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
+            const students = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
+            const data = results.find(i => i.date === date && i.roll == roll && i.cls === cls);
+            const student = students[`${cls}_${roll}`];
+
+            if (!student || !student.wa) {
+                return alert("শিক্ষার্থীর হোয়াটসঅ্যাপ নম্বর ডাটাবেজে পাওয়া যায়নি!");
+            }
+
+            let subjectsList = "";
+            for (let sub in data.scores) {
+                subjectsList += `\n- ${sub}: ${data.scores[sub].t} (${data.scores[sub].g})`;
+            }
+
+            const message = `*আসসালামু আলাইকুম ${data.name}*,
+আপনার/আপনার সন্তানের পরীক্ষার ফলাফল নিচে দেওয়া হলো:
+
+*প্রতিষ্ঠান:* আমিরুল ম্যাথ কেয়ার
+*তারিখ:* ${data.date}
+*পরীক্ষা:* ${data.examType}
+*শ্রেণী:* ${data.cls} | *রোল:* ${data.roll}
+
+*বিষয়ভিত্তিক নম্বর:* ${subjectsList}
+
+*মোট নম্বর:* ${data.grandTotal}
+*মেরিট পজিশন:* #${getMerit(data.roll, data.cls, data.date)}
+
+ধন্যবাদ,
+*আমিরুল ম্যাথ কেয়ার*`;
+
+            window.open(`https://wa.me/${student.wa}?text=${encodeURIComponent(message)}`, '_blank');
         }
 
         function getMerit(roll, cls, date) {
