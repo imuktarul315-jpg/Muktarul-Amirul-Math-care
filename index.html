@@ -17,7 +17,6 @@
         .hidden { display: none; }
         @media print { .no-print { display: none; } }
         
-        /* উন্নত স্লাইডার স্টাইল */
         .slider-container { position: relative; width: 100%; height: 280px; overflow: hidden; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); background: #4c1d95; }
         .slider-track { display: flex; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); height: 100%; }
         .slide { min-width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
@@ -51,8 +50,7 @@
 
     <div id="studentView" class="container mx-auto mt-6 p-4 max-w-lg no-print">
         <div id="heroSlider" class="slider-container mb-6">
-            <div id="sliderTrack" class="slider-track">
-                </div>
+            <div id="sliderTrack" class="slider-track"></div>
             <div class="absolute bottom-3 left-0 right-0 flex justify-center gap-2" id="sliderDots"></div>
         </div>
 
@@ -118,7 +116,6 @@
                     <div class="flex-1">
                         <input type="file" id="logoUpload" accept="image/*" class="hidden" onchange="uploadToImgBB(this, 'logo')">
                         <label for="logoUpload" class="bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm font-bold cursor-pointer hover:bg-yellow-600 block text-center transition">নতুন লোগো আপলোড</label>
-                        <p class="text-[10px] text-gray-500 mt-2 text-center">বর্গাকার ছবি ব্যবহার করা ভালো</p>
                     </div>
                 </div>
             </div>
@@ -129,8 +126,7 @@
                     <i class="fas fa-cloud-upload-alt text-2xl text-cyan-500"></i>
                     <p class="text-xs font-bold text-gray-600">স্লাইডারের জন্য নতুন ছবি যোগ করুন</p>
                 </label>
-                <div id="adminSliderPreview" class="flex gap-2 overflow-x-auto p-2 bg-gray-50 rounded-xl min-h-[80px]">
-                    </div>
+                <div id="adminSliderPreview" class="flex gap-2 overflow-x-auto p-2 bg-gray-50 rounded-xl min-h-[80px]"></div>
             </div>
         </div>
 
@@ -139,14 +135,14 @@
                 <i class="fas fa-users-cog mr-2"></i>স্টুডেন্ট ডাটাবেজ
             </button>
             <button onclick="downloadMeritListPDF()" class="bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition hover:bg-indigo-800">
-                <i class="fas fa-trophy mr-2"></i>মেধা তালিকা PDF (A4)
+                <i class="fas fa-trophy mr-2"></i>মেধা তালিকা PDF
             </button>
         </div>
 
         <div id="studentManager" class="bg-white p-6 rounded-2xl shadow-xl mb-8 border-t-4 border-blue-600 hidden text-black">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="font-bold text-xl text-blue-800">শিক্ষার্থী ডাটাবেজ এন্ট্রি</h2>
-                <button onclick="downloadStudentListPDF()" class="bg-green-600 text-white px-4 py-2 rounded-lg text-xs font-bold"><i class="fas fa-file-pdf mr-1"></i> ছাত্র তালিকা PDF (A4)</button>
+                <button onclick="downloadStudentListPDF()" class="bg-green-600 text-white px-4 py-2 rounded-lg text-xs font-bold"><i class="fas fa-file-pdf mr-1"></i> ছাত্র তালিকা PDF</button>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4 bg-blue-50 p-4 rounded-xl">
                 <input type="number" id="newRoll" placeholder="রোল" class="p-2 border rounded">
@@ -207,8 +203,7 @@
                     <div class="grid grid-cols-2 gap-2">
                         <input type="number" id="feeRoll" placeholder="রোল" class="p-2 border rounded-lg text-sm">
                         <select id="feeMonth" class="p-2 border rounded-lg bg-gray-50 text-sm">
-                            <option value="জানুয়ারি">জানুয়ারি</option><option value="ফেব্রুয়ারি">ফেব্রুয়ারি</option><option value="মার্চ">মার্চ</option><option value="এপ্রিল">এপ্রিল</option><option value="মে">মে</option><option value="জুন">জুন</option>
-                            <option value="জুলাই">জুলাই</option><option value="আগস্ট">আগস্ট</option><option value="সেপ্টেম্বর">সেপ্টেম্বর</option><option value="অক্টোবর">অক্টোবর</option><option value="নভেম্বর">নভেম্বর</option><option value="ডিসেম্বর">ডিসেম্বর</option>
+                            <option value="জানুয়ারি">জানুয়ারি</option><option value="ফেব্রুয়ারি">ফেব্রুয়ারি</option><option value="মার্চ">মার্চ</option><option value="এপ্রিল">এপ্রিল</option><option value="মে">মে</option><option value="জুন">জুন</option><option value="জুলাই">জুলাই</option><option value="আগস্ট">আগস্ট</option><option value="সেপ্টেম্বর">সেপ্টেম্বর</option><option value="অক্টোবর">অক্টোবর</option><option value="নভেম্বর">নভেম্বর</option><option value="ডিসেম্বর">ডিসেম্বর</option>
                         </select>
                     </div>
                     <input type="number" id="feeAmount" placeholder="টাকার পরিমাণ" class="w-full p-2 border rounded-lg text-sm">
@@ -276,24 +271,11 @@
         const IMGBB_API_KEY = "69e6b36e99479e00078021d7b003348d";
         const DEFAULT_LOGO = "https://i.ibb.co/Lhy0W0P/1000018420.jpg";
         
-        // আপনার দেওয়া লেখাগুলো স্লাইড ডেটা হিসেবে
         const defaultSlides = [
-            {
-                title: "আমিরুল ম্যাথ কেয়ার",
-                desc: "একটি নির্ভরযোগ্য শিক্ষা প্রতিষ্ঠান, যার মূল লক্ষ্য হলো গণিতকে সহজ, বোধগম্য ও ভয়মুক্ত করে তোলা।"
-            },
-            {
-                title: "মানসম্মত শিক্ষা",
-                desc: "প্রতিটি শিক্ষার্থীর সক্ষমতা অনুযায়ী আলাদা দিকনির্দেশনা এবং নিয়মিত মূল্যায়নের মাধ্যমে ভিত শক্ত করা হয়।"
-            },
-            {
-                title: "আমাদের বৈশিষ্ট্য",
-                desc: "দুর্বল শিক্ষার্থীদের বিশেষ যত্ন, কনসেপ্টভিত্তিক শেখানো এবং বোর্ড পরীক্ষাভিত্তিক সেরা প্রস্তুতি।"
-            },
-            {
-                title: "আমাদের লক্ষ্য",
-                desc: "শুধু ভালো ফলাফল নয়, বরং শিক্ষার্থীদের মাঝে আত্মবিশ্বাস, যুক্তিবোধ ও স্থায়ী শেখার অভ্যাস গড়ে তোলা।"
-            }
+            { title: "আমিরুল ম্যাথ কেয়ার", desc: "একটি নির্ভরযোগ্য শিক্ষা প্রতিষ্ঠান, যার মূল লক্ষ্য হলো গণিতকে সহজ, বোধগম্য ও ভয়মুক্ত করে তোলা।" },
+            { title: "মানসম্মত শিক্ষা", desc: "প্রতিটি শিক্ষার্থীর সক্ষমতা অনুযায়ী আলাদা দিকনির্দেশনা এবং নিয়মিত মূল্যায়নের মাধ্যমে ভিত শক্ত করা হয়।" },
+            { title: "আমাদের বৈশিষ্ট্য", desc: "দুর্বল শিক্ষার্থীদের বিশেষ যত্ন, কনসেপ্টভিত্তিক শেখানো এবং বোর্ড পরীক্ষাভিত্তিক সেরা প্রস্তুতি।" },
+            { title: "আমাদের লক্ষ্য", desc: "শুধু ভালো ফলাফল নয়, বরং শিক্ষার্থীদের মাঝে আত্মবিশ্বাস, যুক্তিবোধ ও স্থায়ী শেখার অভ্যাস গড়ে তোলা।" }
         ];
 
         let subjectsConfig = {
@@ -378,15 +360,11 @@
             renderAdminSlider(); renderSlider();
         }
 
-        // --- SLIDER LOGIC WITH NEW TEXTS ---
         function renderSlider() {
             const track = document.getElementById('sliderTrack');
             const dots = document.getElementById('sliderDots');
             if(!track) return;
-
-            // যদি ইমেজ না থাকে তবে ডিফল্ট ইমেজ ব্যবহার হবে
             let imgs = sliderImages.length > 0 ? sliderImages : [DEFAULT_LOGO];
-            
             let html = "";
             defaultSlides.forEach((slide, index) => {
                 let currentImg = imgs[index % imgs.length];
@@ -399,12 +377,10 @@
                     </div>
                 </div>`;
             });
-            
             track.innerHTML = html;
             dots.innerHTML = defaultSlides.map((_, i) => `
                 <div class="w-2 h-2 rounded-full transition-all duration-300 ${i === currentSlide ? 'bg-yellow-400 w-5' : 'bg-white/50'}"></div>
             `).join('');
-            
             track.style.transform = `translateX(-${currentSlide * 100}%)`;
         }
 
@@ -415,7 +391,6 @@
             }, 6000);
         }
 
-        // --- অন্যান্য সকল ফাংশন (সেভ, এডিট, ডিলিট, পিডিএফ) অপরিবর্তিত ---
         function updateDashboardStats() {
             const students = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
             const results = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
@@ -580,7 +555,6 @@
                 </div>`;
         }
 
-        // রেজাল্ট ডাটাবেজে হোয়াটসঅ্যাপ বাটন যোগ করা হয়েছে
         function renderTable() {
             let data = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
             const fCls = document.getElementById('filterClass').value;
@@ -600,7 +574,7 @@
                 </tr>`).join('');
         }
 
-        // হোয়াটসঅ্যাপে রেজাল্ট পাঠানোর মূল ফাংশন
+        // --- UPDATED WHATSAPP FUNCTION ---
         function sendSingleResultWhatsApp(date, roll, cls) {
             const results = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
             const students = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
@@ -612,8 +586,13 @@
             }
 
             let subjectsList = "";
+            let grandFullMarks = 0;
+
             for (let sub in data.scores) {
-                subjectsList += `\n- ${sub}: ${data.scores[sub].t} (${data.scores[sub].g})`;
+                const s = data.scores[sub];
+                const full = Number(s.f) || 100;
+                grandFullMarks += full;
+                subjectsList += `\n✅ *${sub}*: ${s.t} / ${full} (MCQ: ${s.m}, CQ: ${s.c}) - গ্রেড: ${s.g}`;
             }
 
             const message = `*আসসালামু আলাইকুম ${data.name}*,
@@ -624,9 +603,10 @@
 *পরীক্ষা:* ${data.examType}
 *শ্রেণী:* ${data.cls} | *রোল:* ${data.roll}
 
-*বিষয়ভিত্তিক নম্বর:* ${subjectsList}
+*বিষয়ভিত্তিক ফলাফল (প্রাপ্ত/পূর্ণমান):* ${subjectsList}
 
-*মোট নম্বর:* ${data.grandTotal}
+--------------------------
+*সর্বমোট নম্বর:* ${data.grandTotal} / ${grandFullMarks}
 *মেরিট পজিশন:* #${getMerit(data.roll, data.cls, data.date)}
 
 ধন্যবাদ,
