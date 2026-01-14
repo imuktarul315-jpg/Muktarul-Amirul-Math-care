@@ -523,11 +523,11 @@
                     <h1 style="color:#4c1d95;margin:5px 0">AMIRUL MATH CARE</h1>
                     <p>${data.examType} রেজাল্ট - ${data.date}</p>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; margin:20px 0; font-size:14px; background:#f9f9f9; padding:10px; border-radius:10px">
+                <div style="display:grid; grid-template-columns:1fr 1fr; margin:20px 0; font-size:14px; background:#f9f9f9; padding:10px; border-radius:10px; color: black !important;">
                     <p>নাম: <b>${data.name}</b></p><p>রোল: <b>${data.roll}</b></p>
                     <p>শ্রেণী: <b>${data.cls}</b></p><p>মোট নম্বর: <b>${data.grandTotal}</b></p>
                 </div>
-                <table style="width:100%; border-collapse:collapse; text-align:center">
+                <table style="width:100%; border-collapse:collapse; text-align:center; color: black !important;">
                     <thead style="background:#4c1d95; color:white"><tr><th style="padding:8px">বিষয়</th><th>MCQ</th><th>CQ</th><th>Total</th><th>Grade</th></tr></thead>
                     <tbody>${rows}</tbody>
                 </table>`;
@@ -545,7 +545,7 @@
             showSection('displayArea');
             document.getElementById('chartContainer').classList.add('hidden');
             document.getElementById('pdfContent').innerHTML = `
-                <div style="border: 5px double #4c1d95; padding: 30px; border-radius: 15px; position:relative">
+                <div style="border: 5px double #4c1d95; padding: 30px; border-radius: 15px; position:relative; color: black !important;">
                     <div style="text-align: center; border-bottom: 2px solid #fbbf24; padding-bottom: 10px; margin-bottom: 20px;">
                         <img src="${siteLogo}" style="width:60px; height:60px; border-radius:50%;">
                         <h1 style="font-size: 24px; color: #4c1d95; margin:5px 0">AMIRUL MATH CARE</h1>
@@ -574,44 +574,20 @@
                 </tr>`).join('');
         }
 
-        // --- UPDATED WHATSAPP FUNCTION ---
         function sendSingleResultWhatsApp(date, roll, cls) {
             const results = JSON.parse(localStorage.getItem('amc_db_final') || "[]");
             const students = JSON.parse(localStorage.getItem('amc_student_db') || "{}");
             const data = results.find(i => i.date === date && i.roll == roll && i.cls === cls);
             const student = students[`${cls}_${roll}`];
-
-            if (!student || !student.wa) {
-                return alert("শিক্ষার্থীর হোয়াটসঅ্যাপ নম্বর ডাটাবেজে পাওয়া যায়নি!");
-            }
-
+            if (!student || !student.wa) return alert("শিক্ষার্থীর হোয়াটসঅ্যাপ নম্বর ডাটাবেজে পাওয়া যায়নি!");
             let subjectsList = "";
             let grandFullMarks = 0;
-
             for (let sub in data.scores) {
                 const s = data.scores[sub];
-                const full = Number(s.f) || 100;
-                grandFullMarks += full;
-                subjectsList += `\n✅ *${sub}*: ${s.t} / ${full} (MCQ: ${s.m}, CQ: ${s.c}) - গ্রেড: ${s.g}`;
+                grandFullMarks += Number(s.f) || 100;
+                subjectsList += `\n✅ *${sub}*: ${s.t} (G: ${s.g})`;
             }
-
-            const message = `*আসসালামু আলাইকুম ${data.name}*,
-আপনার/আপনার সন্তানের পরীক্ষার ফলাফল নিচে দেওয়া হলো:
-
-*প্রতিষ্ঠান:* আমিরুল ম্যাথ কেয়ার
-*তারিখ:* ${data.date}
-*পরীক্ষা:* ${data.examType}
-*শ্রেণী:* ${data.cls} | *রোল:* ${data.roll}
-
-*বিষয়ভিত্তিক ফলাফল (প্রাপ্ত/পূর্ণমান):* ${subjectsList}
-
---------------------------
-*সর্বমোট নম্বর:* ${data.grandTotal} / ${grandFullMarks}
-*মেরিট পজিশন:* #${getMerit(data.roll, data.cls, data.date)}
-
-ধন্যবাদ,
-*আমিরুল ম্যাথ কেয়ার*`;
-
+            const message = `*রেজাল্ট: আমিরুল ম্যাথ কেয়ার*\nনাম: ${data.name}\nরোল: ${data.roll}\nশ্রেণী: ${data.cls}\nতারিখ: ${data.date}\n${subjectsList}\n*মোট নম্বর:* ${data.grandTotal}\n*মেরিট:* #${getMerit(data.roll, data.cls, data.date)}`;
             window.open(`https://wa.me/${student.wa}?text=${encodeURIComponent(message)}`, '_blank');
         }
 
@@ -701,24 +677,59 @@
             if(!sm.classList.contains('hidden')) loadStudentList(); 
         }
 
-        function downloadDocument() { html2pdf().set({ margin: 0.5, filename: 'AMC_Doc.pdf', jsPDF: { format: 'a4' } }).from(document.getElementById('pdfContent')).save(); }
+        // --- FIXED DOWNLOAD FUNCTIONS ---
+        function downloadDocument() {
+            const element = document.getElementById('pdfContent');
+            const opt = {
+                margin: 0.5,
+                filename: 'AMC_Result.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
         
         function downloadMeritListPDF() {
             const fCls = document.getElementById('filterClass').value;
             const fDate = document.getElementById('filterDate').value;
-            if (!fDate || fCls === "সব") return alert("ফিল্টার করুন");
+            if (!fDate || fCls === "সব") return alert("ফিল্টার করুন (শ্রেণী ও তারিখ নির্বাচন করুন)");
+            
             let data = JSON.parse(localStorage.getItem('amc_db_final') || "[]").filter(s => s.cls === fCls && s.date === fDate);
             data.sort((a, b) => b.grandTotal - a.grandTotal);
+            
+            if(data.length === 0) return alert("কোন তথ্য পাওয়া যায়নি");
+
             const el = document.createElement('div');
-            el.innerHTML = `<h1>Merit List - ${fCls}</h1><table>${data.map((s,i)=>`<tr><td>${i+1}</td><td>${s.name}</td><td>${s.grandTotal}</td></tr>`).join('')}</table>`;
-            html2pdf().from(el).save();
+            el.style.padding = "20px";
+            el.innerHTML = `
+                <h1 style="text-align:center;color:#4c1d95">AMIRUL MATH CARE</h1>
+                <h3 style="text-align:center">মেধা তালিকা - ${fCls} (${fDate})</h3>
+                <table style="width:100%; border-collapse:collapse; margin-top:20px" border="1">
+                    <thead><tr style="background:#f2f2f2"><th>মেরিট</th><th>রোল</th><th>নাম</th><th>মোট নম্বর</th></tr></thead>
+                    <tbody>
+                        ${data.map((s,i)=>`<tr><td style="text-align:center">${i+1}</td><td style="text-align:center">${s.roll}</td><td style="padding:5px">${s.name}</td><td style="text-align:center">${s.grandTotal}</td></tr>`).join('')}
+                    </tbody>
+                </table>`;
+            html2pdf().from(el).set({margin:0.5, filename:`Merit_List_${fCls}.pdf`}).save();
         }
 
         function downloadStudentListPDF() {
             let db = Object.values(JSON.parse(localStorage.getItem('amc_student_db') || "{}"));
+            if(db.length === 0) return alert("শিক্ষার্থী ডাটাবেজ খালি!");
+            
             const el = document.createElement('div');
-            el.innerHTML = `<h1>Student List</h1><table>${db.map(s=>`<tr><td>${s.cls}</td><td>${s.roll}</td><td>${s.name}</td></tr>`).join('')}</table>`;
-            html2pdf().from(el).save();
+            el.style.padding = "20px";
+            el.innerHTML = `
+                <h1 style="text-align:center;color:#4c1d95">AMIRUL MATH CARE</h1>
+                <h3 style="text-align:center">শিক্ষার্থী তালিকা</h3>
+                <table style="width:100%; border-collapse:collapse; margin-top:20px" border="1">
+                    <thead><tr style="background:#f2f2f2"><th>শ্রেণী</th><th>রোল</th><th>নাম</th><th>হোয়াটসঅ্যাপ</th></tr></thead>
+                    <tbody>
+                        ${db.sort((a,b)=>a.cls.localeCompare(b.cls)).map(s=>`<tr><td style="text-align:center">${s.cls}</td><td style="text-align:center">${s.roll}</td><td style="padding:5px">${s.name}</td><td style="text-align:center">${s.wa || '-'}</td></tr>`).join('')}
+                    </tbody>
+                </table>`;
+            html2pdf().from(el).set({margin:0.5, filename:'Student_List.pdf'}).save();
         }
 
         window.onload = () => {
