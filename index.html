@@ -3,114 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Professional Q-Maker PRO | v9.6</title>
+    <title>Math Professional Q-Maker ULTIMATE | v10.5</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root { --primary: #4f46e5; }
-        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f8fafc; }
-        .print-area { width: 210mm; min-height: 297mm; margin: 20px auto; background: white; padding: 20mm; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        #mcqList { display: grid; grid-template-columns: 1fr 1fr; column-gap: 30px; }
-        .question-item { position: relative; cursor: move; page-break-inside: avoid; } /* Added page-break-inside */
-        .preview-box { background: #f1f5f9; border-radius: 8px; padding: 10px; font-size: 0.85rem; min-height: 40px; border: 1px dashed #cbd5e1; }
-        .delete-img-btn { position: absolute; top: 5px; right: 5px; background: rgba(255,0,0,0.7); color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; cursor: pointer; }
+        body { font-family: 'Hind Siliguri', sans-serif; background-color: #f1f5f9; }
+        
+        .print-area { 
+            width: 210mm; min-height: 297mm; margin: 20px auto; 
+            background: white; padding: 15mm; position: relative;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1); 
+        }
+
+        #watermark-layer {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 80px; color: rgba(0,0,0,0.04); font-weight: 900;
+            white-space: nowrap; pointer-events: none; z-index: 0; display: none;
+        }
+
+        /* কলাম কন্ট্রোল ক্লাস */
+        .col-setup-1 { display: block; }
+        .col-setup-2 { display: grid; grid-template-columns: 1fr 1fr; column-gap: 30px; }
+        
+        .question-item { position: relative; z-index: 1; page-break-inside: avoid; margin-bottom: 15px; }
+        .preview-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 10px; font-size: 0.85rem; }
+        .delete-img-btn { position: absolute; top: 5px; right: 5px; background: #ef4444; color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         
         @media print {
             .no-print { display: none !important; }
-            body { background: white; }
-            .print-area { box-shadow: none; margin: 0; width: 100%; padding: 12mm; }
+            body { background: white; margin: 0; }
+            .print-area { box-shadow: none; margin: 0; width: 100%; padding: 10mm; }
+            #watermark-layer { display: block !important; }
         }
     </style>
 </head>
 <body class="text-slate-800">
 
-    <div id="dashboard" class="fixed inset-0 z-[100] bg-slate-50 flex items-center justify-center p-6 overflow-y-auto">
+    <div id="dashboard" class="fixed inset-0 z-[100] bg-white flex items-center justify-center p-6">
         <div class="max-w-4xl w-full text-center">
-            <h1 class="text-4xl font-black text-slate-900 mb-6">Math Question Maker <span class="text-indigo-600">PRO</span></h1>
+            <h1 class="text-5xl font-black text-slate-900 mb-8">Math Maker <span class="text-indigo-600">ULTIMATE</span></h1>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div onclick="openEditor('creative')" class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 hover:border-indigo-500 cursor-pointer">
-                    <div class="text-4xl mb-4">📝</div><h3 class="font-bold">সৃজনশীল</h3>
+                <div onclick="openEditor('creative')" class="bg-indigo-50 p-8 rounded-3xl border-2 border-transparent hover:border-indigo-500 cursor-pointer transition-all">
+                    <div class="text-5xl mb-4">📄</div><h3 class="font-bold">সৃজনশীল</h3>
                 </div>
-                <div onclick="openEditor('mcq')" class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 hover:border-indigo-500 cursor-pointer">
-                    <div class="text-4xl mb-4">🎯</div><h3 class="font-bold">MCQ</h3>
+                <div onclick="openEditor('mcq')" class="bg-rose-50 p-8 rounded-3xl border-2 border-transparent hover:border-rose-500 cursor-pointer transition-all">
+                    <div class="text-5xl mb-4">🎯</div><h3 class="font-bold">MCQ</h3>
                 </div>
-                <div onclick="openEditor('short')" class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 hover:border-indigo-500 cursor-pointer">
-                    <div class="text-4xl mb-4">⚡</div><h3 class="font-bold">সংক্ষিপ্ত</h3>
+                <div onclick="openEditor('short')" class="bg-emerald-50 p-8 rounded-3xl border-2 border-transparent hover:border-emerald-500 cursor-pointer transition-all">
+                    <div class="text-5xl mb-4">⚡</div><h3 class="font-bold">সংক্ষিপ্ত</h3>
                 </div>
             </div>
         </div>
     </div>
 
     <div id="mainEditor" class="hidden">
-        <nav class="no-print bg-white border-b px-8 py-4 flex justify-between items-center sticky top-0 z-50">
-            <h1 class="font-bold text-xl cursor-pointer" onclick="location.reload()">Math Maker <span class="text-indigo-600">PRO</span></h1>
+        <nav class="no-print bg-white/80 backdrop-blur-md border-b px-8 py-3 flex justify-between items-center sticky top-0 z-50">
+            <h1 class="font-black text-xl" onclick="location.reload()">MathMaker <span class="text-indigo-600">PRO</span></h1>
             <div class="flex gap-3">
-                <button onclick="saveToDevice()" class="px-4 py-2 text-indigo-700 bg-indigo-50 rounded-xl font-bold">📥 সেভ</button>
-                <button onclick="window.print()" class="px-6 py-2 bg-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-indigo-200">🖨️ প্রিন্ট করুন</button>
+                <button onclick="saveToDevice()" class="px-5 py-2 text-indigo-700 bg-indigo-50 rounded-xl font-bold text-sm">সেভ করুন</button>
+                <button onclick="window.print()" class="px-8 py-2 bg-indigo-600 text-white rounded-xl font-bold shadow-lg text-sm">প্রিন্ট / PDF</button>
             </div>
         </nav>
 
-        <div class="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 p-6">
-            <div class="lg:col-span-4 no-print space-y-6">
-                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xl">
-                    <div class="space-y-3 mb-6">
+        <div class="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 p-6">
+            <div class="lg:col-span-4 no-print space-y-4">
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
+                    <div class="space-y-2 mb-4">
                         <input type="text" id="schoolInput" placeholder="প্রতিষ্ঠানের নাম" class="w-full p-2.5 border-2 rounded-xl focus:border-indigo-500 outline-none font-bold" oninput="syncData()">
-                        <div class="grid grid-cols-2 gap-3">
-                            <input type="text" id="subjectInput" placeholder="বিষয়" class="p-2.5 border-2 rounded-xl" oninput="syncData()">
-                            <input type="text" id="classInput" placeholder="শ্রেণি" class="p-2.5 border-2 rounded-xl" oninput="syncData()">
+                        <input type="text" id="watermarkInput" placeholder="ওয়াটারমার্ক (জলছাপ)" class="w-full p-2 border rounded-lg text-xs bg-slate-50" oninput="syncWatermark()">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="subjectInput" placeholder="বিষয়" class="p-2 border rounded-lg text-sm" oninput="syncData()">
+                            <input type="text" id="classInput" placeholder="শ্রেণি" class="p-2 border rounded-lg text-sm" oninput="syncData()">
                         </div>
                     </div>
 
-                    <div class="flex bg-slate-100 p-1 rounded-2xl mb-4">
-                        <button onclick="setType('creative')" id="btn-creative" class="flex-1 py-2 rounded-xl font-bold text-xs">সৃজনশীল</button>
-                        <button onclick="setType('short')" id="btn-short" class="flex-1 py-2 rounded-xl font-bold text-xs">সংক্ষিপ্ত</button>
-                        <button onclick="setType('mcq')" id="btn-mcq" class="flex-1 py-2 rounded-xl font-bold text-xs">MCQ</button>
+                    <div class="bg-slate-50 p-3 rounded-2xl mb-4 border border-slate-100">
+                        <p class="text-[10px] font-bold text-slate-400 mb-2 uppercase">কলাম বিন্যাস (Layout)</p>
+                        <div class="grid grid-cols-1 gap-2">
+                            <div class="flex items-center justify-between text-xs">
+                                <span>সৃজনশীল:</span>
+                                <select onchange="updateColumn('creative', this.value)" class="p-1 border rounded bg-white">
+                                    <option value="1">১ কলাম</option>
+                                    <option value="2">২ কলাম</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center justify-between text-xs">
+                                <span>সংক্ষিপ্ত:</span>
+                                <select onchange="updateColumn('short', this.value)" class="p-1 border rounded bg-white">
+                                    <option value="1">১ কলাম</option>
+                                    <option value="2" selected>২ কলাম</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center justify-between text-xs">
+                                <span>MCQ:</span>
+                                <select onchange="updateColumn('mcq', this.value)" class="p-1 border rounded bg-white">
+                                    <option value="1">১ কলাম</option>
+                                    <option value="2" selected>২ কলাম</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
-                    <textarea id="mainText" placeholder="প্রশ্ন বা উদ্দীপক লিখুন... (ম্যাথের জন্য $x^2$ ব্যবহার করুন)" class="w-full border-2 p-4 rounded-2xl h-32 outline-none mb-2" oninput="livePreview()"></textarea>
-                    
-                    <div class="mb-4">
-                        <p class="text-xs font-bold text-slate-400 mb-1 uppercase">Live Math Preview:</p>
-                        <div id="mathPreview" class="preview-box"></div>
+                    <div class="flex bg-slate-100 p-1 rounded-2xl mb-3">
+                        <button onclick="setType('creative')" id="btn-creative" class="flex-1 py-1.5 rounded-lg font-bold text-[11px]">সৃজনশীল</button>
+                        <button onclick="setType('short')" id="btn-short" class="flex-1 py-1.5 rounded-lg font-bold text-[11px]">সংক্ষিপ্ত</button>
+                        <button onclick="setType('mcq')" id="btn-mcq" class="flex-1 py-1.5 rounded-lg font-bold text-[11px]">MCQ</button>
                     </div>
 
-                    <div class="mb-4 relative p-2 border-2 border-dashed border-slate-200 rounded-xl">
-                        <label for="imageInput" class="block text-center text-sm text-slate-500 cursor-pointer hover:text-indigo-600">
-                            🖼️ ছবি যুক্ত করুন (ঐচ্ছিক)
-                            <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="previewImage(event)">
-                        </label>
-                        <img id="imagePreview" class="hidden mt-3 max-h-32 w-auto mx-auto rounded-md border" alt="Image Preview">
-                        <button id="removeImageBtn" class="hidden delete-img-btn" onclick="removeImage()">✕</button>
-                    </div>
-                    <div id="creativeParts" class="space-y-2 mb-4">
-                        <input type="text" id="partA" placeholder="ক) প্রশ্ন" class="w-full p-2 border rounded-lg text-sm">
-                        <input type="text" id="partB" placeholder="খ) প্রশ্ন" class="w-full p-2 border rounded-lg text-sm">
-                        <input type="text" id="partC" placeholder="গ) প্রশ্ন" class="w-full p-2 border rounded-lg text-sm">
-                        <input type="text" id="partD" placeholder="ঘ) প্রশ্ন" class="w-full p-2 border rounded-lg text-sm">
+                    <textarea id="mainText" placeholder="প্রশ্ন লিখুন..." class="w-full border-2 p-3 rounded-xl h-24 outline-none mb-2 text-sm focus:border-indigo-500" oninput="livePreview()"></textarea>
+                    <div id="mathPreview" class="preview-box mb-3 min-h-[30px]"></div>
+
+                    <div class="mb-3 relative p-2 border-2 border-dashed border-slate-200 rounded-xl">
+                        <label for="imageInput" class="block text-center text-xs text-slate-500 cursor-pointer">🖼️ ছবি যুক্ত করুন</label>
+                        <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="previewImage(event)">
+                        <div id="imgPreviewCont" class="hidden mt-2 relative"><img id="imagePreview" class="max-h-24 mx-auto rounded border"><button onclick="removeImage()" class="delete-img-btn text-[10px]">✕</button></div>
                     </div>
 
-                    <div id="mcqOptions" class="hidden grid grid-cols-2 gap-2 mb-4">
-                        <input type="text" id="opt1" placeholder="ক) অপশন" class="p-2 border rounded-lg text-sm">
-                        <input type="text" id="opt2" placeholder="খ) অপশন" class="p-2 border rounded-lg text-sm">
-                        <input type="text" id="opt3" placeholder="গ) অপশন" class="p-2 border rounded-lg text-sm">
-                        <input type="text" id="opt4" placeholder="ঘ) অপশন" class="p-2 border rounded-lg text-sm">
+                    <div id="creativeParts" class="space-y-1.5 mb-3">
+                        <input type="text" id="partA" placeholder="ক) ১ নম্বর" class="w-full p-2 border rounded-lg text-xs">
+                        <input type="text" id="partB" placeholder="খ) ২ নম্বর" class="w-full p-2 border rounded-lg text-xs">
+                        <input type="text" id="partC" placeholder="গ) ৩ নম্বর" class="w-full p-2 border rounded-lg text-xs">
+                        <input type="text" id="partD" placeholder="ঘ) ৪ নম্বর" class="w-full p-2 border rounded-lg text-xs">
                     </div>
 
-                    <button onclick="addQuestion()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-lg">➕ প্রশ্ন যুক্ত করুন</button>
+                    <div id="mcqOptions" class="hidden grid grid-cols-2 gap-2 mb-3">
+                        <input type="text" id="opt1" placeholder="ক)" class="p-2 border rounded-lg text-xs">
+                        <input type="text" id="opt2" placeholder="খ)" class="p-2 border rounded-lg text-xs">
+                        <input type="text" id="opt3" placeholder="গ)" class="p-2 border rounded-lg text-xs">
+                        <input type="text" id="opt4" placeholder="ঘ)" class="p-2 border rounded-lg text-xs">
+                    </div>
+
+                    <button onclick="addQuestion()" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold shadow-md hover:bg-indigo-700 active:scale-95 transition-all">➕ প্রশ্ন যুক্ত করুন</button>
                 </div>
             </div>
 
-            <div id="questionContainer" class="lg:col-span-8">
+            <div class="lg:col-span-8">
                 <div id="paper" class="print-area">
-                    <div class="text-center border-b-[3px] border-slate-800 pb-4 mb-6">
+                    <div id="watermark-layer"></div>
+                    <div class="text-center border-b-4 border-slate-800 pb-4 mb-6">
                         <h1 id="schoolName" class="text-3xl font-black mb-1">প্রতিষ্ঠানের নাম</h1>
                         <p class="font-bold text-lg">বার্ষিক পরীক্ষা - ২০২৬</p>
                         <div class="flex justify-between px-4 font-bold mt-4 text-sm italic">
@@ -120,20 +158,9 @@
                         </div>
                     </div>
 
-                    <div id="creativeSection" class="hidden mb-8">
-                        <h3 class="font-bold border-b border-black mb-4">ক বিভাগ: সৃজনশীল</h3>
-                        <div id="creativeList" class="space-y-8"></div>
-                    </div>
-
-                    <div id="shortSection" class="hidden mb-8">
-                        <h3 class="font-bold border-b border-black mb-4">খ বিভাগ: সংক্ষিপ্ত প্রশ্ন</h3>
-                        <div id="shortList" class="space-y-4"></div>
-                    </div>
-
-                    <div id="mcqSection" class="hidden mb-8">
-                        <h3 class="font-bold border-b border-black mb-4">গ বিভাগ: বহুনির্বাচনি (MCQ)</h3>
-                        <div id="mcqList"></div>
-                    </div>
+                    <div id="creativeSection" class="hidden mb-8"><h3 class="font-bold border-b-2 mb-4 bg-slate-50 p-1">ক বিভাগ: সৃজনশীল</h3><div id="creativeList" class="col-setup-1"></div></div>
+                    <div id="shortSection" class="hidden mb-8"><h3 class="font-bold border-b-2 mb-4 bg-slate-50 p-1">খ বিভাগ: সংক্ষিপ্ত প্রশ্ন</h3><div id="shortList" class="col-setup-2"></div></div>
+                    <div id="mcqSection" class="hidden mb-8"><h3 class="font-bold border-b-2 mb-4 bg-slate-50 p-1">গ বিভাগ: MCQ</h3><div id="mcqList" class="col-setup-2"></div></div>
                 </div>
             </div>
         </div>
@@ -141,7 +168,7 @@
 
     <script>
         let currentType = 'creative';
-        let currentImageBase64 = null; // To store base64 image data
+        let currentImageBase64 = null;
         const toBn = n => String(n).replace(/\d/g, d => "০১২৩৪৫৬৭৮৯"[d]);
 
         function openEditor(type) {
@@ -149,17 +176,19 @@
             document.getElementById('mainEditor').classList.remove('hidden');
             setType(type);
             setupDragDrop();
-            // Initial data sync for header
-            syncData();
-            updateTotalMarks();
+        }
+
+        function updateColumn(sectionId, val) {
+            const list = document.getElementById(`${sectionId}List`);
+            list.className = val == "2" ? "col-setup-2" : "col-setup-1";
         }
 
         function setType(type) {
             currentType = type;
             ['creative', 'short', 'mcq'].forEach(t => {
                 document.getElementById(`btn-${t}`).className = t === type ? 
-                'flex-1 py-2 rounded-xl font-bold text-xs bg-white shadow-sm text-indigo-600' : 
-                'flex-1 py-2 rounded-xl font-bold text-xs text-slate-500';
+                'flex-1 py-1.5 rounded-lg font-bold text-[11px] bg-white shadow text-indigo-600' : 
+                'flex-1 py-1.5 rounded-lg font-bold text-[11px] text-slate-500';
             });
             document.getElementById('mcqOptions').classList.toggle('hidden', type !== 'mcq');
             document.getElementById('creativeParts').classList.toggle('hidden', type !== 'creative');
@@ -167,11 +196,10 @@
 
         function livePreview() {
             const preview = document.getElementById('mathPreview');
-            preview.innerText = document.getElementById('mainText').value; // Use innerText for raw content
+            preview.innerText = document.getElementById('mainText').value;
             renderMathInElement(preview, { delimiters: [{left: '$', right: '$', display: false}, {left: '$$', right: '$$', display: true}] });
         }
 
-        // Image Preview and Management
         function previewImage(event) {
             const file = event.target.files[0];
             if (file) {
@@ -179,8 +207,7 @@
                 reader.onload = e => {
                     currentImageBase64 = e.target.result;
                     document.getElementById('imagePreview').src = currentImageBase64;
-                    document.getElementById('imagePreview').classList.remove('hidden');
-                    document.getElementById('removeImageBtn').classList.remove('hidden');
+                    document.getElementById('imgPreviewCont').classList.remove('hidden');
                 };
                 reader.readAsDataURL(file);
             }
@@ -188,68 +215,69 @@
 
         function removeImage() {
             currentImageBase64 = null;
-            document.getElementById('imageInput').value = ''; // Clear file input
-            document.getElementById('imagePreview').classList.add('hidden');
-            document.getElementById('imagePreview').src = ''; // Clear image src
-            document.getElementById('removeImageBtn').classList.add('hidden');
+            document.getElementById('imageInput').value = '';
+            document.getElementById('imgPreviewCont').classList.add('hidden');
+        }
+
+        function syncWatermark() {
+            const wm = document.getElementById('watermark-layer');
+            wm.innerText = document.getElementById('watermarkInput').value;
+            wm.style.display = wm.innerText ? 'block' : 'none';
         }
 
         function addQuestion() {
-            const text = document.getElementById('mainText').value;
-            if (!text) return;
+            const rawText = document.getElementById('mainText').value.trim();
+            if (!rawText) return;
 
-            const wrapper = document.createElement('div');
-            wrapper.className = "question-item p-2 hover:bg-slate-50 rounded-lg group";
-            let deleteBtn = `<button onclick="this.closest('.question-item').remove(); updateNumbers(); updateTotalMarks();" class="no-print absolute -left-10 top-2 text-red-400 opacity-0 group-hover:opacity-100 transition-all">✕</button>`;
-            
-            // Image HTML to be inserted with the question
-            let imageHtml = currentImageBase64 ? 
-                `<div class="text-center my-3"><img src="${currentImageBase64}" class="max-w-[80%] mx-auto border rounded shadow-sm" style="max-height: 200px; object-fit: contain;"></div>` : '';
-
-            if (currentType === 'creative') {
-                document.getElementById('creativeSection').classList.remove('hidden');
-                wrapper.innerHTML = `${deleteBtn}<div class="flex gap-2"><b class="q-num mt-1 text-lg"></b>। <div class="flex-1"><div>${text}</div>${imageHtml}<div class="mt-4 border-t border-slate-100 pt-3 space-y-1"><div class="flex justify-between border-b border-dotted"><span>ক) ${document.getElementById('partA').value}</span><b>১</b></div><div class="flex justify-between border-b border-dotted"><span>খ) ${document.getElementById('partB').value}</span><b>২</b></div><div class="flex justify-between border-b border-dotted"><span>গ) ${document.getElementById('partC').value}</span><b>৩</b></div><div class="flex justify-between"><span>ঘ) ${document.getElementById('partD').value}</span><b>৪</b></div></div></div></div>`;
-                document.getElementById('creativeList').appendChild(wrapper);
-            } else if (currentType === 'short') {
-                document.getElementById('shortSection').classList.remove('hidden');
-                wrapper.innerHTML = `${deleteBtn}<div><b><span class="q-num"></span>।</b> ${text}${imageHtml}</div>`;
-                document.getElementById('shortList').appendChild(wrapper);
-            } else { // MCQ
-                document.getElementById('mcqSection').classList.remove('hidden');
-                wrapper.innerHTML = `${deleteBtn}<div><p class="font-bold"><span class="q-num"></span>। ${text}</p>${imageHtml}<div class="grid grid-cols-2 text-sm ml-5 mt-1"><span>ক) ${document.getElementById('opt1').value}</span><span>খ) ${document.getElementById('opt2').value}</span><span>গ) ${document.getElementById('opt3').value}</span><span>ঘ) ${document.getElementById('opt4').value}</span></div></div>`;
-                document.getElementById('mcqList').appendChild(wrapper);
+            if (currentType === 'short') {
+                const questions = rawText.split(/[;\n]+/).filter(q => q.trim() !== "");
+                questions.forEach(q => createQuestionElement(q.trim()));
+            } else {
+                createQuestionElement(rawText);
             }
-
-            renderMathInElement(wrapper, { delimiters: [{left: '$', right: '$', display: false}, {left: '$$', right: '$$', display: true}] });
             updateNumbers();
             updateTotalMarks();
             resetInputs();
         }
 
+        function createQuestionElement(text) {
+            const wrapper = document.createElement('div');
+            wrapper.className = "question-item group";
+            let del = `<button onclick="this.closest('.question-item').remove(); updateNumbers(); updateTotalMarks();" class="no-print absolute -left-8 top-1 text-red-400 opacity-0 group-hover:opacity-100 transition-all">✕</button>`;
+            let img = currentImageBase64 ? `<div class="text-center my-2"><img src="${currentImageBase64}" class="max-w-[150px] mx-auto border rounded"></div>` : '';
+
+            if (currentType === 'creative') {
+                document.getElementById('creativeSection').classList.remove('hidden');
+                wrapper.innerHTML = `${del}<div class="flex gap-2"><b class="q-num"></b>। <div>${text}${img}<div class="mt-2 space-y-1 text-xs"><div class="flex justify-between border-b border-dotted"><span>ক) ${document.getElementById('partA').value}</span><b>১</b></div><div class="flex justify-between border-b border-dotted"><span>খ) ${document.getElementById('partB').value}</span><b>২</b></div><div class="flex justify-between border-b border-dotted"><span>গ) ${document.getElementById('partC').value}</span><b>৩</b></div><div class="flex justify-between"><span>ঘ) ${document.getElementById('partD').value}</span><b>৪</b></div></div></div></div>`;
+                document.getElementById('creativeList').appendChild(wrapper);
+            } else if (currentType === 'short') {
+                document.getElementById('shortSection').classList.remove('hidden');
+                wrapper.innerHTML = `${del}<div><b><span class="q-num"></span>।</b> ${text}${img}</div>`;
+                document.getElementById('shortList').appendChild(wrapper);
+            } else {
+                document.getElementById('mcqSection').classList.remove('hidden');
+                wrapper.innerHTML = `${del}<div><p class="font-bold"><span class="q-num"></span>। ${text}</p>${img}<div class="grid grid-cols-2 text-[11px] ml-4 mt-1"><span>ক) ${document.getElementById('opt1').value}</span><span>খ) ${document.getElementById('opt2').value}</span><span>গ) ${document.getElementById('opt3').value}</span><span>ঘ) ${document.getElementById('opt4').value}</span></div></div>`;
+                document.getElementById('mcqList').appendChild(wrapper);
+            }
+            renderMathInElement(wrapper, { delimiters: [{left: '$', right: '$', display: false}, {left: '$$', right: '$$', display: true}] });
+        }
+
         function updateNumbers() {
-            ['creative', 'short', 'mcq'].forEach(type => {
-                document.querySelectorAll(`#${type}List .q-num`).forEach((el, i) => el.innerText = toBn(i + 1));
+            ['creative', 'short', 'mcq'].forEach(t => {
+                document.querySelectorAll(`#${t}List .q-num`).forEach((el, i) => el.innerText = toBn(i + 1));
             });
         }
 
         function updateTotalMarks() {
-            let total = 0;
-            total += document.querySelectorAll('#creativeList .question-item').length * 10;
-            total += document.querySelectorAll('#shortList .question-item').length * 2; // Assuming 2 marks for short questions
-            total += document.querySelectorAll('#mcqList .question-item').length * 1;    // Assuming 1 mark for MCQs
+            let total = document.querySelectorAll('#creativeList .question-item').length * 10;
+            total += document.querySelectorAll('#shortList .question-item').length * 1;
+            total += document.querySelectorAll('#mcqList .question-item').length * 1;
             document.getElementById('totalMarksDisplay').innerText = toBn(total);
         }
 
         function setupDragDrop() {
             ['creativeList', 'shortList', 'mcqList'].forEach(id => {
-                // Check if Sortable instance already exists to avoid re-initializing
-                if (document.getElementById(id) && !document.getElementById(id).sortable) {
-                    new Sortable(document.getElementById(id), {
-                        animation: 150,
-                        ghostClass: 'bg-indigo-50',
-                        onEnd: () => { updateNumbers(); updateTotalMarks(); } // Recalculate marks after sorting
-                    });
-                }
+                new Sortable(document.getElementById(id), { animation: 150, onEnd: () => updateNumbers() });
             });
         }
 
@@ -261,15 +289,14 @@
 
         function resetInputs() {
             document.getElementById('mainText').value = "";
-            document.getElementById('mathPreview').innerHTML = ""; // Clear math preview
+            document.getElementById('mathPreview').innerHTML = "";
             document.querySelectorAll('#creativeParts input, #mcqOptions input').forEach(el => el.value = "");
-            removeImage(); // Clear image input and preview
+            removeImage();
         }
 
         function saveToDevice() {
-            const content = document.getElementById('paper').innerHTML;
-            const blob = new Blob([content], {type: "text/html;charset=utf-8"}); // Specify charset for Bengali text
-            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "Question_Paper.html"; a.click();
+            const blob = new Blob([document.documentElement.outerHTML], {type: "text/html;charset=utf-8"});
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "Question_Pro.html"; a.click();
         }
     </script>
 </body>
