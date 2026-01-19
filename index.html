@@ -3,40 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Professional Q-Maker ULTIMATE | v11.0</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Math Professional Q-Maker | Full Edition</title>
     
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Serif+Bengali:wght@300;400;700&family=Kalpurush&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;700&family=Noto+Serif+Bengali:wght@300;400;700&family=Atma:wght@300;400;700&family=Galada&display=swap" rel="stylesheet">
     
     <style>
-        :root { --primary: #4f46e5; }
         body { font-family: 'Hind Siliguri', sans-serif; background-color: #f1f5f9; }
-        
         .print-area { 
             width: 210mm; min-height: 297mm; margin: 20px auto; 
             background: white; padding: 15mm; position: relative;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1); 
-            font-size: 16px; /* Default */
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1); font-size: 16px;
         }
-
         #watermark-layer {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg);
             font-size: 80px; color: rgba(0,0,0,0.04); font-weight: 900;
             white-space: nowrap; pointer-events: none; z-index: 0; display: none;
         }
-
-        .col-setup-1 { display: block; }
         .col-setup-2 { display: grid; grid-template-columns: 1fr 1fr; column-gap: 30px; }
+        /* সৃজনশীল কলাম লেআউট */
+        .creative-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; align-items: start; }
         
-        .question-item { position: relative; z-index: 1; page-break-inside: avoid; margin-bottom: 15px; }
-        .preview-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 10px; font-size: 0.85rem; }
-        .eq-btn { background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin: 2px; cursor: pointer; }
-        .eq-btn:hover { background: #cbd5e1; }
+        .question-item { position: relative; z-index: 1; page-break-inside: avoid; margin-bottom: 20px; }
+        .preview-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 10px; font-size: 0.85rem; min-height: 40px; margin-bottom: 10px; }
+        .eq-btn { background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin: 2px; cursor: pointer; display: inline-block; }
         
         @media print {
             .no-print { display: none !important; }
@@ -48,119 +45,123 @@
 </head>
 <body class="text-slate-800">
 
-    <div id="dashboard" class="fixed inset-0 z-[100] bg-white flex items-center justify-center p-6">
-        <div class="max-w-4xl w-full text-center">
-            <h1 class="text-5xl font-black text-slate-900 mb-8">Math Maker <span class="text-indigo-600">ULTIMATE</span></h1>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div onclick="openEditor('creative')" class="bg-indigo-50 p-8 rounded-3xl border-2 border-transparent hover:border-indigo-500 cursor-pointer transition-all">
-                    <div class="text-5xl mb-4">📄</div><h3 class="font-bold">সৃজনশীল</h3>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCVDCH6t_QVkxRh6_-xtavYcwirHlpvO4Q",
+            authDomain: "muktarul-question-creator.firebaseapp.com",
+            databaseURL: "https://muktarul-question-creator-default-rtdb.firebaseio.com",
+            projectId: "muktarul-question-creator",
+            storageBucket: "muktarul-question-creator.firebasestorage.app",
+            messagingSenderId: "639846260985",
+            appId: "1:639846260985:web:c028bb10bcbab477fa4228"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+    </script>
+
+    <nav class="no-print bg-white border-b px-6 py-3 flex justify-between items-center sticky top-0 z-50">
+        <h1 class="font-black text-xl text-indigo-600">MathMaker <span class="text-slate-400 font-light">Cloud v12.0</span></h1>
+        <div class="flex gap-2">
+            <button onclick="loadFromCloud()" class="px-4 py-2 bg-emerald-50 text-emerald-700 rounded-xl font-bold text-xs border border-emerald-200">লোড করুন</button>
+            <button onclick="saveToCloud()" class="px-4 py-2 bg-indigo-600 text-white rounded-xl font-bold text-xs shadow-lg">সার্ভারে সেভ</button>
+            <button onclick="window.print()" class="px-4 py-2 bg-slate-800 text-white rounded-xl font-bold text-xs">প্রিন্ট / PDF</button>
+        </div>
+    </nav>
+
+    <div class="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 p-4">
+        
+        <div class="lg:col-span-4 no-print space-y-4">
+            <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
+                
+                <div class="space-y-2 mb-4">
+                    <input type="text" id="schoolInput" placeholder="প্রতিষ্ঠানের নাম" class="w-full p-2.5 border-2 rounded-xl focus:border-indigo-500 outline-none font-bold" oninput="syncData()">
+                    <input type="text" id="watermarkInput" placeholder="জলছাপ (Watermark)" class="w-full p-2 border rounded-lg text-sm" oninput="syncWatermark()">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" id="subjectInput" placeholder="বিষয়" class="p-2 border rounded-lg text-sm" oninput="syncData()">
+                        <input type="text" id="classInput" placeholder="শ্রেণি" class="p-2 border rounded-lg text-sm" oninput="syncData()">
+                    </div>
                 </div>
-                <div onclick="openEditor('mcq')" class="bg-rose-50 p-8 rounded-3xl border-2 border-transparent hover:border-rose-500 cursor-pointer transition-all">
-                    <div class="text-5xl mb-4">🎯</div><h3 class="font-bold">MCQ</h3>
+
+                <div class="grid grid-cols-2 gap-2 mb-4 border-t pt-4">
+                    <select onchange="changeFont(this.value)" id="fontSelect" class="p-2 border rounded-lg text-sm bg-slate-50">
+                        <option value="'Hind Siliguri'">সিলিগুরি (আধুনিক)</option>
+                        <option value="'Noto Serif Bengali'">নোটো শেরিফ (বই)</option>
+                        <option value="'Atma'">আত্মা (বোল্ড)</option>
+                        <option value="'Galada'">গলাদা (স্টাইল)</option>
+                    </select>
+                    <select onchange="changeFontSize(this.value)" class="p-2 border rounded-lg text-sm bg-slate-50">
+                        <option value="15px">Size: 15px</option>
+                        <option value="17px" selected>Size: 17px</option>
+                        <option value="19px">Size: 19px</option>
+                    </select>
                 </div>
-                <div onclick="openEditor('short')" class="bg-emerald-50 p-8 rounded-3xl border-2 border-transparent hover:border-emerald-500 cursor-pointer transition-all">
-                    <div class="text-5xl mb-4">⚡</div><h3 class="font-bold">সংক্ষিপ্ত</h3>
+
+                <div class="flex items-center gap-2 mb-4 p-2 bg-indigo-50 rounded-xl border border-indigo-100">
+                    <input type="checkbox" id="colToggle" class="w-4 h-4 cursor-pointer">
+                    <label for="colToggle" class="text-xs font-bold text-indigo-700 cursor-pointer">সৃজনশীল কলাম মোড (উদ্দীপক বামে, প্রশ্ন ডানে)</label>
                 </div>
+
+                <div class="flex bg-slate-100 p-1 rounded-2xl mb-4">
+                    <button onclick="setType('creative')" id="btn-creative" class="flex-1 py-2 rounded-xl font-bold text-xs transition-all">সৃজনশীল</button>
+                    <button onclick="setType('short')" id="btn-short" class="flex-1 py-2 rounded-xl font-bold text-xs transition-all">সংক্ষিপ্ত</button>
+                    <button onclick="setType('mcq')" id="btn-mcq" class="flex-1 py-2 rounded-xl font-bold text-xs transition-all">MCQ</button>
+                </div>
+
+                <div class="mb-2 flex flex-wrap bg-slate-50 p-2 rounded-lg border">
+                    <span class="eq-btn" onclick="insertEq('\\frac{a}{b}')">ভগ্নাংশ</span>
+                    <span class="eq-btn" onclick="insertEq('x^2')">পাওয়ার</span>
+                    <span class="eq-btn" onclick="insertEq('\\sqrt{x}')">রুট</span>
+                    <span class="eq-btn" onclick="insertEq('\\angle')">কোণ</span>
+                </div>
+
+                <textarea id="mainText" placeholder="উদ্দীপক বা মূল প্রশ্ন লিখুন..." class="w-full border-2 p-3 rounded-xl h-24 mb-2 text-sm focus:border-indigo-500 outline-none" oninput="livePreview()"></textarea>
+                <div id="mathPreview" class="preview-box"></div>
+
+                <div id="creativeParts" class="space-y-1.5 mb-3">
+                    <input type="text" id="partA" placeholder="ক) প্রশ্ন" class="w-full p-2 border rounded-lg text-xs">
+                    <input type="text" id="partB" placeholder="খ) প্রশ্ন" class="w-full p-2 border rounded-lg text-xs">
+                    <input type="text" id="partC" placeholder="গ) প্রশ্ন" class="w-full p-2 border rounded-lg text-xs">
+                    <input type="text" id="partD" placeholder="ঘ) প্রশ্ন" class="w-full p-2 border rounded-lg text-xs">
+                </div>
+
+                <div id="mcqOptions" class="hidden grid grid-cols-2 gap-2 mb-3">
+                    <input type="text" id="opt1" placeholder="ক) অপশন" class="p-2 border rounded-lg text-xs">
+                    <input type="text" id="opt2" placeholder="খ) অপশন" class="p-2 border rounded-lg text-xs">
+                    <input type="text" id="opt3" placeholder="গ) অপশন" class="p-2 border rounded-lg text-xs">
+                    <input type="text" id="opt4" placeholder="ঘ) অপশন" class="p-2 border rounded-lg text-xs">
+                </div>
+
+                <button onclick="addQuestion()" class="w-full bg-indigo-600 text-white py-3 rounded-2xl font-bold active:scale-95 transition-all shadow-lg">➕ প্রশ্ন যুক্ত করুন</button>
             </div>
         </div>
-    </div>
 
-    <div id="mainEditor" class="hidden">
-        <nav class="no-print bg-white/80 backdrop-blur-md border-b px-8 py-3 flex justify-between items-center sticky top-0 z-50">
-            <h1 class="font-black text-xl" onclick="location.reload()">MathMaker <span class="text-indigo-600">PRO</span></h1>
-            <div class="flex gap-3">
-                <button onclick="saveToDevice()" class="px-5 py-2 text-indigo-700 bg-indigo-50 rounded-xl font-bold text-sm">সেভ করুন</button>
-                <button onclick="window.print()" class="px-8 py-2 bg-indigo-600 text-white rounded-xl font-bold shadow-lg text-sm">প্রিন্ট / PDF</button>
-            </div>
-        </nav>
-
-        <div class="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 p-6">
-            <div class="lg:col-span-4 no-print space-y-4">
-                <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200">
-                    
-                    <div class="grid grid-cols-2 gap-2 mb-4">
-                        <div>
-                            <label class="text-[10px] font-bold text-slate-400">ফন্ট লিপি</label>
-                            <select onchange="changeFont(this.value)" class="w-full p-2 border rounded-lg text-sm bg-slate-50">
-                                <option value="'Hind Siliguri'">Hind Siliguri</option>
-                                <option value="'Noto Serif Bengali'">Noto Serif</option>
-                                <option value="SutonnyMJ">SutonnyMJ (System)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-slate-400">ফন্ট সাইজ</label>
-                            <select onchange="changeFontSize(this.value)" class="w-full p-2 border rounded-lg text-sm bg-slate-50">
-                                <option value="14px">ছোট (14px)</option>
-                                <option value="16px" selected>মাঝারি (16px)</option>
-                                <option value="18px">বড় (18px)</option>
-                                <option value="20px">এক্সট্রা (20px)</option>
-                            </select>
-                        </div>
+        <div class="lg:col-span-8">
+            <div id="paper" class="print-area">
+                <div id="watermark-layer"></div>
+                
+                <div class="text-center border-b-4 border-slate-800 pb-4 mb-6">
+                    <h1 id="schoolName" class="text-3xl font-black mb-1">প্রতিষ্ঠানের নাম</h1>
+                    <p class="font-bold text-lg">বার্ষিক পরীক্ষা - ২০২৬</p>
+                    <div class="flex justify-between px-4 font-bold mt-4 text-sm">
+                        <span>বিষয়: <span id="subjectName">---</span></span>
+                        <span>শ্রেণি: <span id="className">---</span></span>
+                        <span>পূর্ণমান: <span id="totalMarksDisplay">০</span></span>
                     </div>
-
-                    <div class="space-y-2 mb-4 border-t pt-4">
-                        <input type="text" id="schoolInput" placeholder="প্রতিষ্ঠানের নাম" class="w-full p-2.5 border-2 rounded-xl focus:border-indigo-500 outline-none font-bold" oninput="syncData()">
-                        <input type="text" id="watermarkInput" placeholder="ওয়াটারমার্ক (জলছাপ)" class="w-full p-2 border rounded-lg text-xs bg-slate-50" oninput="syncWatermark()">
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="text" id="subjectInput" placeholder="বিষয়" class="p-2 border rounded-lg text-sm" oninput="syncData()">
-                            <input type="text" id="classInput" placeholder="শ্রেণি" class="p-2 border rounded-lg text-sm" oninput="syncData()">
-                        </div>
-                    </div>
-
-                    <div class="flex bg-slate-100 p-1 rounded-2xl mb-3">
-                        <button onclick="setType('creative')" id="btn-creative" class="flex-1 py-1.5 rounded-lg font-bold text-[11px]">সৃজনশীল</button>
-                        <button onclick="setType('short')" id="btn-short" class="flex-1 py-1.5 rounded-lg font-bold text-[11px]">সংক্ষিপ্ত</button>
-                        <button onclick="setType('mcq')" id="btn-mcq" class="flex-1 py-1.5 rounded-lg font-bold text-[11px]">MCQ</button>
-                    </div>
-
-                    <div class="mb-2 flex flex-wrap bg-slate-50 p-2 rounded-lg border">
-                        <span class="text-[10px] w-full mb-1 font-bold text-slate-400">ইকুয়েশন টুল:</span>
-                        <span class="eq-btn" onclick="insertEq('\\frac{a}{b}')">ভগ্নাংশ</span>
-                        <span class="eq-btn" onclick="insertEq('x^2')">পাওয়ার</span>
-                        <span class="eq-btn" onclick="insertEq('\\sqrt{x}')">রুট</span>
-                        <span class="eq-btn" onclick="insertEq('\\angle')">কোণ</span>
-                        <span class="eq-btn" onclick="insertEq('\\triangle')">ত্রিভুজ</span>
-                        <span class="eq-btn" onclick="insertEq('\\pi')">পাই</span>
-                        <span class="eq-btn" onclick="insertEq('\\theta')">থীটা</span>
-                    </div>
-
-                    <textarea id="mainText" placeholder="প্রশ্ন লিখুন... গাণিতিক চিহ্নের জন্য $ ব্যবহার করুন (যেমন: $x^2$)" class="w-full border-2 p-3 rounded-xl h-24 outline-none mb-2 text-sm focus:border-indigo-500" oninput="livePreview()"></textarea>
-                    <div id="mathPreview" class="preview-box mb-3 min-h-[30px]"></div>
-
-                    <div id="creativeParts" class="space-y-1.5 mb-3">
-                        <input type="text" id="partA" placeholder="ক) প্রশ্ন" class="w-full p-2 border rounded-lg text-xs">
-                        <input type="text" id="partB" placeholder="খ) প্রশ্ন" class="w-full p-2 border rounded-lg text-xs">
-                        <input type="text" id="partC" placeholder="গ) প্রশ্ন" class="w-full p-2 border rounded-lg text-xs">
-                        <input type="text" id="partD" placeholder="ঘ) প্রশ্ন" class="w-full p-2 border rounded-lg text-xs">
-                    </div>
-
-                    <div id="mcqOptions" class="hidden grid grid-cols-2 gap-2 mb-3">
-                        <input type="text" id="opt1" placeholder="ক)" class="p-2 border rounded-lg text-xs">
-                        <input type="text" id="opt2" placeholder="খ)" class="p-2 border rounded-lg text-xs">
-                        <input type="text" id="opt3" placeholder="গ)" class="p-2 border rounded-lg text-xs">
-                        <input type="text" id="opt4" placeholder="ঘ)" class="p-2 border rounded-lg text-xs">
-                    </div>
-
-                    <button onclick="addQuestion()" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold shadow-md hover:bg-indigo-700 active:scale-95 transition-all">➕ প্রশ্ন যুক্ত করুন</button>
                 </div>
-            </div>
 
-            <div class="lg:col-span-8">
-                <div id="paper" class="print-area">
-                    <div id="watermark-layer"></div>
-                    <div class="text-center border-b-4 border-slate-800 pb-4 mb-6">
-                        <h1 id="schoolName" class="text-3xl font-black mb-1">প্রতিষ্ঠানের নাম</h1>
-                        <p class="font-bold text-lg">বার্ষিক পরীক্ষা - ২০২৬</p>
-                        <div class="flex justify-between px-4 font-bold mt-4 text-sm italic">
-                            <span>বিষয়: <span id="subjectName">---</span></span>
-                            <span>শ্রেণি: <span id="className">---</span></span>
-                            <span>পূর্ণমান: <span id="totalMarksDisplay">০</span></span>
-                        </div>
-                    </div>
+                <div id="creativeSection" class="hidden mb-8">
+                    <h3 class="font-bold border-b-2 border-slate-300 mb-4 bg-slate-50 p-1">১ম অংশ: সৃজনশীল প্রশ্ন</h3>
+                    <div id="creativeList" class="space-y-6"></div>
+                </div>
 
-                    <div id="creativeSection" class="hidden mb-8"><h3 class="font-bold border-b-2 mb-4 bg-slate-50 p-1">ক বিভাগ: সৃজনশীল</h3><div id="creativeList" class="col-setup-1"></div></div>
-                    <div id="shortSection" class="hidden mb-8"><h3 class="font-bold border-b-2 mb-4 bg-slate-50 p-1">খ বিভাগ: সংক্ষিপ্ত প্রশ্ন</h3><div id="shortList" class="col-setup-2"></div></div>
-                    <div id="mcqSection" class="hidden mb-8"><h3 class="font-bold border-b-2 mb-4 bg-slate-50 p-1">গ বিভাগ: MCQ</h3><div id="mcqList" class="col-setup-2"></div></div>
+                <div id="shortSection" class="hidden mb-8">
+                    <h3 class="font-bold border-b-2 border-slate-300 mb-4 bg-slate-50 p-1">২য় অংশ: সংক্ষিপ্ত প্রশ্ন</h3>
+                    <div id="shortList" class="col-setup-2"></div>
+                </div>
+
+                <div id="mcqSection" class="hidden mb-8">
+                    <h3 class="font-bold border-b-2 border-slate-300 mb-4 bg-slate-50 p-1">৩য় অংশ: বহুনির্বাচনি (MCQ)</h3>
+                    <div id="mcqList" class="col-setup-2"></div>
                 </div>
             </div>
         </div>
@@ -170,106 +171,30 @@
         let currentType = 'creative';
         const toBn = n => String(n).replace(/\d/g, d => "০১২৩৪৫৬৭৮৯"[d]);
 
-        function openEditor(type) {
-            document.getElementById('dashboard').classList.add('hidden');
-            document.getElementById('mainEditor').classList.remove('hidden');
-            setType(type);
-            setupDragDrop();
-        }
-
-        // নতুন ফাংশন: ফন্ট পরিবর্তন
-        function changeFont(font) {
-            document.getElementById('paper').style.fontFamily = font;
-        }
-
-        // নতুন ফাংশন: ফন্ট সাইজ পরিবর্তন
-        function changeFontSize(size) {
-            document.getElementById('paper').style.fontSize = size;
-        }
-
-        // নতুন ফাংশন: অটো ইকুয়েশন ইনসার্ট
         function insertEq(eq) {
             const textarea = document.getElementById('mainText');
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-            const text = textarea.value;
-            const before = text.substring(0, start);
-            const after = text.substring(end, text.length);
-            textarea.value = before + "$" + eq + "$" + after;
+            textarea.value += `$${eq}$`;
             textarea.focus();
             livePreview();
-        }
-
-        function setType(type) {
-            currentType = type;
-            ['creative', 'short', 'mcq'].forEach(t => {
-                document.getElementById(`btn-${t}`).className = t === type ? 
-                'flex-1 py-1.5 rounded-lg font-bold text-[11px] bg-white shadow text-indigo-600' : 
-                'flex-1 py-1.5 rounded-lg font-bold text-[11px] text-slate-500';
-            });
-            document.getElementById('mcqOptions').classList.toggle('hidden', type !== 'mcq');
-            document.getElementById('creativeParts').classList.toggle('hidden', type !== 'creative');
         }
 
         function livePreview() {
             const preview = document.getElementById('mathPreview');
             preview.innerText = document.getElementById('mainText').value;
-            renderMathInElement(preview, { delimiters: [{left: '$', right: '$', display: false}, {left: '$$', right: '$$', display: true}] });
+            renderMathInElement(preview, { delimiters: [{left: '$', right: '$', display: false}] });
         }
 
-        function syncWatermark() {
-            const wm = document.getElementById('watermark-layer');
-            wm.innerText = document.getElementById('watermarkInput').value;
-            wm.style.display = wm.innerText ? 'block' : 'none';
-        }
-
-        function addQuestion() {
-            const rawText = document.getElementById('mainText').value.trim();
-            if (!rawText) return;
-            createQuestionElement(rawText);
-            updateNumbers();
-            updateTotalMarks();
-            resetInputs();
-        }
-
-        function createQuestionElement(text) {
-            const wrapper = document.createElement('div');
-            wrapper.className = "question-item group";
-            let del = `<button onclick="this.closest('.question-item').remove(); updateNumbers(); updateTotalMarks();" class="no-print absolute -left-8 top-1 text-red-400 opacity-0 group-hover:opacity-100 transition-all">✕</button>`;
-
-            if (currentType === 'creative') {
-                document.getElementById('creativeSection').classList.remove('hidden');
-                wrapper.innerHTML = `${del}<div class="flex gap-2"><b class="q-num"></b>। <div>${text}<div class="mt-2 space-y-1"><div class="flex justify-between border-b border-dotted"><span>ক) ${document.getElementById('partA').value}</span><b>১</b></div><div class="flex justify-between border-b border-dotted"><span>খ) ${document.getElementById('partB').value}</span><b>২</b></div><div class="flex justify-between border-b border-dotted"><span>গ) ${document.getElementById('partC').value}</span><b>৩</b></div><div class="flex justify-between"><span>ঘ) ${document.getElementById('partD').value}</span><b>৪</b></div></div></div></div>`;
-                document.getElementById('creativeList').appendChild(wrapper);
-            } else if (currentType === 'short') {
-                document.getElementById('shortSection').classList.remove('hidden');
-                wrapper.innerHTML = `${del}<div><b><span class="q-num"></span>।</b> ${text}</div>`;
-                document.getElementById('shortList').appendChild(wrapper);
-            } else {
-                document.getElementById('mcqSection').classList.remove('hidden');
-                wrapper.innerHTML = `${del}<div><p class="font-bold"><span class="q-num"></span>। ${text}</p><div class="grid grid-cols-2 ml-4 mt-1"><span>ক) ${document.getElementById('opt1').value}</span><span>খ) ${document.getElementById('opt2').value}</span><span>গ) ${document.getElementById('opt3').value}</span><span>ঘ) ${document.getElementById('opt4').value}</span></div></div>`;
-                document.getElementById('mcqList').appendChild(wrapper);
-            }
-            renderMathInElement(wrapper, { delimiters: [{left: '$', right: '$', display: false}, {left: '$$', right: '$$', display: true}] });
-        }
-
-        function updateNumbers() {
+        function setType(type) {
+            currentType = type;
             ['creative', 'short', 'mcq'].forEach(t => {
-                document.querySelectorAll(`#${t}List .q-num`).forEach((el, i) => el.innerText = toBn(i + 1));
+                const btn = document.getElementById(`btn-${t}`);
+                btn.className = t === type ? 
+                    'flex-1 py-2 rounded-xl font-bold text-xs bg-white shadow text-indigo-600' : 
+                    'flex-1 py-2 rounded-xl font-bold text-xs text-slate-500';
             });
-        }
-
-        function updateTotalMarks() {
-            let total = document.querySelectorAll('#creativeList .question-item').length * 10;
-            total += document.querySelectorAll('#shortList .question-item').length * 1;
-            total += document.querySelectorAll('#mcqList .question-item').length * 1;
-            document.getElementById('totalMarksDisplay').innerText = toBn(total);
-        }
-
-        function setupDragDrop() {
-            ['creativeList', 'shortList', 'mcqList'].forEach(id => {
-                new Sortable(document.getElementById(id), { animation: 150, onEnd: () => updateNumbers() });
-            });
+            document.getElementById('mcqOptions').classList.toggle('hidden', type !== 'mcq');
+            document.getElementById('creativeParts').classList.toggle('hidden', type !== 'creative');
+            document.getElementById('colToggle').parentElement.classList.toggle('hidden', type !== 'creative');
         }
 
         function syncData() {
@@ -278,23 +203,129 @@
             document.getElementById('className').innerText = document.getElementById('classInput').value || "---";
         }
 
-        function resetInputs() {
-            document.getElementById('mainText').value = "";
-            document.getElementById('mathPreview').innerHTML = "";
-            document.querySelectorAll('#creativeParts input, #mcqOptions input').forEach(el => el.value = "");
+        function syncWatermark() {
+            const wm = document.getElementById('watermark-layer');
+            wm.innerText = document.getElementById('watermarkInput').value;
+            wm.style.display = wm.innerText ? 'block' : 'none';
         }
 
-        function saveToDevice() {
-            const blob = new Blob([document.documentElement.outerHTML], {type: "text/html;charset=utf-8"});
-            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "Question_Pro.html"; a.click();
+        function changeFont(f) { document.getElementById('paper').style.fontFamily = f; }
+        function changeFontSize(s) { document.getElementById('paper').style.fontSize = s; }
+
+        function addQuestion() {
+            const text = document.getElementById('mainText').value.trim();
+            if (!text) return;
+            
+            const wrapper = document.createElement('div');
+            wrapper.className = "question-item group";
+            let del = `<button onclick="this.closest('.question-item').remove(); reIndex(); updateTotal();" class="no-print absolute -left-8 text-red-400 opacity-0 group-hover:opacity-100">✕</button>`;
+
+            if (currentType === 'creative') {
+                document.getElementById('creativeSection').classList.remove('hidden');
+                const isCol = document.getElementById('colToggle').checked;
+                
+                // কলাম মোড অনুযায়ী HTML স্ট্রাকচার
+                const content = isCol ? 
+                    `<div class="creative-grid">
+                        <div>${text}</div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between border-b border-dotted"><span>ক) ${document.getElementById('partA').value}</span><b>১</b></div>
+                            <div class="flex justify-between border-b border-dotted"><span>খ) ${document.getElementById('partB').value}</span><b>২</b></div>
+                            <div class="flex justify-between border-b border-dotted"><span>গ) ${document.getElementById('partC').value}</span><b>৩</b></div>
+                            <div class="flex justify-between"><span>ঘ) ${document.getElementById('partD').value}</span><b>৪</b></div>
+                        </div>
+                    </div>` : 
+                    `<div>${text}<div class="mt-2 space-y-1 ml-2">
+                        <div class="flex justify-between border-b border-dotted"><span>ক) ${document.getElementById('partA').value}</span><b>১</b></div>
+                        <div class="flex justify-between border-b border-dotted"><span>খ) ${document.getElementById('partB').value}</span><b>২</b></div>
+                        <div class="flex justify-between border-b border-dotted"><span>গ) ${document.getElementById('partC').value}</span><b>৩</b></div>
+                        <div class="flex justify-between"><span>ঘ) ${document.getElementById('partD').value}</span><b>৪</b></div>
+                    </div></div>`;
+
+                wrapper.innerHTML = `${del}<div class="flex gap-2"><b class="q-idx"></b>। ${content}</div>`;
+                document.getElementById('creativeList').appendChild(wrapper);
+            } else if (currentType === 'short') {
+                document.getElementById('shortSection').classList.remove('hidden');
+                wrapper.innerHTML = `${del}<b><span class="q-idx"></span>।</b> ${text}`;
+                document.getElementById('shortList').appendChild(wrapper);
+            } else {
+                document.getElementById('mcqSection').classList.remove('hidden');
+                wrapper.innerHTML = `${del}<div><b><span class="q-idx"></span>।</b> ${text}
+                    <div class="grid grid-cols-2 ml-4 mt-1 text-sm">
+                        <span>ক) ${document.getElementById('opt1').value}</span><span>খ) ${document.getElementById('opt2').value}</span>
+                        <span>গ) ${document.getElementById('opt3').value}</span><span>ঘ) ${document.getElementById('opt4').value}</span>
+                    </div></div>`;
+                document.getElementById('mcqList').appendChild(wrapper);
+            }
+            
+            renderMathInElement(wrapper, { delimiters: [{left: '$', right: '$', display: false}] });
+            reIndex();
+            updateTotal();
+            resetInputs();
         }
+
+        function reIndex() {
+            ['creativeList', 'shortList', 'mcqList'].forEach(id => {
+                document.querySelectorAll(`#${id} .q-idx`).forEach((el, i) => el.innerText = toBn(i + 1));
+            });
+        }
+
+        function updateTotal() {
+            let total = document.querySelectorAll('#creativeList .question-item').length * 10;
+            total += document.querySelectorAll('#shortList .question-item').length;
+            total += document.querySelectorAll('#mcqList .question-item').length;
+            document.getElementById('totalMarksDisplay').innerText = toBn(total);
+        }
+
+        function resetInputs() {
+            document.getElementById('mainText').value = "";
+            document.getElementById('mathPreview').innerText = "";
+            document.querySelectorAll('#creativeParts input, #mcqOptions input').forEach(i => i.value = "");
+        }
+
+        function saveToCloud() {
+            const school = document.getElementById('schoolInput').value;
+            if(!school) return alert("প্রতিষ্ঠানের নাম দিন!");
+            const data = {
+                school: school, sub: document.getElementById('subjectInput').value,
+                cls: document.getElementById('classInput').value,
+                creative: document.getElementById('creativeList').innerHTML,
+                short: document.getElementById('shortList').innerHTML,
+                mcq: document.getElementById('mcqList').innerHTML,
+                font: document.getElementById('fontSelect').value,
+                wm: document.getElementById('watermarkInput').value
+            };
+            db.ref('full_exams/' + school).set(data).then(() => alert("✅ সফলভাবে সেভ হয়েছে!"));
+        }
+
+        function loadFromCloud() {
+            const school = prompt("প্রতিষ্ঠানের নাম:");
+            if(!school) return;
+            db.ref('full_exams/' + school).once('value').then(snap => {
+                const d = snap.val();
+                if(d) {
+                    document.getElementById('schoolInput').value = d.school;
+                    document.getElementById('subjectInput').value = d.sub;
+                    document.getElementById('classInput').value = d.cls;
+                    document.getElementById('watermarkInput').value = d.wm || "";
+                    document.getElementById('creativeList').innerHTML = d.creative || "";
+                    document.getElementById('shortList').innerHTML = d.short || "";
+                    document.getElementById('mcqList').innerHTML = d.mcq || "";
+                    
+                    if(d.creative) document.getElementById('creativeSection').classList.remove('hidden');
+                    if(d.short) document.getElementById('shortSection').classList.remove('hidden');
+                    if(d.mcq) document.getElementById('mcqSection').classList.remove('hidden');
+
+                    syncData(); syncWatermark(); reIndex(); updateTotal();
+                    renderMathInElement(document.getElementById('paper'), { delimiters: [{left: '$', right: '$', display: false}] });
+                    alert("✅ ডেটা লোড হয়েছে!");
+                } else alert("❌ পাওয়া যায়নি!");
+            });
+        }
+
+        new Sortable(document.getElementById('creativeList'), { animation: 150, onEnd: reIndex });
+        new Sortable(document.getElementById('shortList'), { animation: 150, onEnd: reIndex });
+        new Sortable(document.getElementById('mcqList'), { animation: 150, onEnd: reIndex });
     </script>
 </body>
 </html>
-এই কোডটিতে সকল সিস্টেম পূর্ণ বহাল রেখে নতুনভাবে কলাম,  অট সারি ভিত্তিক প্রশ্ন সাজানো। 
-যেমন প্রশ্ন ১
-প্রশ্ন ২ এভাবে 
-প্রশ্ন গুলো সেট হবে।
-প্রশ্ন স্ক্রিন লক থাকবে।
-কোন প্রশ্ন ভুল হলে এডিট করা অপসন থাকবে।
- কিন্তু খেয়াল রাখবে যেন কোন তথ্য আমার কোড থেকে বাদ না পড়ে যায়।
