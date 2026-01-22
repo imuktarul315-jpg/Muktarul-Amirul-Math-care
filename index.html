@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Professional Q-Maker | Pro v12.5</title>
+    <title>Math Professional Q-Maker | Pro v13.8 Custom</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
@@ -25,23 +24,29 @@
             font-size: var(--paper-font-size);
             font-family: var(--paper-font-family), serif;
         }
-        #watermark-layer {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg);
-            font-size: 80px; color: rgba(0,0,0,0.04); font-weight: 900;
-            white-space: nowrap; pointer-events: none; z-index: 0; display: none;
+        .q-main { white-space: pre-line; line-height: 1.6; outline: none; }
+        .question-item { 
+            position: relative; 
+            margin-bottom: 25px; 
+            break-inside: avoid;
+            display: block;
         }
-        .col-setup-2 { display: grid; grid-template-columns: 1fr 1fr; column-gap: 30px; }
-        .creative-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; align-items: start; }
-        .question-item { position: relative; z-index: 1; page-break-inside: avoid; margin-bottom: 15px; }
-        .question-item:hover { background-color: #f8fafc; outline: 1px dashed #cbd5e1; }
-        .preview-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 10px; font-size: 0.85rem; min-height: 40px; margin-bottom: 10px; }
-        .eq-btn { background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin: 2px; cursor: pointer; display: inline-block; }
+        .editable-part:focus { background-color: #f0f7ff; outline: 1px dashed #4f46e5; border-radius: 4px; }
+
+        .dynamic-cols {
+            column-fill: auto;
+            column-gap: 30px;
+        }
+        .cols-1 { column-count: 1 !important; }
+        .cols-2 { column-count: 2 !important; }
+        
+        .align-btn { padding: 5px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 12px; cursor: pointer; background: white; }
+        .align-btn.active { background: #4f46e5; color: white; border-color: #4f46e5; }
         
         @media print {
             .no-print { display: none !important; }
             body { background: white; margin: 0; }
             .print-area { box-shadow: none; margin: 0; width: 100%; padding: 10mm; }
-            #watermark-layer { display: block !important; }
         }
     </style>
 </head>
@@ -62,10 +67,9 @@
     </script>
 
     <nav class="no-print bg-white border-b px-6 py-3 flex justify-between items-center sticky top-0 z-50">
-        <h1 class="font-black text-xl text-indigo-600">MathMaker <span class="text-slate-400 font-light">Pro v12.5</span></h1>
+        <h1 class="font-black text-xl text-indigo-600">MathMaker <span class="text-slate-400 font-light">Pro v13.8</span></h1>
         <div class="flex gap-2">
             <button onclick="clearAllData()" class="px-4 py-2 bg-red-50 text-red-600 rounded-xl font-bold text-xs border border-red-200">সব মুছুন</button>
-            <button onclick="loadFromCloud()" class="px-4 py-2 bg-emerald-50 text-emerald-700 rounded-xl font-bold text-xs border border-emerald-200">সার্ভার লোড</button>
             <button onclick="saveToCloud()" class="px-4 py-2 bg-indigo-600 text-white rounded-xl font-bold text-xs shadow-lg">সার্ভারে সেভ</button>
             <button onclick="window.print()" class="px-4 py-2 bg-slate-800 text-white rounded-xl font-bold text-xs">প্রিন্ট / PDF</button>
         </div>
@@ -74,60 +78,46 @@
     <div class="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 p-4">
         
         <div class="lg:col-span-4 no-print space-y-4">
-            <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 sticky top-20 overflow-y-auto max-h-[90vh]">
+            <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-200 sticky top-20">
                 
-                <div class="space-y-2 mb-4">
-                    <input type="text" id="schoolInput" placeholder="প্রতিষ্ঠানের নাম (এটি আপনার সেভ আইডি)" class="w-full p-2.5 border-2 rounded-xl focus:border-indigo-500 outline-none font-bold" oninput="syncData(); autoSaveLocal();">
-                    <div class="grid grid-cols-2 gap-2">
-                        <input type="text" id="subjectInput" placeholder="বিষয়" class="p-2 border rounded-lg text-sm" oninput="syncData(); autoSaveLocal();">
-                        <input type="text" id="classInput" placeholder="শ্রেণি" class="p-2 border rounded-lg text-sm" oninput="syncData(); autoSaveLocal();">
+                <p class="text-[10px] text-slate-400 mb-2 uppercase tracking-widest font-bold">কুইক ইনপুট</p>
+                
+                <input type="text" id="schoolInput" placeholder="প্রতিষ্ঠানের নাম" class="w-full p-2.5 border-2 rounded-xl mb-2 outline-none font-bold" oninput="syncData()">
+                
+                <div class="grid grid-cols-2 gap-2 mb-4">
+                    <input type="text" id="subjectInput" placeholder="বিষয়/সময়" class="p-2 border rounded-lg text-sm" oninput="syncData()">
+                    <input type="text" id="classInput" placeholder="শ্রেণি" class="p-2 border rounded-lg text-sm" oninput="syncData()">
+                </div>
+
+                <div class="flex items-center justify-between mb-4 bg-indigo-50 p-2 rounded-xl border border-indigo-100">
+                    <span class="text-xs font-bold text-indigo-600 ml-2">কলাম সংখ্যা:</span>
+                    <div class="flex gap-1">
+                        <button onclick="setGlobalCols(1)" id="col-btn-1" class="align-btn active">১ কলাম</button>
+                        <button onclick="setGlobalCols(2)" id="col-btn-2" class="align-btn">২ কলাম</button>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2 mb-4 border-t pt-4">
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-500 block mb-1">লিপি (Font)</label>
-                        <select id="fontSelect" onchange="changeFont(this.value); autoSaveLocal();" class="w-full p-2 border rounded-lg text-xs bg-slate-50">
-                            <option value="'Hind Siliguri'">আধুনিক (সিলিগুরি)</option>
-                            <option value="'Noto Serif Bengali'">বইয়ের মতো (নোটো শেরিফ)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-500 block mb-1">সাইজ (Size)</label>
-                        <select id="sizeSelect" onchange="changeFontSize(this.value); autoSaveLocal();" class="w-full p-2 border rounded-lg text-xs bg-slate-50">
-                            <option value="14px">১৪ পিক্সেল</option>
-                            <option value="16px" selected>১৬ পিক্সেল</option>
-                            <option value="18px">১৮ পিক্সেল</option>
-                            <option value="20px">২০ পিক্সেল</option>
-                        </select>
-                    </div>
+                <div class="flex items-center gap-3 mb-4 bg-slate-50 p-2 rounded-xl border border-slate-200">
+                    <span class="text-xs font-bold text-slate-500">এলাইনমেন্ট:</span>
+                    <button onclick="setAlign('left')" id="btn-left" class="align-btn active">বাম</button>
+                    <button onclick="setAlign('center')" id="btn-center" class="align-btn">মাঝ</button>
+                    <button onclick="setAlign('right')" id="btn-right" class="align-btn">ডান</button>
+                    <input type="hidden" id="currentAlign" value="left">
                 </div>
 
                 <div class="flex bg-slate-100 p-1 rounded-2xl mb-4">
-                    <button onclick="setType('creative')" id="btn-creative" class="flex-1 py-2 rounded-xl font-bold text-xs transition-all">সৃজনশীল</button>
-                    <button onclick="setType('short')" id="btn-short" class="flex-1 py-2 rounded-xl font-bold text-xs transition-all">সংক্ষিপ্ত</button>
-                    <button onclick="setType('mcq')" id="btn-mcq" class="flex-1 py-2 rounded-xl font-bold text-xs transition-all">MCQ</button>
+                    <button onclick="setType('creative')" id="btn-creative" class="flex-1 py-2 rounded-xl font-bold text-xs bg-white shadow text-indigo-600">সৃজনশীল</button>
+                    <button onclick="setType('short')" id="btn-short" class="flex-1 py-2 rounded-xl font-bold text-xs text-slate-500">সংক্ষিপ্ত</button>
+                    <button onclick="setType('mcq')" id="btn-mcq" class="flex-1 py-2 rounded-xl font-bold text-xs text-slate-500">MCQ</button>
                 </div>
 
-                <div class="flex items-center gap-2 mb-3 p-2 bg-indigo-50 rounded-xl border border-indigo-100">
-                    <input type="checkbox" id="colToggle" class="w-4 h-4 cursor-pointer">
-                    <label for="colToggle" class="text-xs font-bold text-indigo-700 cursor-pointer">দুই কলাম লেআউট</label>
-                </div>
-
-                <div class="mb-2 flex flex-wrap bg-slate-50 p-2 rounded-lg border">
-                    <span class="eq-btn" onclick="insertEq('\\frac{a}{b}')">ভগ্নাংশ</span>
-                    <span class="eq-btn" onclick="insertEq('x^2')">পাওয়ার</span>
-                    <span class="eq-btn" onclick="insertEq('\\sqrt{x}')">রুট</span>
-                    <span class="eq-btn" onclick="insertEq('\\angle')">কোণ</span>
-                </div>
-
-                <textarea id="mainText" placeholder="প্রশ্ন লিখুন..." class="w-full border-2 p-3 rounded-xl h-24 mb-2 text-sm focus:border-indigo-500 outline-none" oninput="livePreview()"></textarea>
-                <div id="mathPreview" class="preview-box"></div>
+                <textarea id="mainText" placeholder="প্রশ্ন বা উদ্দীপক লিখুন..." class="w-full border-2 p-3 rounded-xl h-32 mb-2 text-sm focus:border-indigo-500 outline-none" oninput="livePreview()"></textarea>
+                <div id="mathPreview" class="preview-box border border-dashed p-3 mb-2 text-sm min-h-[50px] bg-slate-50 rounded-xl q-main" style="text-align: left;"></div>
 
                 <div id="creativeParts" class="space-y-1.5 mb-3">
-                    <input type="text" id="partA" placeholder="ক) প্রশ্ন" class="w-full p-2 border rounded-lg text-xs">
-                    <input type="text" id="partB" placeholder="খ) প্রশ্ন" class="w-full p-2 border rounded-lg text-xs">
-                    <input type="text" id="partC" placeholder="গ) প্রশ্ন" class="w-full p-2 border rounded-lg text-xs">
+                    <input type="text" id="partA" placeholder="ক) অংশ" class="w-full p-2 border rounded-lg text-xs">
+                    <input type="text" id="partB" placeholder="খ) অংশ" class="w-full p-2 border rounded-lg text-xs">
+                    <input type="text" id="partC" placeholder="গ) অংশ" class="w-full p-2 border rounded-lg text-xs">
                 </div>
 
                 <div id="mcqOptions" class="hidden grid grid-cols-2 gap-2 mb-3">
@@ -137,39 +127,59 @@
                     <input type="text" id="opt4" placeholder="ঘ) অপশন" class="p-2 border rounded-lg text-xs">
                 </div>
 
-                <button onclick="addQuestion()" id="addBtn" class="w-full bg-indigo-600 text-white py-3 rounded-2xl font-bold active:scale-95 transition-all shadow-lg">➕ প্রশ্ন যুক্ত করুন</button>
+                <button onclick="addQuestion()" class="w-full bg-indigo-600 text-white py-3.5 rounded-2xl font-bold shadow-lg hover:bg-indigo-700 transition-all">➕ প্রশ্ন যুক্ত করুন</button>
             </div>
         </div>
 
         <div class="lg:col-span-8">
             <div id="paper" class="print-area">
-                <div id="watermark-layer"></div>
                 <div class="text-center border-b-4 border-slate-800 pb-4 mb-6">
-                    <h1 id="schoolName" class="text-3xl font-black mb-1">প্রতিষ্ঠানের নাম</h1>
-                    <p class="font-bold text-lg">বার্ষিক পরীক্ষা - ২০২৬</p>
-                    <div class="flex justify-between px-4 font-bold mt-4 text-sm">
-                        <span>বিষয়: <span id="subjectName">---</span></span>
-                        <span>শ্রেণি: <span id="className">---</span></span>
-                        <span>পূর্ণমান: <span id="totalMarksDisplay">০</span></span>
+                    <h1 id="schoolName" class="text-3xl font-black mb-1 editable-part" contenteditable="true" onblur="autoSave()">প্রতিষ্ঠানের নাম</h1>
+                    <p id="examName" class="font-bold text-lg editable-part" contenteditable="true" onblur="autoSave()">বার্ষিক পরীক্ষা - ২০২৬</p>
+                    
+                    <div class="mt-4 text-sm font-bold">
+                        <div class="mb-1">শ্রেণি: <span id="className" class="editable-part" contenteditable="true" onblur="autoSave()">---</span></div>
+                        <div class="flex justify-between px-10">
+                            <span>বিষয়/সময়: <span id="subjectName" class="editable-part" contenteditable="true" onblur="autoSave()">---</span></span>
+                            <span>পূর্ণমান: <span id="marksName" class="editable-part" contenteditable="true" onblur="autoSave()">১০০</span></span>
+                        </div>
                     </div>
                 </div>
-                <div id="creativeSection" class="hidden mb-8"><h3 class="font-bold border-b-2 border-slate-300 mb-4 bg-slate-50 p-1">সৃজনশীল প্রশ্ন</h3><div id="creativeList" class="space-y-6"></div></div>
-                <div id="shortSection" class="hidden mb-8"><h3 class="font-bold border-b-2 border-slate-300 mb-4 bg-slate-50 p-1">সংক্ষিপ্ত প্রশ্ন</h3><div id="shortList"></div></div>
-                <div id="mcqSection" class="hidden mb-8"><h3 class="font-bold border-b-2 border-slate-300 mb-4 bg-slate-50 p-1">বহুনির্বাচনি প্রশ্ন</h3><div id="mcqList"></div></div>
+
+                <div id="dynamicContainer" class="dynamic-cols cols-1">
+                    <div id="creativeSection" class="hidden mb-8"><div id="creativeList" class="space-y-6"></div></div>
+                    <div id="shortSection" class="hidden mb-8"><div id="shortList" class="space-y-4"></div></div>
+                    <div id="mcqSection" class="hidden mb-8"><div id="mcqList" class="space-y-4"></div></div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         let currentType = 'creative';
-        let editTarget = null;
-        const toBn = n => String(n).replace(/\d/g, d => "০১২৩৪৫৬৭৮৯"[d]);
+        const editAttr = `contenteditable="true" onblur="autoSave()"`;
 
-        // --- কোর ফাংশনসমূহ ---
-        function changeFont(f) { document.documentElement.style.setProperty('--paper-font-family', f); }
-        function changeFontSize(s) { document.documentElement.style.setProperty('--paper-font-size', s); }
-        function insertEq(eq) { const t = document.getElementById('mainText'); t.value += `$${eq}$`; t.focus(); livePreview(); }
-        function livePreview() { const p = document.getElementById('mathPreview'); p.innerText = document.getElementById('mainText').value; renderMathInElement(p, { delimiters: [{left: '$', right: '$', display: false}] }); }
+        function setGlobalCols(count) {
+            const container = document.getElementById('dynamicContainer');
+            if(count === 1) {
+                container.classList.replace('cols-2', 'cols-1');
+                document.getElementById('col-btn-1').classList.add('active');
+                document.getElementById('col-btn-2').classList.remove('active');
+            } else {
+                container.classList.replace('cols-1', 'cols-2');
+                document.getElementById('col-btn-2').classList.add('active');
+                document.getElementById('col-btn-1').classList.remove('active');
+            }
+            autoSave();
+        }
+
+        function setAlign(align) {
+            document.getElementById('currentAlign').value = align;
+            document.getElementById('mathPreview').style.textAlign = align;
+            ['left', 'center', 'right'].forEach(a => {
+                document.getElementById(`btn-${a}`).classList.toggle('active', a === align);
+            });
+        }
 
         function setType(type) {
             currentType = type;
@@ -182,6 +192,12 @@
             document.getElementById('creativeParts').classList.toggle('hidden', type !== 'creative');
         }
 
+        function livePreview() {
+            const p = document.getElementById('mathPreview');
+            p.innerText = document.getElementById('mainText').value;
+            renderMathInElement(p, { delimiters: [{left: '$', right: '$', display: false}] });
+        }
+
         function syncData() {
             document.getElementById('schoolName').innerText = document.getElementById('schoolInput').value || "প্রতিষ্ঠানের নাম";
             document.getElementById('subjectName').innerText = document.getElementById('subjectInput').value || "---";
@@ -191,146 +207,108 @@
         function addQuestion() {
             const text = document.getElementById('mainText').value.trim();
             if (!text) return;
-            const isCol = document.getElementById('colToggle').checked;
+
+            const align = document.getElementById('currentAlign').value;
             let html = "";
+            let listId = "";
+            let sectionId = "";
 
             if (currentType === 'creative') {
-                html = isCol ? 
-                    `<div class="flex gap-2"><b class="q-idx"></b>। <div class="creative-grid w-full"><div class="q-main">${text}</div><div class="space-y-1"><div class="flex justify-between border-b border-dotted"><span class="qa">ক) ${document.getElementById('partA').value}</span><b>১</b></div><div class="flex justify-between border-b border-dotted"><span class="qb">খ) ${document.getElementById('partB').value}</span><b>২</b></div><div class="flex justify-between border-b border-dotted"><span class="qc">গ) ${document.getElementById('partC').value}</span><b>৪</b></div></div></div></div>` :
-                    `<div class="flex gap-2"><b class="q-idx"></b>। <div class="w-full"><span class="q-main">${text}</span><div class="mt-2 space-y-1 ml-2"><div class="flex justify-between border-b border-dotted"><span class="qa">ক) ${document.getElementById('partA').value}</span><b>১</b></div><div class="flex justify-between border-b border-dotted"><span class="qb">খ) ${document.getElementById('partB').value}</span><b>২</b></div><div class="flex justify-between border-b border-dotted"><span class="qc">গ) ${document.getElementById('partC').value}</span><b>৪</b></div></div></div></div>`;
-                appendToList('creativeList', html, 'creativeSection');
+                listId = 'creativeList'; sectionId = 'creativeSection';
+                html = `<div class="w-full">
+                            <div style="text-align: ${align}" class="q-main mb-2 font-bold editable-part" ${editAttr}>${text}</div>
+                            <div class="ml-4 space-y-1 text-sm">
+                                <div class="flex justify-between border-b border-dotted"><span class="editable-part" ${editAttr}>ক) ${document.getElementById('partA').value}</span><b>১</b></div>
+                                <div class="flex justify-between border-b border-dotted"><span class="editable-part" ${editAttr}>খ) ${document.getElementById('partB').value}</span><b>২</b></div>
+                                <div class="flex justify-between border-b border-dotted"><span class="editable-part" ${editAttr}>গ) ${document.getElementById('partC').value}</span><b>৪</b></div>
+                            </div>
+                        </div>`;
             } else if (currentType === 'short') {
-                text.split('\n').filter(l => l.trim()).forEach(line => {
-                    html = `<b><span class="q-idx"></span>।</b> <span class="q-main">${line}</span>`;
-                    appendToList('shortList', html, 'shortSection', isCol);
-                });
+                listId = 'shortList'; sectionId = 'shortSection';
+                html = `<div class="q-main editable-part" style="text-align: ${align}" ${editAttr}>${text}</div>`;
             } else if (currentType === 'mcq') {
-                html = `<div><b><span class="q-idx"></span>।</b> <span class="q-main">${text}</span><div class="grid grid-cols-2 ml-4 mt-1 text-sm"><span class="qa">ক) ${document.getElementById('opt1').value}</span><span class="qb">খ) ${document.getElementById('opt2').value}</span><span class="qc">গ) ${document.getElementById('opt3').value}</span><span class="qd">ঘ) ${document.getElementById('opt4').value}</span></div></div>`;
-                appendToList('mcqList', html, 'mcqSection', isCol);
+                listId = 'mcqList'; sectionId = 'mcqSection';
+                html = `<div class="w-full">
+                            <div class="q-main font-bold editable-part" ${editAttr}>${text}</div>
+                            <div class="grid grid-cols-2 ml-4 mt-1 text-[13px]">
+                                <span class="editable-part" ${editAttr}>ক) ${document.getElementById('opt1').value}</span>
+                                <span class="editable-part" ${editAttr}>খ) ${document.getElementById('opt2').value}</span>
+                                <span class="editable-part" ${editAttr}>গ) ${document.getElementById('opt3').value}</span>
+                                <span class="editable-part" ${editAttr}>ঘ) ${document.getElementById('opt4').value}</span>
+                            </div>
+                        </div>`;
             }
 
-            if (editTarget) { editTarget.remove(); editTarget = null; document.getElementById('addBtn').innerText = "➕ প্রশ্ন যুক্ত করুন"; }
-            reIndex(); updateTotal(); resetInputs();
-            renderMathInElement(document.getElementById('paper'), { delimiters: [{left: '$', right: '$', display: false}] });
-            autoSaveLocal(); // সেভ টু লোকাল
-        }
-
-        function appendToList(listId, html, sectionId, isCol = false) {
-            const container = document.getElementById(listId);
-            document.getElementById(sectionId).classList.remove('hidden');
-            if (isCol) container.className = "col-setup-2";
             const wrapper = document.createElement('div');
-            wrapper.className = "question-item group p-1";
-            wrapper.innerHTML = `<div class="no-print absolute -left-12 flex gap-1 opacity-0 group-hover:opacity-100"><button onclick="editQuestion(this, '${listId}')" class="bg-blue-500 text-white p-1 rounded text-[10px]">Edit</button><button onclick="this.closest('.question-item').remove(); reIndex(); updateTotal(); autoSaveLocal();" class="bg-red-500 text-white p-1 rounded text-[10px]">✕</button></div>${html}`;
-            container.appendChild(wrapper);
+            wrapper.className = "question-item group";
+            wrapper.innerHTML = `<div class="no-print absolute -left-8 opacity-0 group-hover:opacity-100"><button onclick="this.closest('.question-item').remove(); autoSave();" class="text-red-500 text-xl font-bold">×</button></div>${html}`;
+            
+            document.getElementById(listId).appendChild(wrapper);
+            document.getElementById(sectionId).classList.remove('hidden');
+
+            resetInputs();
+            renderMathInElement(document.getElementById('paper'), { delimiters: [{left: '$', right: '$', display: false}] });
+            autoSave();
         }
 
-        function editQuestion(btn, listId) {
-            const item = btn.closest('.question-item'); editTarget = item;
-            document.getElementById('addBtn').innerText = "💾 আপডেট করুন";
-            document.getElementById('mainText').value = item.querySelector('.q-main').innerText;
-            if (listId === 'creativeList') {
-                setType('creative');
-                document.getElementById('partA').value = item.querySelector('.qa').innerText.replace('ক) ', '');
-                document.getElementById('partB').value = item.querySelector('.qb').innerText.replace('খ) ', '');
-                document.getElementById('partC').value = item.querySelector('.qc').innerText.replace('গ) ', '');
-            } else if (listId === 'mcqList') {
-                setType('mcq');
-                document.getElementById('opt1').value = item.querySelector('.qa').innerText.replace('ক) ', '');
-                document.getElementById('opt2').value = item.querySelector('.qb').innerText.replace('খ) ', '');
-                document.getElementById('opt3').value = item.querySelector('.qc').innerText.replace('গ) ', '');
-                document.getElementById('opt4').value = item.querySelector('.qd').innerText.replace('ঘ) ', '');
-            } else { setType('short'); }
-            livePreview(); window.scrollTo({ top: 0, behavior: 'smooth' });
+        function resetInputs() {
+            document.getElementById('mainText').value = "";
+            document.getElementById('mathPreview').innerText = "";
+            document.querySelectorAll('#creativeParts input, #mcqOptions input').forEach(i => i.value = "");
         }
 
-        function reIndex() { ['creativeList', 'shortList', 'mcqList'].forEach(id => document.querySelectorAll(`#${id} .q-idx`).forEach((el, i) => el.innerText = toBn(i + 1))); }
-        function updateTotal() { let t = document.querySelectorAll('#creativeList .question-item').length * 10 + document.querySelectorAll('#shortList .question-item').length + document.querySelectorAll('#mcqList .question-item').length; document.getElementById('totalMarksDisplay').innerText = toBn(t); }
-        function resetInputs() { document.getElementById('mainText').value = ""; document.getElementById('mathPreview').innerText = ""; document.querySelectorAll('#creativeParts input, #mcqOptions input').forEach(i => i.value = ""); }
-
-        // --- স্টোরেজ লজিক (Local & Cloud) ---
-        function getSafeKey(str) { return btoa(unescape(encodeURIComponent(str))).replace(/[+/=]/g, '_'); }
-
-        function captureAllData() {
-            return {
-                school: document.getElementById('schoolInput').value,
-                sub: document.getElementById('subjectInput').value,
-                cls: document.getElementById('classInput').value,
+        function autoSave() {
+            const data = {
+                school: document.getElementById('schoolName').innerText,
+                exam: document.getElementById('examName').innerText,
+                sub: document.getElementById('subjectName').innerText,
+                cls: document.getElementById('className').innerText,
+                marks: document.getElementById('marksName').innerText,
+                colCount: document.getElementById('dynamicContainer').classList.contains('cols-2') ? 2 : 1,
                 creative: document.getElementById('creativeList').innerHTML,
                 short: document.getElementById('shortList').innerHTML,
-                mcq: document.getElementById('mcqList').innerHTML,
-                creativeClass: document.getElementById('creativeList').className,
-                shortClass: document.getElementById('shortList').className,
-                mcqClass: document.getElementById('mcqList').className,
-                fontSize: document.getElementById('sizeSelect').value,
-                fontFamily: document.getElementById('fontSelect').value
+                mcq: document.getElementById('mcqList').innerHTML
             };
+            localStorage.setItem('math_q_maker_v13_8', JSON.stringify(data));
         }
 
-        function autoSaveLocal() {
-            const data = captureAllData();
-            localStorage.setItem('mathMaker_draft', JSON.stringify(data));
-        }
-
-        function saveToCloud() {
-            const school = document.getElementById('schoolInput').value.trim();
-            if(!school) return alert("প্রতিষ্ঠানের নাম দিন!");
-            const data = captureAllData();
-            db.ref('exams/' + getSafeKey(school)).set(data).then(() => alert("✅ সফলভাবে ক্লাউডে সেভ হয়েছে!"));
-        }
-
-        function loadFromCloud() {
-            const school = prompt("প্রতিষ্ঠানের নাম (সেভ আইডি) লিখুন:");
-            if(!school) return;
-            db.ref('exams/' + getSafeKey(school)).once('value').then(snap => {
-                const d = snap.val();
-                if(d) {
-                    applyDataToUI(d);
-                    alert("✅ ক্লাউড থেকে লোড সম্পন্ন হয়েছে!");
-                } else alert("❌ পাওয়া যায়নি!");
-            });
-        }
-
-        function applyDataToUI(d) {
-            if(!d) return;
-            document.getElementById('schoolInput').value = d.school || "";
-            document.getElementById('subjectInput').value = d.sub || "";
-            document.getElementById('classInput').value = d.cls || "";
-            document.getElementById('creativeList').innerHTML = d.creative || "";
-            document.getElementById('shortList').innerHTML = d.short || "";
-            document.getElementById('mcqList').innerHTML = d.mcq || "";
-            document.getElementById('creativeList').className = d.creativeClass || "space-y-6";
-            document.getElementById('shortList').className = d.shortClass || "";
-            document.getElementById('mcqList').className = d.mcqClass || "";
-            if(d.fontSize) { document.getElementById('sizeSelect').value = d.fontSize; changeFontSize(d.fontSize); }
-            if(d.fontFamily) { document.getElementById('fontSelect').value = d.fontFamily; changeFont(d.fontFamily); }
-            
-            document.getElementById('creativeSection').classList.toggle('hidden', !d.creative);
-            document.getElementById('shortSection').classList.toggle('hidden', !d.short);
-            document.getElementById('mcqSection').classList.toggle('hidden', !d.mcq);
-            
-            syncData(); reIndex(); updateTotal();
-            renderMathInElement(document.getElementById('paper'), { delimiters: [{left: '$', right: '$', display: false}] });
-        }
-
-        function clearAllData() {
-            if(confirm("আপনি কি নিশ্চিতভাবে সব মুছে ফেলতে চান?")) {
-                localStorage.removeItem('mathMaker_draft');
-                location.reload();
-            }
-        }
-
-        // --- ইনিশিয়ালাইজেশন ---
         window.onload = () => {
-            const localData = localStorage.getItem('mathMaker_draft');
-            if(localData) {
-                applyDataToUI(JSON.parse(localData));
+            const saved = localStorage.getItem('math_q_maker_v13_8');
+            if (saved) {
+                const d = JSON.parse(saved);
+                document.getElementById('schoolName').innerText = d.school || "প্রতিষ্ঠানের নাম";
+                document.getElementById('examName').innerText = d.exam || "বার্ষিক পরীক্ষা - ২০২৬";
+                document.getElementById('subjectName').innerText = d.sub || "---";
+                document.getElementById('className').innerText = d.cls || "---";
+                document.getElementById('marksName').innerText = d.marks || "১০০";
+                document.getElementById('creativeList').innerHTML = d.creative || "";
+                document.getElementById('shortList').innerHTML = d.short || "";
+                document.getElementById('mcqList').innerHTML = d.mcq || "";
+                
+                if(d.colCount === 2) setGlobalCols(2);
+                if(d.creative) document.getElementById('creativeSection').classList.remove('hidden');
+                if(d.short) document.getElementById('shortSection').classList.remove('hidden');
+                if(d.mcq) document.getElementById('mcqSection').classList.remove('hidden');
+                
+                renderMathInElement(document.getElementById('paper'), { delimiters: [{left: '$', right: '$', display: false}] });
             }
         };
 
-        new Sortable(document.getElementById('creativeList'), { animation: 150, onEnd: () => { reIndex(); autoSaveLocal(); } });
-        new Sortable(document.getElementById('shortList'), { animation: 150, onEnd: () => { reIndex(); autoSaveLocal(); } });
-        new Sortable(document.getElementById('mcqList'), { animation: 150, onEnd: () => { reIndex(); autoSaveLocal(); } });
+        function clearAllData() { if(confirm("সব ডাটা মুছে যাবে। আপনি কি নিশ্চিত?")) { localStorage.clear(); location.reload(); } }
+        
+        function saveToCloud() {
+            const id = document.getElementById('schoolName').innerText.trim();
+            if(!id || id === "প্রতিষ্ঠানের নাম") return alert("প্রতিষ্ঠানের নাম দিন।");
+            db.ref('exams/' + btoa(unescape(encodeURIComponent(id)))).set({
+                school: id,
+                exam: document.getElementById('examName').innerText,
+                sub: document.getElementById('subjectName').innerText,
+                cls: document.getElementById('className').innerText,
+                creative: document.getElementById('creativeList').innerHTML,
+                short: document.getElementById('shortList').innerHTML,
+                mcq: document.getElementById('mcqList').innerHTML
+            }).then(() => alert("✅ সফলভাবে ক্লাউডে সেভ হয়েছে।"));
+        }
     </script>
 </body>
 </html>
