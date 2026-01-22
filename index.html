@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Professional Q-Maker | Pro v13.8 Custom</title>
+    <title>Math Professional Q-Maker | Pro v13.8 Custom Image Support</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
@@ -42,6 +42,9 @@
         
         .align-btn { padding: 5px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 12px; cursor: pointer; background: white; }
         .align-btn.active { background: #4f46e5; color: white; border-color: #4f46e5; }
+
+        .q-image-container { margin: 10px 0; text-align: center; }
+        .q-image-container img { max-width: 100%; max-height: 200px; border: 1px solid #eee; }
         
         @media print {
             .no-print { display: none !important; }
@@ -112,6 +115,16 @@
                 </div>
 
                 <textarea id="mainText" placeholder="প্রশ্ন বা উদ্দীপক লিখুন..." class="w-full border-2 p-3 rounded-xl h-32 mb-2 text-sm focus:border-indigo-500 outline-none" oninput="livePreview()"></textarea>
+                
+                <div class="mb-3">
+                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">ছবি যুক্ত করুন (ঐচ্ছিক)</label>
+                    <input type="file" id="imageInput" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" onchange="previewImage(this)">
+                    <div id="imgPreviewContainer" class="hidden mt-2 relative">
+                        <img id="imgPreview" src="" class="max-h-32 rounded border mx-auto">
+                        <button onclick="removeImage()" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs">×</button>
+                    </div>
+                </div>
+
                 <div id="mathPreview" class="preview-box border border-dashed p-3 mb-2 text-sm min-h-[50px] bg-slate-50 rounded-xl q-main" style="text-align: left;"></div>
 
                 <div id="creativeParts" class="space-y-1.5 mb-3">
@@ -157,7 +170,26 @@
 
     <script>
         let currentType = 'creative';
+        let currentBase64Img = "";
         const editAttr = `contenteditable="true" onblur="autoSave()"`;
+
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentBase64Img = e.target.result;
+                    document.getElementById('imgPreview').src = currentBase64Img;
+                    document.getElementById('imgPreviewContainer').classList.remove('hidden');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function removeImage() {
+            currentBase64Img = "";
+            document.getElementById('imageInput').value = "";
+            document.getElementById('imgPreviewContainer').classList.add('hidden');
+        }
 
         function setGlobalCols(count) {
             const container = document.getElementById('dynamicContainer');
@@ -206,17 +238,20 @@
 
         function addQuestion() {
             const text = document.getElementById('mainText').value.trim();
-            if (!text) return;
+            if (!text && !currentBase64Img) return;
 
             const align = document.getElementById('currentAlign').value;
             let html = "";
             let listId = "";
             let sectionId = "";
 
+            const imageHtml = currentBase64Img ? `<div class="q-image-container"><img src="${currentBase64Img}"></div>` : "";
+
             if (currentType === 'creative') {
                 listId = 'creativeList'; sectionId = 'creativeSection';
                 html = `<div class="w-full">
                             <div style="text-align: ${align}" class="q-main mb-2 font-bold editable-part" ${editAttr}>${text}</div>
+                            ${imageHtml}
                             <div class="ml-4 space-y-1 text-sm">
                                 <div class="flex justify-between border-b border-dotted"><span class="editable-part" ${editAttr}>ক) ${document.getElementById('partA').value}</span><b>১</b></div>
                                 <div class="flex justify-between border-b border-dotted"><span class="editable-part" ${editAttr}>খ) ${document.getElementById('partB').value}</span><b>২</b></div>
@@ -225,11 +260,15 @@
                         </div>`;
             } else if (currentType === 'short') {
                 listId = 'shortList'; sectionId = 'shortSection';
-                html = `<div class="q-main editable-part" style="text-align: ${align}" ${editAttr}>${text}</div>`;
+                html = `<div class="w-full">
+                            <div class="q-main editable-part" style="text-align: ${align}" ${editAttr}>${text}</div>
+                            ${imageHtml}
+                        </div>`;
             } else if (currentType === 'mcq') {
                 listId = 'mcqList'; sectionId = 'mcqSection';
                 html = `<div class="w-full">
                             <div class="q-main font-bold editable-part" ${editAttr}>${text}</div>
+                            ${imageHtml}
                             <div class="grid grid-cols-2 ml-4 mt-1 text-[13px]">
                                 <span class="editable-part" ${editAttr}>ক) ${document.getElementById('opt1').value}</span>
                                 <span class="editable-part" ${editAttr}>খ) ${document.getElementById('opt2').value}</span>
@@ -254,6 +293,7 @@
         function resetInputs() {
             document.getElementById('mainText').value = "";
             document.getElementById('mathPreview').innerText = "";
+            removeImage();
             document.querySelectorAll('#creativeParts input, #mcqOptions input').forEach(i => i.value = "");
         }
 
