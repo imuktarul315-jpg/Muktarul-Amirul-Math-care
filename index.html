@@ -3,245 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Professional Q-Maker | Pro v13.8</title>
+    <title>Math Professional Q-Maker | Pro v15.0</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        :root { 
-            --paper-font: 'Hind Siliguri', 'Kalpurush', sans-serif;
-            --font-size-base: 18px;
-        }
-
-        body { 
-            font-family: var(--paper-font);
-            background-color: #f1f5f9;
-        }
-
+        :root { --paper-font: 'Hind Siliguri', sans-serif; }
+        body { font-family: var(--paper-font); background-color: #f1f5f9; }
         .print-area { 
-            width: 210mm; 
-            min-height: 297mm; 
-            margin: 20px auto; 
-            background: white; 
-            padding: 20mm; 
-            box-shadow: 0 5px 25px rgba(0,0,0,0.1);
-            font-size: var(--font-size-base);
-            line-height: 1.7;
-            color: #000;
-            overflow: hidden; /* কন্টেন্ট বাইরে যাবে না */
+            width: 210mm; min-height: 297mm; margin: 20px auto; background: white; 
+            padding: 20mm; box-shadow: 0 5px 25px rgba(0,0,0,0.1); font-size: 17px; line-height: 1.5; color: black;
         }
-
-        .q-main { 
-            display: block;
-            white-space: pre-line; 
-            margin-bottom: 12px;
-            font-weight: 500;
-        }
-
-        .question-item { 
-            position: relative; 
-            margin-bottom: 25px; 
-            padding-left: 5px;
-        }
-
-        .q-number {
-            font-weight: 700;
-            margin-right: 8px;
-            font-size: 1.1em;
-        }
-
-        #schoolName { font-size: 32px; font-weight: 800; margin-bottom: 5px; color: #111; }
-
-        /* ফিক্স: টেক্সট এরিয়া এবং ইনপুট ফোকাস */
-        textarea, input {
-            position: relative;
-            z-index: 10;
-        }
-
-        @media print {
-            .no-print { display: none !important; }
-            body { background: white; margin: 0; }
-            .print-area { box-shadow: none; margin: 0; width: 100%; padding: 15mm; }
-        }
-
-        @media (max-width: 768px) {
-            .print-area { width: 95%; padding: 10mm; font-size: 16px; }
-        }
+        .q-main { font-weight: 600; margin-bottom: 5px; }
+        .question-item { position: relative; margin-bottom: 20px; page-break-inside: avoid; }
+        .geo-display { text-align: center; margin: 10px 0; }
+        .geo-label-text { font-family: 'Times New Roman', serif; font-style: italic; font-weight: bold; font-size: 12px; }
+        .mcq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-left: 25px; font-size: 15px; }
+        @media print { .no-print { display: none !important; } .print-area { box-shadow: none; margin: 0; width: 100%; padding: 10mm; } }
     </style>
 </head>
 <body class="text-slate-800">
 
     <nav class="no-print bg-white border-b px-4 py-2 flex justify-between items-center sticky top-0 z-50">
         <div class="flex flex-col">
-            <span class="font-bold text-indigo-700 leading-none text-lg">MathMaker</span>
-            <span class="text-[10px] text-slate-400">v13.8 Pro</span>
+            <span class="font-bold text-indigo-700 leading-none text-lg">MathMaker Ultimate</span>
+            <span class="text-[10px] text-slate-400">v15.0 Pro</span>
         </div>
         <div class="flex gap-2">
             <button onclick="clearAllData()" class="px-3 py-1.5 text-red-500 border border-red-200 rounded-lg text-xs font-bold">ক্লিয়ার</button>
-            <button onclick="window.print()" class="px-3 py-1.5 bg-slate-800 text-white rounded-lg text-xs font-bold">প্রিন্ট / PDF</button>
+            <button onclick="exportToWord()" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold">Word</button>
+            <button onclick="exportToPDF()" class="px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-bold">PDF</button>
+            <button onclick="window.print()" class="px-3 py-1.5 bg-slate-800 text-white rounded-lg text-xs font-bold">প্রিন্ট</button>
         </div>
     </nav>
 
     <div class="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 p-4">
-        
         <div class="lg:col-span-4 no-print space-y-4">
-            <div class="bg-white p-5 rounded-2xl border shadow-sm sticky top-20">
-                <input type="text" id="schoolInput" placeholder="প্রতিষ্ঠানের নাম" class="w-full p-2.5 border rounded-xl mb-3 outline-none font-bold focus:ring-2 ring-indigo-50" oninput="syncData()">
-                
-                <div class="grid grid-cols-2 gap-2 mb-4 text-sm">
-                    <input type="text" id="subjectInput" placeholder="বিষয়/সময়" class="p-2 border rounded-lg outline-none" oninput="syncData()">
-                    <input type="text" id="classInput" placeholder="শ্রেণি" class="p-2 border rounded-lg outline-none" oninput="syncData()">
+            <div class="bg-white p-5 rounded-2xl border shadow-sm sticky top-16 max-h-[90vh] overflow-y-auto">
+                <div class="space-y-2 mb-4">
+                    <input type="text" id="schoolInput" placeholder="প্রতিষ্ঠানের নাম" class="w-full p-2 border rounded-lg font-bold outline-none focus:ring-2 ring-indigo-400" oninput="syncData()">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" id="subjectInput" placeholder="বিষয়/সময়" class="p-2 border rounded-lg text-sm outline-none" oninput="syncData()">
+                        <input type="text" id="classInput" placeholder="শ্রেণি" class="p-2 border rounded-lg text-sm outline-none" oninput="syncData()">
+                    </div>
                 </div>
 
                 <div class="flex bg-slate-100 p-1 rounded-xl mb-4 text-xs font-bold">
-                    <button onclick="setType('creative')" id="btn-creative" class="flex-1 py-2 rounded-lg bg-white shadow text-indigo-600">সৃজনশীল</button>
-                    <button onclick="setType('short')" id="btn-short" class="flex-1 py-2 rounded-lg text-slate-500">সংক্ষিপ্ত</button>
+                    <button onclick="setMode('creative')" id="m-creative" class="flex-1 py-2 rounded-lg bg-white shadow text-indigo-600">সৃজনশীল</button>
+                    <button onclick="setMode('short')" id="m-short" class="flex-1 py-2 rounded-lg text-slate-500">সংক্ষিপ্ত</button>
+                    <button onclick="setMode('mcq')" id="m-mcq" class="flex-1 py-2 rounded-lg text-slate-500">MCQ</button>
                 </div>
 
-                <textarea id="mainText" placeholder="উদ্দীপক (যেমন: $x+y=5$)" class="w-full border p-3 rounded-xl h-32 mb-4 text-sm focus:border-indigo-500 outline-none" oninput="liveRender()"></textarea>
-                
-                <div id="creativeParts" class="space-y-2 mb-4">
-                    <input type="text" id="partA" placeholder="ক) অংশ" class="w-full p-2 border rounded-lg text-sm" oninput="liveRender()">
-                    <input type="text" id="partB" placeholder="খ) অংশ" class="w-full p-2 border rounded-lg text-sm" oninput="liveRender()">
-                    <input type="text" id="partC" placeholder="গ) অংশ" class="w-full p-2 border rounded-lg text-sm" oninput="liveRender()">
+                <div class="space-y-3">
+                    <textarea id="mainText" placeholder="উদ্দীপক/প্রশ্ন লিখুন..." class="w-full border p-3 rounded-xl h-24 text-sm outline-none focus:ring-2 ring-indigo-400"></textarea>
+                    
+                    <div id="geoBox" class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
+                        <select id="geoSelect" class="w-full p-2 border rounded-lg text-xs mb-2 outline-none">
+                            <option value="">চিত্র যোগ করুন (ঐচ্ছিক)</option>
+                            <option value="triangle">ত্রিভুজ</option>
+                            <option value="circle">বৃত্ত</option>
+                            <option value="rectangle">আয়তক্ষেত্র</option>
+                            <option value="parallelogram">সামান্তরিক</option>
+                            <option value="trapezium">ট্রাপিজিয়াম</option>
+                            <option value="rhombus">রম্বস</option>
+                        </select>
+                        <input type="text" id="geoLabels" placeholder="লেবেল (যেমন: A, B, C, D)" class="w-full p-2 border rounded-lg text-xs outline-none">
+                    </div>
+
+                    <div id="creativeFields" class="space-y-2">
+                        <input type="text" id="partA" placeholder="ক) প্রশ্ন" class="w-full p-2 border rounded-lg text-sm">
+                        <input type="text" id="partB" placeholder="খ) প্রশ্ন" class="w-full p-2 border rounded-lg text-sm">
+                        <input type="text" id="partC" placeholder="গ) প্রশ্ন" class="w-full p-2 border rounded-lg text-sm">
+                    </div>
+
+                    <div id="mcqFields" class="hidden grid grid-cols-2 gap-2">
+                        <input type="text" id="opt1" placeholder="Option 1" class="p-2 border rounded-lg text-sm">
+                        <input type="text" id="opt2" placeholder="Option 2" class="p-2 border rounded-lg text-sm">
+                        <input type="text" id="opt3" placeholder="Option 3" class="p-2 border rounded-lg text-sm">
+                        <input type="text" id="opt4" placeholder="Option 4" class="p-2 border rounded-lg text-sm">
+                    </div>
                 </div>
 
-                <button onclick="addQuestion()" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 transition-all">➕ প্রশ্ন যুক্ত করুন</button>
+                <button onclick="addQuestion()" class="w-full mt-4 bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg">➕ প্রশ্ন যুক্ত করুন</button>
             </div>
         </div>
 
         <div class="lg:col-span-8">
             <div id="paper" class="print-area">
                 <div class="text-center border-b-2 border-black pb-4 mb-6">
-                    <h1 id="schoolName" class="editable-part" contenteditable="true">প্রতিষ্ঠানের নাম</h1>
-                    <p id="examName" class="font-bold text-lg editable-part" contenteditable="true">বার্ষিক পরীক্ষা - ২০২৬</p>
-                    
-                    <div class="mt-4 font-bold text-base">
-                        <div>শ্রেণি: <span id="className" class="editable-part" contenteditable="true">---</span></div>
-                        <div class="flex justify-between px-10">
-                            <span>বিষয়/সময়: <span id="subjectName" class="editable-part" contenteditable="true">---</span></span>
-                            <span>পূর্ণমান: <span id="marksName" class="editable-part" contenteditable="true">১০০</span></span>
-                        </div>
+                    <h1 id="schoolName" class="text-3xl font-black">প্রতিষ্ঠানের নাম</h1>
+                    <p class="font-bold text-lg">বার্ষিক পরীক্ষা - ২০২৬</p>
+                    <div class="flex justify-between mt-4 px-10 text-sm font-bold">
+                        <span>শ্রেণি: <span id="className">---</span></span>
+                        <span>বিষয়: <span id="subjectName">---</span></span>
+                        <span>পূর্ণমান: ১০০</span>
                     </div>
                 </div>
 
-                <div id="dynamicContainer">
-                    <div id="creativeSection" class="hidden mb-6">
-                        <h4 class="font-bold border-b border-gray-300 mb-4 pb-1">সৃজনশীল প্রশ্ন:</h4>
-                        <div id="creativeList" class="space-y-6"></div>
-                    </div>
-                    
-                    <div id="shortSection" class="hidden mb-6">
-                        <h4 class="font-bold border-b border-gray-300 mb-4 pb-1">সংক্ষিপ্ত প্রশ্ন:</h4>
-                        <div id="shortList" class="space-y-4"></div>
-                    </div>
+                <div id="creativeSection" class="hidden mb-8">
+                    <h4 class="font-bold border-b border-black mb-4">ক-বিভাগ (সৃজনশীল প্রশ্ন):</h4>
+                    <div id="creativeList"></div>
+                </div>
+
+                <div id="shortSection" class="hidden mb-8">
+                    <h4 class="font-bold border-b border-black mb-4">খ-বিভাগ (সংক্ষিপ্ত প্রশ্ন):</h4>
+                    <div id="shortList"></div>
+                </div>
+
+                <div id="mcqSection" class="hidden mb-8">
+                    <h4 class="font-bold border-b border-black mb-4">গ-বিভাগ (বহুনির্বাচনী প্রশ্ন):</h4>
+                    <div id="mcqList"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let currentType = 'creative';
-        let qCount = { creative: 1, short: 1 };
+        let mode = 'creative';
+        let counts = { creative: 1, short: 1, mcq: 1 };
 
-        // টাইপ পরিবর্তন
-        function setType(type) {
-            currentType = type;
-            document.getElementById('creativeParts').classList.toggle('hidden', type !== 'creative');
-            ['creative', 'short'].forEach(t => {
-                const btn = document.getElementById(`btn-${t}`);
-                if(btn) btn.className = t === type ? 
-                    'flex-1 py-2 rounded-lg bg-white shadow text-indigo-600' : 'flex-1 py-2 rounded-lg text-slate-500';
+        function setMode(m) {
+            mode = m;
+            document.getElementById('creativeFields').classList.toggle('hidden', m !== 'creative');
+            document.getElementById('mcqFields').classList.toggle('hidden', m !== 'mcq');
+            ['creative', 'short', 'mcq'].forEach(i => {
+                document.getElementById('m-'+i).className = i === m ? 'flex-1 py-2 rounded-lg bg-white shadow text-indigo-600' : 'flex-1 py-2 rounded-lg text-slate-500';
             });
         }
 
-        // লাইভ রেন্ডার ফাংশন (যাতে টাইপ করার সময় সাথে সাথে দেখা যায়)
-        function liveRender() {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left: '$', right: '$', display: false},
-                    {left: '$$', right: '$$', display: true}
-                ],
-                throwOnError: false
-            });
-        }
-
-        // ডেটা সিঙ্ক
         function syncData() {
             document.getElementById('schoolName').innerText = document.getElementById('schoolInput').value || "প্রতিষ্ঠানের নাম";
             document.getElementById('subjectName').innerText = document.getElementById('subjectInput').value || "---";
             document.getElementById('className').innerText = document.getElementById('classInput').value || "---";
         }
 
-        // প্রশ্ন যুক্ত করা
+        function generateGeoSVG(type, labels) {
+            if (!type) return "";
+            const lab = labels ? labels.split(',').map(s => s.trim()) : [];
+            let svg = "";
+            const style = `fill="none" stroke="black" stroke-width="2"`;
+
+            if (type === 'triangle') svg = `<svg width="140" height="100" viewBox="0 0 140 100"><polygon points="70,10 130,90 10,90" ${style}/><text x="65" y="10" class="geo-label-text">${lab[0]||'A'}</text><text x="2" y="98" class="geo-label-text">${lab[1]||'B'}</text><text x="132" y="98" class="geo-label-text">${lab[2]||'C'}</text></svg>`;
+            else if (type === 'circle') svg = `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" ${style}/><circle cx="50" cy="50" r="2" fill="black"/><text x="40" y="52" class="geo-label-text">${lab[0]||'O'}</text></svg>`;
+            else if (type === 'rectangle') svg = `<svg width="150" height="90" viewBox="0 0 150 90"><rect x="20" y="15" width="110" height="60" ${style}/><text x="15" y="15" class="geo-label-text">${lab[0]||'A'}</text><text x="135" y="15" class="geo-label-text">${lab[1]||'B'}</text><text x="135" y="85" class="geo-label-text">${lab[2]||'C'}</text><text x="15" y="85" class="geo-label-text">${lab[3]||'D'}</text></svg>`;
+            else if (type === 'parallelogram') svg = `<svg width="150" height="90" viewBox="0 0 150 90"><polygon points="30,15 140,15 120,75 10,75" ${style}/><text x="25" y="15" class="geo-label-text">${lab[0]||'A'}</text><text x="142" y="15" class="geo-label-text">${lab[1]||'B'}</text></svg>`;
+            else if (type === 'trapezium') svg = `<svg width="150" height="90" viewBox="0 0 150 90"><polygon points="40,15 110,15 140,75 10,75" ${style}/></svg>`;
+            else if (type === 'rhombus') svg = `<svg width="120" height="120" viewBox="0 0 120 120"><polygon points="60,10 110,60 60,110 10,60" ${style}/></svg>`;
+
+            return `<div class="geo-display">${svg}</div>`;
+        }
+
         function addQuestion() {
             const text = document.getElementById('mainText').value.trim();
             if (!text) return;
 
-            let html = "";
-            let listId = "";
-            let sectionId = "";
-
-            if (currentType === 'creative') {
-                listId = 'creativeList'; sectionId = 'creativeSection';
-                html = `<div>
-                            <div class="q-main" contenteditable="true"><span class="q-number">${qCount.creative}।</span>${text}</div>
-                            <div class="ml-6 space-y-1 text-[16px]">
-                                <div class="flex justify-between border-b border-dotted"><span contenteditable="true">ক) ${document.getElementById('partA').value}</span><b>২</b></div>
-                                <div class="flex justify-between border-b border-dotted"><span contenteditable="true">খ) ${document.getElementById('partB').value}</span><b>৪</b></div>
-                                <div class="flex justify-between border-b border-dotted"><span contenteditable="true">গ) ${document.getElementById('partC').value}</span><b>৪</b></div>
-                            </div>
-                        </div>`;
-                qCount.creative++;
+            const geoHTML = generateGeoSVG(document.getElementById('geoSelect').value, document.getElementById('geoLabels').value);
+            let html = `<div class="question-item group"><button onclick="this.parentElement.remove()" class="no-print absolute -left-8 text-red-400">×</button>`;
+            
+            if (mode === 'creative') {
+                html += `<div class="q-main"><span>${counts.creative}।</span> ${text}</div>${geoHTML}
+                         <div class="ml-6 space-y-1">
+                            <div class="flex justify-between border-b border-dotted"><span>ক) ${document.getElementById('partA').value}</span><b>২</b></div>
+                            <div class="flex justify-between border-b border-dotted"><span>খ) ${document.getElementById('partB').value}</span><b>৪</b></div>
+                            <div class="flex justify-between border-b border-dotted"><span>গ) ${document.getElementById('partC').value}</span><b>৪</b></div>
+                         </div>`;
+                document.getElementById('creativeList').insertAdjacentHTML('beforeend', html + '</div>');
+                document.getElementById('creativeSection').classList.remove('hidden');
+                counts.creative++;
+            } else if (mode === 'short') {
+                html += `<div class="q-main"><span>${counts.short}।</span> ${text}</div>${geoHTML}</div>`;
+                document.getElementById('shortList').insertAdjacentHTML('beforeend', html);
+                document.getElementById('shortSection').classList.remove('hidden');
+                counts.short++;
             } else {
-                listId = 'shortList'; sectionId = 'shortSection';
-                html = `<div class="q-main" contenteditable="true"><span class="q-number">${qCount.short}।</span>${text}</div>`;
-                qCount.short++;
+                html += `<div class="q-main"><span>${counts.mcq}।</span> ${text}</div>${geoHTML}
+                         <div class="mcq-grid">
+                            <span>(ক) ${document.getElementById('opt1').value}</span><span>(খ) ${document.getElementById('opt2').value}</span>
+                            <span>(গ) ${document.getElementById('opt3').value}</span><span>(ঘ) ${document.getElementById('opt4').value}</span>
+                         </div></div>`;
+                document.getElementById('mcqList').insertAdjacentHTML('beforeend', html);
+                document.getElementById('mcqSection').classList.remove('hidden');
+                counts.mcq++;
             }
 
-            const wrapper = document.createElement('div');
-            wrapper.className = "question-item group";
-            wrapper.innerHTML = `<button onclick="this.parentElement.remove(); autoSave();" class="no-print absolute -left-8 text-red-400 opacity-0 group-hover:opacity-100">×</button>${html}`;
-            
-            document.getElementById(listId).appendChild(wrapper);
-            document.getElementById(sectionId).classList.remove('hidden');
-
-            // ইনপুট ক্লিয়ার এবং সেভ
+            renderMathInElement(document.getElementById('paper'), { delimiters: [{left: '$', right: '$', display: false}] });
             document.getElementById('mainText').value = "";
-            document.getElementById('partA').value = "";
-            document.getElementById('partB').value = "";
-            document.getElementById('partC').value = "";
-            
-            liveRender();
-            autoSave();
         }
 
-        function autoSave() {
-            localStorage.setItem('math_maker_pro_save', document.getElementById('paper').innerHTML);
+        function exportToWord() {
+            const content = document.getElementById('paper').innerHTML;
+            const blob = new Blob(['\ufeff', `<html><head><meta charset='utf-8'><style>body{font-family:'Arial Unicode MS', sans-serif;} .flex{display:flex; justify-content:space-between;} .mcq-grid{display:grid; grid-template-columns:1fr 1fr;}</style></head><body>${content}</body></html>`], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = 'Question.doc'; a.click();
         }
 
-        window.onload = () => {
-            const saved = localStorage.getItem('math_maker_pro_save');
-            if (saved) {
-                document.getElementById('paper').innerHTML = saved;
-                // লোড হওয়ার পর কাউন্টার ঠিক করা
-                const items = document.querySelectorAll('.question-item');
-                // আপনি চাইলে এখানে কাউন্টার রিসেট লজিক যোগ করতে পারেন
-            }
-            liveRender();
-        };
-
-        function clearAllData() { 
-            if(confirm("সব তথ্য মুছে যাবে! আপনি কি নিশ্চিত?")) { 
-                localStorage.clear(); 
-                location.reload(); 
-            } 
+        function exportToPDF() {
+            html2pdf().from(document.getElementById('paper')).set({ margin: 10, filename: 'Question.pdf', html2canvas: { scale: 3 } }).save();
         }
+
+        function clearAllData() { if(confirm("সব ডাটা মুছে যাবে?")) location.reload(); }
     </script>
 </body>
 </html>
