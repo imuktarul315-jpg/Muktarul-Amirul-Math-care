@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Professional Q-Maker | Pro v15.0</title>
+    <title>Math Professional Q-Maker | Pro v16.0 Live</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
@@ -18,32 +18,46 @@
         body { font-family: var(--paper-font); background-color: #f1f5f9; }
         .print-area { 
             width: 210mm; min-height: 297mm; margin: 20px auto; background: white; 
-            padding: 20mm; box-shadow: 0 5px 25px rgba(0,0,0,0.1); font-size: 17px; line-height: 1.5; color: black;
+            padding: 15mm; box-shadow: 0 5px 25px rgba(0,0,0,0.1); font-size: 15px; line-height: 1.4; color: black;
         }
-        .q-main { font-weight: 600; margin-bottom: 5px; }
-        .question-item { position: relative; margin-bottom: 20px; page-break-inside: avoid; }
-        .geo-display { text-align: center; margin: 10px 0; }
-        .geo-label-text { font-family: 'Times New Roman', serif; font-style: italic; font-weight: bold; font-size: 12px; }
-        .mcq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-left: 25px; font-size: 15px; }
-        @media print { .no-print { display: none !important; } .print-area { box-shadow: none; margin: 0; width: 100%; padding: 10mm; } }
+        .columns-container { columns: 2; column-gap: 30px; column-rule: 1px solid #eee; }
+        .question-item { break-inside: avoid; margin-bottom: 15px; position: relative; border-bottom: 1px dashed #f0f0f0; padding-bottom: 10px; }
+        .q-main { font-weight: 600; margin-bottom: 3px; }
+        .geo-display { text-align: center; margin: 5px 0; }
+        .mcq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-left: 20px; font-size: 13px; }
+        .solution-box { font-size: 12px; color: #4338ca; background: #f5f3ff; padding: 5px; border-radius: 4px; margin-top: 5px; display: none; }
+        .show-solutions .solution-box { display: block; }
+        
+        /* Live Preview Styles */
+        #live-preview-container { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 15px; background: #fff; margin-top: 15px; }
+        .live-badge { display: inline-block; background: #ef4444; color: white; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: bold; margin-bottom: 8px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        @media print { 
+            .no-print { display: none !important; } 
+            .print-area { box-shadow: none; margin: 0; width: 100%; padding: 10mm; }
+            .show-solutions .solution-box { display: block; border: 1px solid #ccc; }
+        }
     </style>
 </head>
-<body class="text-slate-800">
+<body class="text-slate-800" oninput="updateLivePreview()">
 
-    <nav class="no-print bg-white border-b px-4 py-2 flex justify-between items-center sticky top-0 z-50">
-        <div class="flex flex-col">
-            <span class="font-bold text-indigo-700 leading-none text-lg">MathMaker Ultimate</span>
-            <span class="text-[10px] text-slate-400">v15.0 Pro</span>
+    <nav class="no-print bg-white border-b px-4 py-2 flex justify-between items-center sticky top-0 z-50 shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="flex flex-col">
+                <span class="font-bold text-indigo-700 leading-none text-lg">MathMaker Pro</span>
+                <span class="text-[10px] text-slate-400">v16.0 Multi-Column & Live Preview</span>
+            </div>
         </div>
         <div class="flex gap-2">
+            <button onclick="toggleSolutions()" id="solBtn" class="px-3 py-1.5 border border-indigo-200 text-indigo-600 rounded-lg text-xs font-bold bg-indigo-50">উত্তরপত্র দেখুন</button>
             <button onclick="clearAllData()" class="px-3 py-1.5 text-red-500 border border-red-200 rounded-lg text-xs font-bold">ক্লিয়ার</button>
-            <button onclick="exportToWord()" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold">Word</button>
-            <button onclick="exportToPDF()" class="px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-bold">PDF</button>
+            <button onclick="exportToPDF()" class="px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-bold">PDF ডাউনলোড</button>
             <button onclick="window.print()" class="px-3 py-1.5 bg-slate-800 text-white rounded-lg text-xs font-bold">প্রিন্ট</button>
         </div>
     </nav>
 
-    <div class="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 p-4">
+    <div class="max-w-[1500px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 p-4">
         <div class="lg:col-span-4 no-print space-y-4">
             <div class="bg-white p-5 rounded-2xl border shadow-sm sticky top-16 max-h-[90vh] overflow-y-auto">
                 <div class="space-y-2 mb-4">
@@ -61,32 +75,42 @@
                 </div>
 
                 <div class="space-y-3">
-                    <textarea id="mainText" placeholder="উদ্দীপক/প্রশ্ন লিখুন..." class="w-full border p-3 rounded-xl h-24 text-sm outline-none focus:ring-2 ring-indigo-400"></textarea>
+                    <textarea id="mainText" placeholder="উদ্দীপক/প্রশ্ন লিখুন (Latex এর জন্য $...$ ব্যবহার করুন)" class="w-full border p-3 rounded-xl h-24 text-sm outline-none focus:ring-2 ring-indigo-400" oninput="updateLivePreview()"></textarea>
                     
                     <div id="geoBox" class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
-                        <select id="geoSelect" class="w-full p-2 border rounded-lg text-xs mb-2 outline-none">
-                            <option value="">চিত্র যোগ করুন (ঐচ্ছিক)</option>
+                        <select id="geoSelect" onchange="updateLivePreview()" class="w-full p-2 border rounded-lg text-xs mb-2 outline-none">
+                            <option value="">জ্যামিতিক চিত্র (ঐচ্ছিক)</option>
                             <option value="triangle">ত্রিভুজ</option>
                             <option value="circle">বৃত্ত</option>
                             <option value="rectangle">আয়তক্ষেত্র</option>
                             <option value="parallelogram">সামান্তরিক</option>
-                            <option value="trapezium">ট্রাপিজিয়াম</option>
-                            <option value="rhombus">রম্বস</option>
                         </select>
-                        <input type="text" id="geoLabels" placeholder="লেবেল (যেমন: A, B, C, D)" class="w-full p-2 border rounded-lg text-xs outline-none">
+                        <input type="text" id="geoLabels" placeholder="লেবেল (উদা: A, B, C)" class="w-full p-2 border rounded-lg text-xs outline-none" oninput="updateLivePreview()">
                     </div>
 
                     <div id="creativeFields" class="space-y-2">
-                        <input type="text" id="partA" placeholder="ক) প্রশ্ন" class="w-full p-2 border rounded-lg text-sm">
-                        <input type="text" id="partB" placeholder="খ) প্রশ্ন" class="w-full p-2 border rounded-lg text-sm">
-                        <input type="text" id="partC" placeholder="গ) প্রশ্ন" class="w-full p-2 border rounded-lg text-sm">
+                        <input type="text" id="partA" placeholder="ক) প্রশ্ন" class="w-full p-2 border rounded-lg text-sm" oninput="updateLivePreview()">
+                        <input type="text" id="partB" placeholder="খ) প্রশ্ন" class="w-full p-2 border rounded-lg text-sm" oninput="updateLivePreview()">
+                        <input type="text" id="partC" placeholder="গ) প্রশ্ন" class="w-full p-2 border rounded-lg text-sm" oninput="updateLivePreview()">
                     </div>
 
                     <div id="mcqFields" class="hidden grid grid-cols-2 gap-2">
-                        <input type="text" id="opt1" placeholder="Option 1" class="p-2 border rounded-lg text-sm">
-                        <input type="text" id="opt2" placeholder="Option 2" class="p-2 border rounded-lg text-sm">
-                        <input type="text" id="opt3" placeholder="Option 3" class="p-2 border rounded-lg text-sm">
-                        <input type="text" id="opt4" placeholder="Option 4" class="p-2 border rounded-lg text-sm">
+                        <input type="text" id="opt1" placeholder="ক" class="p-2 border rounded-lg text-sm" oninput="updateLivePreview()">
+                        <input type="text" id="opt2" placeholder="খ" class="p-2 border rounded-lg text-sm" oninput="updateLivePreview()">
+                        <input type="text" id="opt3" placeholder="গ" class="p-2 border rounded-lg text-sm" oninput="updateLivePreview()">
+                        <input type="text" id="opt4" placeholder="ঘ" class="p-2 border rounded-lg text-sm" oninput="updateLivePreview()">
+                    </div>
+
+                    <div class="pt-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">সমাধান (ঐচ্ছিক)</label>
+                        <textarea id="solutionInput" placeholder="সঠিক উত্তর..." class="w-full border p-2 rounded-xl h-12 text-sm outline-none bg-emerald-50 focus:ring-2 ring-emerald-400" oninput="updateLivePreview()"></textarea>
+                    </div>
+                </div>
+
+                <div id="live-preview-container">
+                    <span class="live-badge">LIVE PREVIEW</span>
+                    <div id="live-render-area" class="text-[13px]">
+                        <p class="text-slate-400 italic">প্রশ্ন টাইপ করা শুরু করুন...</p>
                     </div>
                 </div>
 
@@ -106,19 +130,21 @@
                     </div>
                 </div>
 
-                <div id="creativeSection" class="hidden mb-8">
-                    <h4 class="font-bold border-b border-black mb-4">ক-বিভাগ (সৃজনশীল প্রশ্ন):</h4>
-                    <div id="creativeList"></div>
-                </div>
+                <div class="columns-container">
+                    <div id="creativeSection" class="hidden mb-4">
+                        <h4 class="font-bold border-b border-black mb-2 text-sm uppercase italic underline">সৃজনশীল অংশ:</h4>
+                        <div id="creativeList"></div>
+                    </div>
 
-                <div id="shortSection" class="hidden mb-8">
-                    <h4 class="font-bold border-b border-black mb-4">খ-বিভাগ (সংক্ষিপ্ত প্রশ্ন):</h4>
-                    <div id="shortList"></div>
-                </div>
+                    <div id="shortSection" class="hidden mb-4">
+                        <h4 class="font-bold border-b border-black mb-2 text-sm uppercase italic underline">সংক্ষিপ্ত প্রশ্ন:</h4>
+                        <div id="shortList"></div>
+                    </div>
 
-                <div id="mcqSection" class="hidden mb-8">
-                    <h4 class="font-bold border-b border-black mb-4">গ-বিভাগ (বহুনির্বাচনী প্রশ্ন):</h4>
-                    <div id="mcqList"></div>
+                    <div id="mcqSection" class="hidden mb-4">
+                        <h4 class="font-bold border-b border-black mb-2 text-sm uppercase italic underline">বহুনির্বাচনী:</h4>
+                        <div id="mcqList"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -127,6 +153,7 @@
     <script>
         let mode = 'creative';
         let counts = { creative: 1, short: 1, mcq: 1 };
+        let showSols = false;
 
         function setMode(m) {
             mode = m;
@@ -135,6 +162,7 @@
             ['creative', 'short', 'mcq'].forEach(i => {
                 document.getElementById('m-'+i).className = i === m ? 'flex-1 py-2 rounded-lg bg-white shadow text-indigo-600' : 'flex-1 py-2 rounded-lg text-slate-500';
             });
+            updateLivePreview();
         }
 
         function syncData() {
@@ -148,63 +176,98 @@
             const lab = labels ? labels.split(',').map(s => s.trim()) : [];
             let svg = "";
             const style = `fill="none" stroke="black" stroke-width="2"`;
+            const labelStyle = `class="geo-label-text" style="font-size: 10px; font-style: italic;"`;
 
-            if (type === 'triangle') svg = `<svg width="140" height="100" viewBox="0 0 140 100"><polygon points="70,10 130,90 10,90" ${style}/><text x="65" y="10" class="geo-label-text">${lab[0]||'A'}</text><text x="2" y="98" class="geo-label-text">${lab[1]||'B'}</text><text x="132" y="98" class="geo-label-text">${lab[2]||'C'}</text></svg>`;
-            else if (type === 'circle') svg = `<svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" ${style}/><circle cx="50" cy="50" r="2" fill="black"/><text x="40" y="52" class="geo-label-text">${lab[0]||'O'}</text></svg>`;
-            else if (type === 'rectangle') svg = `<svg width="150" height="90" viewBox="0 0 150 90"><rect x="20" y="15" width="110" height="60" ${style}/><text x="15" y="15" class="geo-label-text">${lab[0]||'A'}</text><text x="135" y="15" class="geo-label-text">${lab[1]||'B'}</text><text x="135" y="85" class="geo-label-text">${lab[2]||'C'}</text><text x="15" y="85" class="geo-label-text">${lab[3]||'D'}</text></svg>`;
-            else if (type === 'parallelogram') svg = `<svg width="150" height="90" viewBox="0 0 150 90"><polygon points="30,15 140,15 120,75 10,75" ${style}/><text x="25" y="15" class="geo-label-text">${lab[0]||'A'}</text><text x="142" y="15" class="geo-label-text">${lab[1]||'B'}</text></svg>`;
-            else if (type === 'trapezium') svg = `<svg width="150" height="90" viewBox="0 0 150 90"><polygon points="40,15 110,15 140,75 10,75" ${style}/></svg>`;
-            else if (type === 'rhombus') svg = `<svg width="120" height="120" viewBox="0 0 120 120"><polygon points="60,10 110,60 60,110 10,60" ${style}/></svg>`;
+            if (type === 'triangle') svg = `<svg width="80" height="60" viewBox="0 0 100 70"><polygon points="50,10 90,60 10,60" ${style}/><text x="45" y="10" ${labelStyle}>${lab[0]||'A'}</text><text x="2" y="65" ${labelStyle}>${lab[1]||'B'}</text><text x="92" y="65" ${labelStyle}>${lab[2]||'C'}</text></svg>`;
+            else if (type === 'circle') svg = `<svg width="60" height="60" viewBox="0 0 70 70"><circle cx="35" cy="35" r="25" ${style}/><circle cx="35" cy="35" r="1.5" fill="black"/><text x="38" y="38" ${labelStyle}>${lab[0]||'O'}</text></svg>`;
+            else if (type === 'rectangle') svg = `<svg width="80" height="50" viewBox="0 0 100 60"><rect x="10" y="10" width="80" height="40" ${style}/><text x="5" y="10" ${labelStyle}>${lab[0]||'A'}</text><text x="90" y="10" ${labelStyle}>${lab[1]||'B'}</text></svg>`;
+            else if (type === 'parallelogram') svg = `<svg width="80" height="50" viewBox="0 0 100 60"><polygon points="25,10 95,10 75,50 5,50" ${style}/></svg>`;
 
             return `<div class="geo-display">${svg}</div>`;
         }
 
+        function updateLivePreview() {
+            const text = document.getElementById('mainText').value;
+            const geoHTML = generateGeoSVG(document.getElementById('geoSelect').value, document.getElementById('geoLabels').value);
+            let liveHTML = "";
+
+            if (!text && !geoHTML) {
+                document.getElementById('live-render-area').innerHTML = `<p class="text-slate-400 italic">টাইপ শুরু করুন...</p>`;
+                return;
+            }
+
+            if (mode === 'creative') {
+                liveHTML = `<div><b>${counts.creative}। ${text}</b>${geoHTML}
+                <div class="ml-4 opacity-70">ক) ${document.getElementById('partA').value}<br>খ) ${document.getElementById('partB').value}<br>গ) ${document.getElementById('partC').value}</div></div>`;
+            } else if (mode === 'short') {
+                liveHTML = `<div><b>${counts.short}। ${text}</b>${geoHTML}</div>`;
+            } else {
+                liveHTML = `<div><b>${counts.mcq}। ${text}</b>${geoHTML}
+                <div class="grid grid-cols-2 text-xs opacity-70"><span>(ক) ${document.getElementById('opt1').value}</span><span>(খ) ${document.getElementById('opt2').value}</span></div></div>`;
+            }
+
+            const area = document.getElementById('live-render-area');
+            area.innerHTML = liveHTML;
+            renderMathInElement(area, { delimiters: [{left: '$', right: '$', display: false}], throwOnError: false });
+        }
+
         function addQuestion() {
             const text = document.getElementById('mainText').value.trim();
+            const solution = document.getElementById('solutionInput').value.trim();
             if (!text) return;
 
             const geoHTML = generateGeoSVG(document.getElementById('geoSelect').value, document.getElementById('geoLabels').value);
-            let html = `<div class="question-item group"><button onclick="this.parentElement.remove()" class="no-print absolute -left-8 text-red-400">×</button>`;
+            const solHTML = solution ? `<div class="solution-box"><b>উত্তর:</b> ${solution}</div>` : "";
+            
+            let html = `<div class="question-item">
+                        <button onclick="this.parentElement.remove()" class="no-print absolute -right-6 top-0 text-red-400 hover:text-red-600">×</button>`;
             
             if (mode === 'creative') {
-                html += `<div class="q-main"><span>${counts.creative}।</span> ${text}</div>${geoHTML}
-                         <div class="ml-6 space-y-1">
-                            <div class="flex justify-between border-b border-dotted"><span>ক) ${document.getElementById('partA').value}</span><b>২</b></div>
-                            <div class="flex justify-between border-b border-dotted"><span>খ) ${document.getElementById('partB').value}</span><b>৪</b></div>
-                            <div class="flex justify-between border-b border-dotted"><span>গ) ${document.getElementById('partC').value}</span><b>৪</b></div>
-                         </div>`;
-                document.getElementById('creativeList').insertAdjacentHTML('beforeend', html + '</div>');
+                html += `<div class="q-main">${counts.creative}। ${text}</div>${geoHTML}
+                         <div class="ml-4 text-sm">
+                            <div class="flex justify-between"><span>ক) ${document.getElementById('partA').value}</span><b>২</b></div>
+                            <div class="flex justify-between"><span>খ) ${document.getElementById('partB').value}</span><b>৪</b></div>
+                            <div class="flex justify-between"><span>গ) ${document.getElementById('partC').value}</span><b>৪</b></div>
+                         </div>${solHTML}</div>`;
+                document.getElementById('creativeList').insertAdjacentHTML('beforeend', html);
                 document.getElementById('creativeSection').classList.remove('hidden');
                 counts.creative++;
             } else if (mode === 'short') {
-                html += `<div class="q-main"><span>${counts.short}।</span> ${text}</div>${geoHTML}</div>`;
+                html += `<div class="q-main">${counts.short}। ${text}</div>${geoHTML}${solHTML}</div>`;
                 document.getElementById('shortList').insertAdjacentHTML('beforeend', html);
                 document.getElementById('shortSection').classList.remove('hidden');
                 counts.short++;
             } else {
-                html += `<div class="q-main"><span>${counts.mcq}।</span> ${text}</div>${geoHTML}
+                html += `<div class="q-main">${counts.mcq}। ${text}</div>${geoHTML}
                          <div class="mcq-grid">
                             <span>(ক) ${document.getElementById('opt1').value}</span><span>(খ) ${document.getElementById('opt2').value}</span>
                             <span>(গ) ${document.getElementById('opt3').value}</span><span>(ঘ) ${document.getElementById('opt4').value}</span>
-                         </div></div>`;
+                         </div>${solHTML}</div>`;
                 document.getElementById('mcqList').insertAdjacentHTML('beforeend', html);
                 document.getElementById('mcqSection').classList.remove('hidden');
                 counts.mcq++;
             }
 
-            renderMathInElement(document.getElementById('paper'), { delimiters: [{left: '$', right: '$', display: false}] });
+            renderMathInElement(document.getElementById('paper'), { 
+                delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}],
+                throwOnError: false 
+            });
+            
+            // Clear inputs & Reset Live
             document.getElementById('mainText').value = "";
+            document.getElementById('solutionInput').value = "";
+            updateLivePreview();
         }
 
-        function exportToWord() {
-            const content = document.getElementById('paper').innerHTML;
-            const blob = new Blob(['\ufeff', `<html><head><meta charset='utf-8'><style>body{font-family:'Arial Unicode MS', sans-serif;} .flex{display:flex; justify-content:space-between;} .mcq-grid{display:grid; grid-template-columns:1fr 1fr;}</style></head><body>${content}</body></html>`], { type: 'application/msword' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url; a.download = 'Question.doc'; a.click();
+        function toggleSolutions() {
+            showSols = !showSols;
+            document.getElementById('paper').classList.toggle('show-solutions', showSols);
+            document.getElementById('solBtn').innerText = showSols ? "উত্তরপত্র লুকুান" : "উত্তরপত্র দেখুন";
         }
 
         function exportToPDF() {
-            html2pdf().from(document.getElementById('paper')).set({ margin: 10, filename: 'Question.pdf', html2canvas: { scale: 3 } }).save();
+            const element = document.getElementById('paper');
+            html2pdf().set({ margin: 0, filename: 'Question_Paper.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(element).save();
         }
 
         function clearAllData() { if(confirm("সব ডাটা মুছে যাবে?")) location.reload(); }
