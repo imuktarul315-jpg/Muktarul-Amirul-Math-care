@@ -3,26 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProExam Premium - Token System</title>
+    <title>ProExam Premium | Secure Testing</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .glass-morphism { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        /* WhatsApp Pulse Effect */
-        .whatsapp-pulse {
-            animation: pulse-green 2s infinite;
-        }
+        .whatsapp-pulse { animation: pulse-green 2s infinite; }
         @keyframes pulse-green {
             0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
             70% { box-shadow: 0 0 0 15px rgba(34, 197, 94, 0); }
             100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
         }
+        .dark-mode { background-color: #1a202c; color: #e2e8f0; }
+        .dark-card { background-color: #2d3748; border-color: #4a5568; }
     </style>
 </head>
 
 <body class="bg-gray-100 text-gray-800 transition-colors duration-300" id="body">
 
-<div id="noticeBar" class="bg-yellow-400 text-black py-2 font-bold overflow-hidden whitespace-nowrap border-b border-yellow-500">
-    <marquee id="noticeText" behavior="scroll" direction="left">Welcome to ProExam Premium! Contact admin for your exam tokens via WhatsApp.</marquee>
+<div id="noticeBar" class="bg-yellow-400 text-black py-2 font-bold overflow-hidden border-b border-yellow-500">
+    <marquee id="noticeText" behavior="scroll" direction="left">Loading latest updates...</marquee>
 </div>
 
 <nav class="bg-indigo-700 text-white p-4 flex justify-between items-center shadow-md sticky top-0 z-50">
@@ -30,7 +29,7 @@
     <div class="flex items-center space-x-3">
         <button onclick="toggleDark()" class="bg-gray-800 px-3 py-1 rounded hover:bg-gray-700 transition">🌙</button>
         <div id="userInfo" class="hidden flex items-center bg-indigo-800 px-3 py-1 rounded-full border border-indigo-400">
-            <span id="userPhone" class="font-medium mr-3"></span>
+            <span id="userPhone" class="font-medium mr-3 text-xs"></span>
             <span class="bg-green-400 text-black px-2 py-0.5 rounded-full text-[10px] font-bold uppercase">Verified</span>
         </div>
         <button id="authBtn" onclick="openLogin()" class="bg-yellow-400 text-black px-4 py-1 rounded font-bold hover:bg-yellow-300 transition">Login</button>
@@ -38,20 +37,20 @@
     </div>
 </nav>
 
-<a href="https://wa.me/8801853991049" target="_blank" class="fixed bottom-6 right-6 z-50 bg-green-500 text-white p-4 rounded-full shadow-2xl whatsapp-pulse hover:bg-green-600 transition-all flex items-center justify-center">
+<a href="https://wa.me/8801853991049" target="_blank" class="fixed bottom-6 right-6 z-50 bg-green-500 text-white p-4 rounded-full shadow-2xl whatsapp-pulse hover:bg-green-600 transition-all">
     <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.937 3.659 1.432 5.633 1.433h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
 </a>
 
-<section class="text-center py-16 bg-indigo-600 text-white px-4">
+<section id="heroSection" class="text-center py-16 bg-indigo-600 text-white px-4">
     <h2 class="text-4xl md:text-5xl font-extrabold mb-4">Secure Token-Based Examination</h2>
     <p class="mb-8 opacity-90 text-lg">Select your test type and verify your payment token to begin.</p>
     
-    <div class="max-w-md mx-auto bg-white p-6 rounded-2xl shadow-2xl text-black">
+    <div class="max-w-md mx-auto bg-white p-6 rounded-2xl shadow-2xl text-black" id="examCard">
         <label class="block text-left text-sm font-bold text-gray-600 mb-2">Select Test Type:</label>
         <select id="examTypeSelect" class="w-full border-2 border-gray-200 p-3 rounded-lg mb-6 focus:border-indigo-500 outline-none">
             <option value="Medical Admission">Medical Admission</option>
-            <option value="Engineering (BUET/CKRUET)">Engineering (BUET/CKRUET)</option>
-            <option value="University Admission (A-Unit)">University Admission (A-Unit)</option>
+            <option value="Engineering (BUET/CKRUET)">Engineering</option>
+            <option value="University Admission (A-Unit)">University Admission</option>
             <option value="BCS Preliminary">BCS Preliminary</option>
         </select>
         <button onclick="startExam()" class="w-full bg-indigo-600 text-white px-8 py-4 rounded-xl text-lg font-bold shadow-lg hover:bg-indigo-700 transition-transform transform active:scale-95">Enter Exam Token</button>
@@ -64,15 +63,10 @@
 
 <div id="tokenModal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 backdrop-blur-sm p-4">
     <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md text-black text-center border-t-8 border-indigo-600">
-        <div class="mb-4 text-indigo-600 bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
-        </div>
         <h3 class="text-2xl font-bold mb-1">Verify Access</h3>
         <p id="selectedExamDisplay" class="text-indigo-600 font-bold mb-4 italic"></p>
-        
         <input id="studentRoll" type="text" placeholder="Your Roll Number" class="w-full border-2 border-gray-200 p-3 rounded-lg mb-3 text-center focus:border-indigo-500 outline-none">
         <input id="examTokenInput" type="text" placeholder="EXAM-XXXXXX" class="w-full border-2 border-indigo-500 p-3 rounded-lg mb-6 text-center text-xl font-mono font-bold uppercase focus:ring-4 ring-indigo-100 outline-none">
-        
         <button onclick="validateToken()" class="bg-indigo-600 hover:bg-indigo-700 text-white w-full py-4 rounded-xl font-bold shadow-lg transition mb-3">Validate & Start</button>
         <button onclick="closeTokenModal()" class="text-gray-400 text-sm underline">Cancel</button>
     </div>
@@ -92,68 +86,21 @@
 </div>
 
 <div id="resultSection" class="hidden max-w-5xl mx-auto mt-8 p-4">
-    <h2 class="text-3xl font-bold mb-4 text-center">Exam Result Analysis</h2>
     <div class="bg-white p-8 rounded-xl shadow-lg border-2 border-indigo-100 mb-6 text-center">
-        <div id="badgeContainer" class="mb-4"></div>
-        <p id="studentDetail" class="text-lg text-gray-500 mb-2"></p>
-        <p id="resultText" class="text-4xl text-indigo-700 font-black"></p>
-        <p id="testTypeLabel" class="mt-2 text-sm font-bold text-gray-400 uppercase tracking-widest"></p>
-        <button onclick="location.reload()" class="mt-6 bg-indigo-100 text-indigo-700 px-6 py-2 rounded-full font-bold hover:bg-indigo-200 transition">Back to Home</button>
+        <h2 class="text-3xl font-black text-indigo-700 mb-2">Exam Result</h2>
+        <p id="studentDetail" class="text-lg text-gray-500 mb-2 font-bold"></p>
+        <p id="resultText" class="text-5xl font-black text-green-600"></p>
+        <button onclick="location.reload()" class="mt-6 bg-indigo-100 text-indigo-700 px-6 py-2 rounded-full font-bold hover:bg-indigo-200 transition">Take Another Exam</button>
     </div>
-    <div id="reviewSection" class="space-y-4"></div>
-</div>
-
-<div id="adminPanel" class="hidden max-w-4xl mx-auto my-10 bg-white p-8 rounded-xl shadow-2xl border-t-8 border-green-500 text-black">
-    <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-green-700">Admin Dashboard</h2>
-        <button onclick="generateToken()" class="bg-orange-500 text-white px-4 py-2 rounded font-bold hover:bg-orange-600">+ Generate Paid Token</button>
-    </div>
-
-    <div class="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-xl">
-        <h3 class="font-bold text-blue-800 mb-2">📢 Update Live Notice Board</h3>
-        <div class="flex gap-2">
-            <input id="adminNoticeInput" type="text" placeholder="Type new scrolling notice..." class="flex-grow border p-3 rounded-lg outline-none focus:ring-2 ring-blue-300">
-            <button onclick="updateNotice()" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700 transition">Update Notice</button>
-        </div>
-    </div>
-
-    <div class="mb-6 p-4 bg-orange-50 border border-orange-200 rounded">
-        <h3 class="font-bold text-orange-800 mb-2">Active Unused Tokens:</h3>
-        <div id="tokenList" class="flex flex-wrap gap-2 text-xs font-mono"></div>
-    </div>
-    
-    <div class="bg-gray-50 p-6 rounded-xl border-2 border-dashed border-gray-300">
-        <h3 class="font-bold mb-4 text-lg">Add New Question to Bank</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <input id="newQuestion" type="text" placeholder="Question Text" class="md:col-span-2 border p-3 rounded-lg">
-            <select id="newQuestionCat" class="border p-3 rounded-lg bg-white">
-                <option value="Medical Admission">Medical Admission</option>
-                <option value="Engineering (BUET/CKRUET)">Engineering</option>
-                <option value="University Admission (A-Unit)">University Admission</option>
-                <option value="BCS Preliminary">BCS Preliminary</option>
-            </select>
-            <input id="correctIndex" type="number" placeholder="Correct Index (0-3)" class="border p-3 rounded-lg">
-        </div>
-        <div class="grid grid-cols-2 gap-3 mb-4">
-            <input class="border p-2 rounded-lg optionInput" placeholder="Option 0">
-            <input class="border p-2 rounded-lg optionInput" placeholder="Option 1">
-            <input class="border p-2 rounded-lg optionInput" placeholder="Option 2">
-            <input class="border p-2 rounded-lg optionInput" placeholder="Option 3">
-        </div>
-        <textarea id="explanation" placeholder="Explanation for students" class="border p-3 rounded-lg w-full mb-4"></textarea>
-        <div class="flex gap-2">
-            <button onclick="addQuestion()" class="bg-indigo-600 text-white px-8 py-2 rounded-lg font-bold">Save Question</button>
-            <button onclick="clearAllQuestions()" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg font-bold hover:bg-red-200">Reset Bank</button>
-        </div>
-    </div>
+    <div id="reviewSection" class="space-y-4 pb-20"></div>
 </div>
 
 <div id="loginModal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
     <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-black">
         <h3 class="text-2xl font-bold mb-4 text-indigo-700">Student Login</h3>
-        <input id="loginPhone" type="text" placeholder="Phone Number" class="w-full border p-3 rounded-lg mb-3 outline-none focus:ring-2 ring-indigo-200">
-        <input id="loginPass" type="password" placeholder="Password" class="w-full border p-3 rounded-lg mb-4 outline-none focus:ring-2 ring-indigo-200">
-        <button onclick="handleLogin()" class="bg-indigo-600 text-white w-full py-3 rounded-lg font-bold hover:bg-indigo-700">Login</button>
+        <input id="loginPhone" type="text" placeholder="Phone Number" class="w-full border p-3 rounded-lg mb-3">
+        <input id="loginPass" type="password" placeholder="Password" class="w-full border p-3 rounded-lg mb-4">
+        <button onclick="handleLogin()" class="bg-indigo-600 text-white w-full py-3 rounded-lg font-bold">Login</button>
         <p class="text-sm text-center mt-4">New student? <a href="#" onclick="openRegister()" class="text-indigo-600 font-bold underline">Register Account</a></p>
     </div>
 </div>
@@ -164,274 +111,258 @@
         <input id="regPhone" type="text" placeholder="Phone Number" class="w-full border p-3 rounded-lg mb-3">
         <input id="regPass" type="password" placeholder="Password" class="w-full border p-3 rounded-lg mb-4">
         <button onclick="handleRegister()" class="bg-green-600 text-white w-full py-3 rounded-lg font-bold">Register Now</button>
-        <button onclick="closeRegister()" class="text-sm text-gray-500 w-full mt-4 underline">Back to Login</button>
+        <button onclick="closeRegister()" class="text-sm text-gray-500 w-full mt-4 underline text-center">Back to Login</button>
     </div>
 </div>
 
-<script>
-// --- CORE DATA ---
-let masterQuestions = JSON.parse(localStorage.getItem("questions")) || [
-    { q: "Which organ is affected by Hepatitis?", options: ["Heart", "Liver", "Lungs", "Kidney"], correct: 1, explanation: "Hepatitis is an inflammation of the liver.", category: "Medical Admission" },
-    { q: "Value of gravity 'g' in m/s²?", options: ["9.8", "10", "8.9", "7.5"], correct: 0, explanation: "The standard acceleration due to gravity is 9.8.", category: "Engineering (BUET/CKRUET)" }
-];
+<div id="adminPanel" class="hidden max-w-4xl mx-auto my-10 bg-white p-8 rounded-xl shadow-2xl border-t-8 border-green-500 text-black">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-green-700">Admin Dashboard</h2>
+        <button onclick="generateToken()" class="bg-orange-500 text-white px-4 py-2 rounded font-bold hover:bg-orange-600">+ Generate Token</button>
+    </div>
+    <div class="mb-4 p-4 bg-orange-50 border border-orange-200 rounded">
+        <h3 class="font-bold text-orange-800 mb-2">Unused Tokens:</h3>
+        <div id="tokenList" class="flex flex-wrap gap-2 text-xs font-mono"></div>
+    </div>
+    <div class="bg-gray-100 p-6 rounded-xl">
+        <h3 class="font-bold mb-4">Add Question</h3>
+        <input id="newQuestion" type="text" placeholder="Question Text" class="w-full border p-3 rounded-lg mb-2">
+        <div class="grid grid-cols-2 gap-2 mb-2">
+            <input class="border p-2 rounded-lg optionInput" placeholder="Option 0">
+            <input class="border p-2 rounded-lg optionInput" placeholder="Option 1">
+            <input class="border p-2 rounded-lg optionInput" placeholder="Option 2">
+            <input class="border p-2 rounded-lg optionInput" placeholder="Option 3">
+        </div>
+        <input id="correctIndex" type="number" placeholder="Correct Index (0-3)" class="w-full border p-3 rounded-lg mb-2">
+        <textarea id="explanation" placeholder="Explanation" class="w-full border p-3 rounded-lg mb-4"></textarea>
+        <button onclick="addQuestion()" class="bg-indigo-600 text-white px-8 py-2 rounded-lg font-bold">Save to Database</button>
+    </div>
+</div>
 
-let activeTokens = JSON.parse(localStorage.getItem("activeTokens")) || ["DEMO123"]; 
-let currentUser = JSON.parse(sessionStorage.getItem("loggedInUser")) || null;
-let registeredUsers = JSON.parse(localStorage.getItem("users")) || [];
-let liveNotice = localStorage.getItem("siteNotice") || "Welcome to ProExam Premium! Contact admin for your exam tokens via WhatsApp.";
+<script type="module">
+    // --- FIREBASE INTEGRATION ---
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// Exam State
-let questions = []; 
-let current = 0;
-let answers = [];
-let timeLeft = 300;
-let timerInterval;
-let activeRoll = "";
-let activeTestType = "";
-const ADMIN_PASSWORD = "admin123";
+    const firebaseConfig = {
+        apiKey: "AIzaSyAE7KebrNnNL6X3kr6-kG8ksPq_h40csiA",
+        authDomain: "question-bank-3c2ec.firebaseapp.com",
+        projectId: "question-bank-3c2ec",
+        storageBucket: "question-bank-3c2ec.firebasestorage.app",
+        messagingSenderId: "824586550049",
+        appId: "1:824586550049:web:b601d05fbf21ae84281c60"
+    };
 
-// --- INITIALIZATION ---
-function init() {
-    document.getElementById("noticeText").innerText = liveNotice;
-    updateUI();
-}
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-// --- NOTICE LOGIC ---
-function updateNotice() {
-    const input = document.getElementById("adminNoticeInput").value;
-    if(!input) return alert("Notice cannot be empty");
-    liveNotice = input;
-    localStorage.setItem("siteNotice", liveNotice);
-    document.getElementById("noticeText").innerText = liveNotice;
-    alert("Notice updated!");
-}
+    // --- STATE MANAGEMENT ---
+    window.masterQuestions = [];
+    window.activeTokens = JSON.parse(localStorage.getItem("activeTokens")) || ["DEMO123"];
+    window.currentUser = JSON.parse(sessionStorage.getItem("loggedInUser")) || null;
+    window.registeredUsers = JSON.parse(localStorage.getItem("users")) || [];
+    window.questions = [];
+    window.current = 0;
+    window.answers = [];
+    window.timeLeft = 300;
+    window.timerInterval = null;
+    window.activeRoll = "";
 
-// --- SYSTEM LOGIC ---
-function startExam() {
-    if (!currentUser) return openLogin();
-    activeTestType = document.getElementById("examTypeSelect").value;
-    questions = masterQuestions.filter(q => q.category === activeTestType);
-    if(questions.length === 0) {
-        alert("No questions available for this category yet.");
-        return;
+    // --- CORE FUNCTIONS ---
+    async function loadGlobalQuestions() {
+        const querySnapshot = await getDocs(collection(db, "questions"));
+        window.masterQuestions = querySnapshot.docs.map(doc => doc.data());
+        console.log("Questions Loaded from Firebase");
     }
-    document.getElementById("selectedExamDisplay").innerText = "Target: " + activeTestType;
-    document.getElementById("tokenModal").classList.remove("hidden");
-}
 
-function closeTokenModal() { document.getElementById("tokenModal").classList.add("hidden"); }
-
-function validateToken() {
-    const inputToken = document.getElementById("examTokenInput").value.trim().toUpperCase();
-    const roll = document.getElementById("studentRoll").value.trim();
-    if(!roll) return alert("Enter Roll Number");
-    const tokenIdx = activeTokens.indexOf(inputToken);
-    if(tokenIdx !== -1) {
-        activeTokens.splice(tokenIdx, 1);
-        localStorage.setItem("activeTokens", JSON.stringify(activeTokens));
-        activeRoll = roll;
-        document.getElementById("tokenModal").classList.add("hidden");
-        initExam();
-    } else {
-        alert("Invalid Token! Contact Admin on WhatsApp.");
+    window.startExam = function() {
+        if (!window.currentUser) return openLogin();
+        const type = document.getElementById("examTypeSelect").value;
+        window.questions = window.masterQuestions.filter(q => q.category === type);
+        
+        if(window.questions.length === 0) {
+            alert("No questions found for this category in Firebase.");
+            return;
+        }
+        
+        document.getElementById("selectedExamDisplay").innerText = "Target: " + type;
+        document.getElementById("tokenModal").classList.remove("hidden");
     }
-}
 
-function initExam() {
-    document.getElementById("examSection").classList.remove("hidden");
-    document.getElementById("timer").classList.remove("hidden");
-    answers = new Array(questions.length).fill(null);
-    current = 0;
-    buildNav();
-    loadQuestion();
-    startTimer();
-    window.scrollTo(0,0);
-}
-
-function loadQuestion() {
-    let q = questions[current];
-    document.getElementById("progressText").innerText = `Question ${current + 1} of ${questions.length}`;
-    let html = `<h3 class="text-2xl font-bold mb-6 text-indigo-900">${current + 1}. ${q.q}</h3>`;
-    q.options.forEach((opt, i) => {
-        html += `
-        <label class="flex items-center border-2 ${answers[current] === i ? 'border-indigo-500 bg-indigo-50' : 'border-gray-100'} p-4 rounded-xl mb-3 cursor-pointer hover:border-indigo-300 transition">
-            <input type="radio" name="option" value="${i}" class="w-5 h-5 accent-indigo-600" ${answers[current] == i ? "checked" : ""}> 
-            <span class="ml-4 text-lg font-medium">${opt}</span>
-        </label>`;
-    });
-    document.getElementById("questionBox").innerHTML = html;
-    highlightNav();
-}
-
-function saveAnswer() {
-    let selected = document.querySelector('input[name="option"]:checked');
-    if (selected) answers[current] = parseInt(selected.value);
-}
-
-function nextQuestion() { saveAnswer(); if (current < questions.length - 1) { current++; loadQuestion(); } }
-function prevQuestion() { saveAnswer(); if (current > 0) { current--; loadQuestion(); } }
-
-function buildNav() {
-    let nav = "";
-    questions.forEach((_, i) => {
-        nav += `<button onclick="goTo(${i})" id="nav${i}" class="border-2 px-3 py-2 rounded-lg bg-white font-bold transition"> ${i + 1} </button>`;
-    });
-    document.getElementById("navGrid").innerHTML = nav;
-}
-
-function highlightNav() {
-    document.querySelectorAll("#navGrid button").forEach(btn => {
-        const idx = parseInt(btn.id.replace('nav',''));
-        if(idx === current) btn.className = "border-2 px-3 py-2 rounded-lg bg-indigo-600 text-white font-bold";
-        else if(answers[idx] !== null) btn.className = "border-2 px-3 py-2 rounded-lg bg-green-100 text-green-700 border-green-200 font-bold";
-        else btn.className = "border-2 px-3 py-2 rounded-lg bg-white font-bold";
-    });
-}
-
-function goTo(i) { saveAnswer(); current = i; loadQuestion(); }
-
-function submitExam() {
-    saveAnswer();
-    if(!confirm("Are you sure you want to submit?")) return;
-    clearInterval(timerInterval);
-    let correct = 0;
-    let reviewHTML = "";
-    questions.forEach((q, i) => {
-        const isCorrect = answers[i] === q.correct;
-        if (isCorrect) correct++;
-        reviewHTML += `<div class="bg-white p-6 rounded-xl shadow border-l-8 ${isCorrect ? 'border-green-500' : 'border-red-500'}">...</div>`;
-    });
-    document.getElementById("studentDetail").innerText = `Student Roll: ${activeRoll} | ID: ${currentUser.phone}`;
-    document.getElementById("resultText").innerText = `Total Score: ${correct} / ${questions.length}`;
-    document.getElementById("examSection").classList.add("hidden");
-    document.getElementById("resultSection").classList.remove("hidden");
-}
-
-function startTimer() {
-    timeLeft = 300; 
-    timerInterval = setInterval(() => {
-        if (timeLeft <= 0) { clearInterval(timerInterval); submitExam(); }
-        let m = Math.floor(timeLeft / 60); let s = timeLeft % 60;
-        document.getElementById("timer").innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
-        timeLeft--;
-    }, 1000);
-}
-
-// --- ADMIN FUNCTIONS ---
-function addQuestion() {
-    const qText = document.getElementById("newQuestion").value;
-    const cat = document.getElementById("newQuestionCat").value;
-    const corr = parseInt(document.getElementById("correctIndex").value);
-    const expl = document.getElementById("explanation").value;
-    const opts = Array.from(document.querySelectorAll(".optionInput")).map(i => i.value);
-    if(!qText || isNaN(corr)) return alert("Fill all fields");
-    masterQuestions.push({ q: qText, options: opts, correct: corr, explanation: expl, category: cat });
-    localStorage.setItem("questions", JSON.stringify(masterQuestions));
-    alert("Question added!");
-    location.reload();
-}
-
-function generateToken() {
-    const code = "EXAM-" + Math.random().toString(36).substr(2, 6).toUpperCase();
-    activeTokens.push(code);
-    localStorage.setItem("activeTokens", JSON.stringify(activeTokens));
-    renderTokenList();
-}
-
-function renderTokenList() {
-    const container = document.getElementById("tokenList");
-    container.innerHTML = activeTokens.map(t => `<span class="bg-orange-200 text-orange-800 px-2 py-1 rounded border border-orange-300">${t}</span>`).join("");
-}
-
-function showAdmin() {
-    if(prompt("Admin Password?") === ADMIN_PASSWORD) {
-        document.getElementById("adminPanel").classList.toggle("hidden");
-        renderTokenList();
-        window.scrollTo(0, document.body.scrollHeight);
+    window.validateToken = function() {
+        const input = document.getElementById("examTokenInput").value.trim().toUpperCase();
+        const roll = document.getElementById("studentRoll").value.trim();
+        if(!roll) return alert("Enter Roll");
+        
+        const idx = window.activeTokens.indexOf(input);
+        if(idx !== -1) {
+            window.activeTokens.splice(idx, 1);
+            localStorage.setItem("activeTokens", JSON.stringify(window.activeTokens));
+            window.activeRoll = roll;
+            document.getElementById("tokenModal").classList.add("hidden");
+            initExam();
+        } else alert("Invalid Token!");
     }
-}
 
-// --- AUTH ---
-function openLogin() { document.getElementById("loginModal").classList.remove("hidden"); }
-function openRegister() { document.getElementById("loginModal").classList.add("hidden"); document.getElementById("registerModal").classList.remove("hidden"); }
-function closeRegister() { document.getElementById("registerModal").classList.add("hidden"); openLogin(); }
+    function initExam() {
+        document.getElementById("heroSection").classList.add("hidden");
+        document.getElementById("examSection").classList.remove("hidden");
+        document.getElementById("timer").classList.remove("hidden");
+        window.answers = new Array(window.questions.length).fill(null);
+        window.current = 0;
+        buildNav();
+        loadQuestion();
+        startTimer();
+    }
 
-function handleRegister() {
-    const phone = document.getElementById("regPhone").value;
-    const pass = document.getElementById("regPass").value;
-    if(!phone || !pass) return alert("Fill fields");
-    registeredUsers.push({phone, pass});
-    localStorage.setItem("users", JSON.stringify(registeredUsers));
-    alert("Registration Successful!");
-    closeRegister();
-}
+    window.loadQuestion = function() {
+        let q = window.questions[window.current];
+        document.getElementById("progressText").innerText = `Question ${window.current + 1} of ${window.questions.length}`;
+        let html = `<h3 class="text-2xl font-bold mb-6">${window.current + 1}. ${q.q}</h3>`;
+        q.options.forEach((opt, i) => {
+            html += `
+            <label class="flex items-center border-2 ${window.answers[window.current] === i ? 'border-indigo-500 bg-indigo-50' : 'border-gray-100'} p-4 rounded-xl mb-3 cursor-pointer">
+                <input type="radio" name="option" value="${i}" onclick="window.saveAns(${i})" ${window.answers[window.current] === i ? "checked" : ""}> 
+                <span class="ml-4">${opt}</span>
+            </label>`;
+        });
+        document.getElementById("questionBox").innerHTML = html;
+        highlightNav();
+    }
 
-function handleLogin() {
-    const phone = document.getElementById("loginPhone").value;
-    const pass = document.getElementById("loginPass").value;
-    const user = registeredUsers.find(u => u.phone === phone && u.pass === pass);
-    if(user) {
-        currentUser = user;
-        sessionStorage.setItem("loggedInUser", JSON.stringify(user));
+    window.saveAns = function(i) {
+        window.answers[window.current] = i;
+        highlightNav();
+    }
+
+    window.nextQuestion = function() { if (window.current < window.questions.length - 1) { window.current++; loadQuestion(); } }
+    window.prevQuestion = function() { if (window.current > 0) { window.current--; loadQuestion(); } }
+
+    function highlightNav() {
+        document.querySelectorAll("#navGrid button").forEach((btn, idx) => {
+            if(idx === window.current) btn.className = "bg-indigo-600 text-white p-2 rounded font-bold";
+            else if(window.answers[idx] !== null) btn.className = "bg-green-400 text-white p-2 rounded";
+            else btn.className = "bg-white border p-2 rounded";
+        });
+    }
+
+    function buildNav() {
+        let nav = "";
+        window.questions.forEach((_, i) => {
+            nav += `<button onclick="window.jumpTo(${i})" class="border p-2 rounded">${i+1}</button>`;
+        });
+        document.getElementById("navGrid").innerHTML = nav;
+    }
+
+    window.jumpTo = (i) => { window.current = i; loadQuestion(); }
+
+    window.submitExam = async function() {
+        clearInterval(window.timerInterval);
+        let correct = 0;
+        let reviewHTML = `<h3 class="text-2xl font-bold mb-4">Detailed Review:</h3>`;
+        
+        window.questions.forEach((q, i) => {
+            const isCorrect = window.answers[i] === q.correct;
+            if(isCorrect) correct++;
+            reviewHTML += `
+                <div class="bg-white p-4 rounded shadow border-l-4 ${isCorrect ? 'border-green-500' : 'border-red-500'} mb-4">
+                    <p class="font-bold">${i+1}. ${q.q}</p>
+                    <p class="text-sm">Your Answer: ${q.options[window.answers[i]] || "Skipped"}</p>
+                    <p class="text-sm font-bold text-green-600">Correct: ${q.options[q.correct]}</p>
+                    <p class="text-xs italic mt-1">${q.explanation}</p>
+                </div>`;
+        });
+
+        // Save Result to Firebase
+        await addDoc(collection(db, "results"), {
+            roll: window.activeRoll,
+            phone: window.currentUser.phone,
+            score: correct,
+            total: window.questions.length,
+            category: window.questions[0].category,
+            timestamp: new Date()
+        });
+
+        document.getElementById("studentDetail").innerText = `Roll: ${window.activeRoll} | User: ${window.currentUser.phone}`;
+        document.getElementById("resultText").innerText = `${correct} / ${window.questions.length}`;
+        document.getElementById("reviewSection").innerHTML = reviewHTML;
+        document.getElementById("examSection").classList.add("hidden");
+        document.getElementById("timer").classList.add("hidden");
+        document.getElementById("resultSection").classList.remove("hidden");
+    }
+
+    function startTimer() {
+        window.timerInterval = setInterval(() => {
+            if (window.timeLeft <= 0) window.submitExam();
+            let m = Math.floor(window.timeLeft / 60);
+            let s = window.timeLeft % 60;
+            document.getElementById("timer").innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+            window.timeLeft--;
+        }, 1000);
+    }
+
+    // --- ADMIN ---
+    window.addQuestion = async function() {
+        const qData = {
+            q: document.getElementById("newQuestion").value,
+            category: document.getElementById("examTypeSelect").value,
+            options: Array.from(document.querySelectorAll(".optionInput")).map(i => i.value),
+            correct: parseInt(document.getElementById("correctIndex").value),
+            explanation: document.getElementById("explanation").value
+        };
+        await addDoc(collection(db, "questions"), qData);
+        alert("Saved to Firebase!");
         location.reload();
-    } else alert("Invalid Credentials");
-}
+    }
 
-function updateUI() {
-    if(currentUser) {
+    window.generateToken = function() {
+        const code = "EXAM-" + Math.random().toString(36).substr(2, 6).toUpperCase();
+        window.activeTokens.push(code);
+        localStorage.setItem("activeTokens", JSON.stringify(window.activeTokens));
+        renderTokens();
+    }
+
+    function renderTokens() {
+        document.getElementById("tokenList").innerHTML = window.activeTokens.map(t => `<span class="bg-orange-100 p-1 rounded">${t}</span>`).join("");
+    }
+
+    // --- AUTH ---
+    window.handleRegister = function() {
+        const phone = document.getElementById("regPhone").value;
+        const pass = document.getElementById("regPass").value;
+        window.registeredUsers.push({phone, pass});
+        localStorage.setItem("users", JSON.stringify(window.registeredUsers));
+        alert("Registered!");
+        location.reload();
+    }
+
+    window.handleLogin = function() {
+        const phone = document.getElementById("loginPhone").value;
+        const pass = document.getElementById("loginPass").value;
+        const user = window.registeredUsers.find(u => u.phone === phone && u.pass === pass);
+        if(user) {
+            sessionStorage.setItem("loggedInUser", JSON.stringify(user));
+            location.reload();
+        } else alert("Fail");
+    }
+
+    // --- UI HELPERS ---
+    window.openLogin = () => document.getElementById("loginModal").classList.remove("hidden");
+    window.openRegister = () => { document.getElementById("loginModal").classList.add("hidden"); document.getElementById("registerModal").classList.remove("hidden"); };
+    window.closeRegister = () => document.getElementById("registerModal").classList.add("hidden");
+    window.closeTokenModal = () => document.getElementById("tokenModal").classList.add("hidden");
+    window.toggleDark = () => { document.body.classList.toggle("dark-mode"); };
+    window.showAdmin = () => { if(prompt("Pass?") === "admin123") { document.getElementById("adminPanel").classList.toggle("hidden"); renderTokens(); } };
+
+    // Init
+    loadGlobalQuestions();
+    if(window.currentUser) {
         document.getElementById("userInfo").classList.remove("hidden");
-        document.getElementById("userPhone").innerText = currentUser.phone;
+        document.getElementById("userPhone").innerText = window.currentUser.phone;
         document.getElementById("authBtn").innerText = "Logout";
         document.getElementById("authBtn").onclick = () => { sessionStorage.clear(); location.reload(); };
     }
-}
-
-function toggleDark() { 
-    document.getElementById("body").classList.toggle("bg-gray-900"); 
-    document.getElementById("body").classList.toggle("text-white");
-    document.querySelectorAll('.bg-white').forEach(el => {
-        el.classList.toggle('bg-gray-800');
-        el.classList.toggle('text-white');
-    });
-}
-
-init();
-    <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyAE7KebrNnNL6X3kr6-kG8ksPq_h40csiA",
-    authDomain: "question-bank-3c2ec.firebaseapp.com",
-    projectId: "question-bank-3c2ec",
-    storageBucket: "question-bank-3c2ec.firebasestorage.app",
-    messagingSenderId: "824586550049",
-    appId: "1:824586550049:web:b601d05fbf21ae84281c60",
-    measurementId: "G-044VQ68G5X"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  // Initialize Firestore
-  const db = getFirestore(app);
-
-  // ডেটা সেভ করার একটি সিম্পল ফাংশন
-  async function saveData() {
-    try {
-      const docRef = await addDoc(collection(db, "questions"), {
-        question: "বাংলাদেশের রাজধানীর নাম কি?",
-        answer: "ঢাকা",
-        timestamp: new Date()
-      });
-      console.log("Document written with ID: ", docRef.id);
-      alert("ডেটা সফলভাবে সেভ হয়েছে!");
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
-  }
-
-  // টেস্ট করার জন্য ফাংশনটি কল করতে পারেন
-  // saveData(); 
+    document.getElementById("noticeText").innerText = "Welcome to ProExam! Use your token to start. Admins are online for support.";
 </script>
 </body>
 </html>
