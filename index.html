@@ -396,6 +396,42 @@ function toggleDark() {
 }
 
 init();
+    <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAE7KebrNnNL6X3kr6-kG8ksPq_h40csiA",
+    authDomain: "question-bank-3c2ec.firebaseapp.com",
+    projectId: "question-bank-3c2ec",
+    storageBucket: "question-bank-3c2ec.firebasestorage.app",
+    messagingSenderId: "824586550049",
+    appId: "1:824586550049:web:b601d05fbf21ae84281c60",
+    measurementId: "G-044VQ68G5X"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  // Initialize Firestore
+  const db = getFirestore(app);
+
+  // ডেটা সেভ করার একটি সিম্পল ফাংশন
+  async function saveData() {
+    try {
+      const docRef = await addDoc(collection(db, "questions"), {
+        question: "বাংলাদেশের রাজধানীর নাম কি?",
+        answer: "ঢাকা",
+        timestamp: new Date()
+      });
+      console.log("Document written with ID: ", docRef.id);
+      alert("ডেটা সফলভাবে সেভ হয়েছে!");
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  }
+
+  // টেস্ট করার জন্য ফাংশনটি কল করতে পারেন
+  // saveData(); 
 </script>
 </body>
 </html>
