@@ -1,276 +1,401 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math Professional Q-Maker | Pro v16.0 Live</title>
-    
+    <title>ProExam Premium - Token System</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
     <style>
-        :root { --paper-font: 'Hind Siliguri', sans-serif; }
-        body { font-family: var(--paper-font); background-color: #f1f5f9; }
-        .print-area { 
-            width: 210mm; min-height: 297mm; margin: 20px auto; background: white; 
-            padding: 15mm; box-shadow: 0 5px 25px rgba(0,0,0,0.1); font-size: 15px; line-height: 1.4; color: black;
+        .glass-morphism { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        /* WhatsApp Pulse Effect */
+        .whatsapp-pulse {
+            animation: pulse-green 2s infinite;
         }
-        .columns-container { columns: 2; column-gap: 30px; column-rule: 1px solid #eee; }
-        .question-item { break-inside: avoid; margin-bottom: 15px; position: relative; border-bottom: 1px dashed #f0f0f0; padding-bottom: 10px; }
-        .q-main { font-weight: 600; margin-bottom: 3px; }
-        .geo-display { text-align: center; margin: 5px 0; }
-        .mcq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-left: 20px; font-size: 13px; }
-        .solution-box { font-size: 12px; color: #4338ca; background: #f5f3ff; padding: 5px; border-radius: 4px; margin-top: 5px; display: none; }
-        .show-solutions .solution-box { display: block; }
-        
-        /* Live Preview Styles */
-        #live-preview-container { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 15px; background: #fff; margin-top: 15px; }
-        .live-badge { display: inline-block; background: #ef4444; color: white; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: bold; margin-bottom: 8px; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
-        @media print { 
-            .no-print { display: none !important; } 
-            .print-area { box-shadow: none; margin: 0; width: 100%; padding: 10mm; }
-            .show-solutions .solution-box { display: block; border: 1px solid #ccc; }
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(34, 197, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
         }
     </style>
 </head>
-<body class="text-slate-800" oninput="updateLivePreview()">
 
-    <nav class="no-print bg-white border-b px-4 py-2 flex justify-between items-center sticky top-0 z-50 shadow-sm">
-        <div class="flex items-center gap-3">
-            <div class="flex flex-col">
-                <span class="font-bold text-indigo-700 leading-none text-lg">MathMaker Pro</span>
-                <span class="text-[10px] text-slate-400">v16.0 Multi-Column & Live Preview</span>
-            </div>
+<body class="bg-gray-100 text-gray-800 transition-colors duration-300" id="body">
+
+<div id="noticeBar" class="bg-yellow-400 text-black py-2 font-bold overflow-hidden whitespace-nowrap border-b border-yellow-500">
+    <marquee id="noticeText" behavior="scroll" direction="left">Welcome to ProExam Premium! Contact admin for your exam tokens via WhatsApp.</marquee>
+</div>
+
+<nav class="bg-indigo-700 text-white p-4 flex justify-between items-center shadow-md sticky top-0 z-50">
+    <h1 class="text-2xl font-bold">ProExam <span class="text-yellow-400">Premium</span></h1>
+    <div class="flex items-center space-x-3">
+        <button onclick="toggleDark()" class="bg-gray-800 px-3 py-1 rounded hover:bg-gray-700 transition">🌙</button>
+        <div id="userInfo" class="hidden flex items-center bg-indigo-800 px-3 py-1 rounded-full border border-indigo-400">
+            <span id="userPhone" class="font-medium mr-3"></span>
+            <span class="bg-green-400 text-black px-2 py-0.5 rounded-full text-[10px] font-bold uppercase">Verified</span>
         </div>
+        <button id="authBtn" onclick="openLogin()" class="bg-yellow-400 text-black px-4 py-1 rounded font-bold hover:bg-yellow-300 transition">Login</button>
+        <button onclick="showAdmin()" class="bg-green-500 px-3 py-1 rounded font-bold hover:bg-green-400 transition">Admin</button>
+    </div>
+</nav>
+
+<a href="https://wa.me/8801853991049" target="_blank" class="fixed bottom-6 right-6 z-50 bg-green-500 text-white p-4 rounded-full shadow-2xl whatsapp-pulse hover:bg-green-600 transition-all flex items-center justify-center">
+    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.937 3.659 1.432 5.633 1.433h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<section class="text-center py-16 bg-indigo-600 text-white px-4">
+    <h2 class="text-4xl md:text-5xl font-extrabold mb-4">Secure Token-Based Examination</h2>
+    <p class="mb-8 opacity-90 text-lg">Select your test type and verify your payment token to begin.</p>
+    
+    <div class="max-w-md mx-auto bg-white p-6 rounded-2xl shadow-2xl text-black">
+        <label class="block text-left text-sm font-bold text-gray-600 mb-2">Select Test Type:</label>
+        <select id="examTypeSelect" class="w-full border-2 border-gray-200 p-3 rounded-lg mb-6 focus:border-indigo-500 outline-none">
+            <option value="Medical Admission">Medical Admission</option>
+            <option value="Engineering (BUET/CKRUET)">Engineering (BUET/CKRUET)</option>
+            <option value="University Admission (A-Unit)">University Admission (A-Unit)</option>
+            <option value="BCS Preliminary">BCS Preliminary</option>
+        </select>
+        <button onclick="startExam()" class="w-full bg-indigo-600 text-white px-8 py-4 rounded-xl text-lg font-bold shadow-lg hover:bg-indigo-700 transition-transform transform active:scale-95">Enter Exam Token</button>
+    </div>
+</section>
+
+<div class="text-center mt-6">
+    <span id="timer" class="bg-red-500 text-white px-8 py-3 rounded-full hidden font-mono text-3xl shadow-xl animate-pulse">05:00</span>
+</div>
+
+<div id="tokenModal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 backdrop-blur-sm p-4">
+    <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md text-black text-center border-t-8 border-indigo-600">
+        <div class="mb-4 text-indigo-600 bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+        </div>
+        <h3 class="text-2xl font-bold mb-1">Verify Access</h3>
+        <p id="selectedExamDisplay" class="text-indigo-600 font-bold mb-4 italic"></p>
+        
+        <input id="studentRoll" type="text" placeholder="Your Roll Number" class="w-full border-2 border-gray-200 p-3 rounded-lg mb-3 text-center focus:border-indigo-500 outline-none">
+        <input id="examTokenInput" type="text" placeholder="EXAM-XXXXXX" class="w-full border-2 border-indigo-500 p-3 rounded-lg mb-6 text-center text-xl font-mono font-bold uppercase focus:ring-4 ring-indigo-100 outline-none">
+        
+        <button onclick="validateToken()" class="bg-indigo-600 hover:bg-indigo-700 text-white w-full py-4 rounded-xl font-bold shadow-lg transition mb-3">Validate & Start</button>
+        <button onclick="closeTokenModal()" class="text-gray-400 text-sm underline">Cancel</button>
+    </div>
+</div>
+
+<div id="examSection" class="hidden max-w-5xl mx-auto mt-6 p-4">
+    <div id="questionBox" class="bg-white p-8 rounded-xl shadow-xl mb-6 border-t-4 border-indigo-500 min-h-[300px]"></div>
+    <div class="flex justify-between items-center bg-white p-4 rounded-lg shadow-md mb-6">
+        <button onclick="prevQuestion()" class="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded transition">Previous</button>
+        <span class="font-bold text-indigo-700" id="progressText"></span>
+        <button onclick="nextQuestion()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded transition">Next</button>
+    </div>
+    <div id="navGrid" class="grid grid-cols-5 md:grid-cols-10 gap-2 mt-6"></div>
+    <div class="text-center mt-8">
+        <button onclick="submitExam()" class="bg-green-600 hover:bg-green-700 text-white px-10 py-4 rounded-xl text-xl font-bold shadow-2xl transition transform hover:scale-105">Submit Final Exam</button>
+    </div>
+</div>
+
+<div id="resultSection" class="hidden max-w-5xl mx-auto mt-8 p-4">
+    <h2 class="text-3xl font-bold mb-4 text-center">Exam Result Analysis</h2>
+    <div class="bg-white p-8 rounded-xl shadow-lg border-2 border-indigo-100 mb-6 text-center">
+        <div id="badgeContainer" class="mb-4"></div>
+        <p id="studentDetail" class="text-lg text-gray-500 mb-2"></p>
+        <p id="resultText" class="text-4xl text-indigo-700 font-black"></p>
+        <p id="testTypeLabel" class="mt-2 text-sm font-bold text-gray-400 uppercase tracking-widest"></p>
+        <button onclick="location.reload()" class="mt-6 bg-indigo-100 text-indigo-700 px-6 py-2 rounded-full font-bold hover:bg-indigo-200 transition">Back to Home</button>
+    </div>
+    <div id="reviewSection" class="space-y-4"></div>
+</div>
+
+<div id="adminPanel" class="hidden max-w-4xl mx-auto my-10 bg-white p-8 rounded-xl shadow-2xl border-t-8 border-green-500 text-black">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-green-700">Admin Dashboard</h2>
+        <button onclick="generateToken()" class="bg-orange-500 text-white px-4 py-2 rounded font-bold hover:bg-orange-600">+ Generate Paid Token</button>
+    </div>
+
+    <div class="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+        <h3 class="font-bold text-blue-800 mb-2">📢 Update Live Notice Board</h3>
         <div class="flex gap-2">
-            <button onclick="toggleSolutions()" id="solBtn" class="px-3 py-1.5 border border-indigo-200 text-indigo-600 rounded-lg text-xs font-bold bg-indigo-50">উত্তরপত্র দেখুন</button>
-            <button onclick="clearAllData()" class="px-3 py-1.5 text-red-500 border border-red-200 rounded-lg text-xs font-bold">ক্লিয়ার</button>
-            <button onclick="exportToPDF()" class="px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-bold">PDF ডাউনলোড</button>
-            <button onclick="window.print()" class="px-3 py-1.5 bg-slate-800 text-white rounded-lg text-xs font-bold">প্রিন্ট</button>
-        </div>
-    </nav>
-
-    <div class="max-w-[1500px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 p-4">
-        <div class="lg:col-span-4 no-print space-y-4">
-            <div class="bg-white p-5 rounded-2xl border shadow-sm sticky top-16 max-h-[90vh] overflow-y-auto">
-                <div class="space-y-2 mb-4">
-                    <input type="text" id="schoolInput" placeholder="প্রতিষ্ঠানের নাম" class="w-full p-2 border rounded-lg font-bold outline-none focus:ring-2 ring-indigo-400" oninput="syncData()">
-                    <div class="grid grid-cols-2 gap-2">
-                        <input type="text" id="subjectInput" placeholder="বিষয়/সময়" class="p-2 border rounded-lg text-sm outline-none" oninput="syncData()">
-                        <input type="text" id="classInput" placeholder="শ্রেণি" class="p-2 border rounded-lg text-sm outline-none" oninput="syncData()">
-                    </div>
-                </div>
-
-                <div class="flex bg-slate-100 p-1 rounded-xl mb-4 text-xs font-bold">
-                    <button onclick="setMode('creative')" id="m-creative" class="flex-1 py-2 rounded-lg bg-white shadow text-indigo-600">সৃজনশীল</button>
-                    <button onclick="setMode('short')" id="m-short" class="flex-1 py-2 rounded-lg text-slate-500">সংক্ষিপ্ত</button>
-                    <button onclick="setMode('mcq')" id="m-mcq" class="flex-1 py-2 rounded-lg text-slate-500">MCQ</button>
-                </div>
-
-                <div class="space-y-3">
-                    <textarea id="mainText" placeholder="উদ্দীপক/প্রশ্ন লিখুন (Latex এর জন্য $...$ ব্যবহার করুন)" class="w-full border p-3 rounded-xl h-24 text-sm outline-none focus:ring-2 ring-indigo-400" oninput="updateLivePreview()"></textarea>
-                    
-                    <div id="geoBox" class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
-                        <select id="geoSelect" onchange="updateLivePreview()" class="w-full p-2 border rounded-lg text-xs mb-2 outline-none">
-                            <option value="">জ্যামিতিক চিত্র (ঐচ্ছিক)</option>
-                            <option value="triangle">ত্রিভুজ</option>
-                            <option value="circle">বৃত্ত</option>
-                            <option value="rectangle">আয়তক্ষেত্র</option>
-                            <option value="parallelogram">সামান্তরিক</option>
-                        </select>
-                        <input type="text" id="geoLabels" placeholder="লেবেল (উদা: A, B, C)" class="w-full p-2 border rounded-lg text-xs outline-none" oninput="updateLivePreview()">
-                    </div>
-
-                    <div id="creativeFields" class="space-y-2">
-                        <input type="text" id="partA" placeholder="ক) প্রশ্ন" class="w-full p-2 border rounded-lg text-sm" oninput="updateLivePreview()">
-                        <input type="text" id="partB" placeholder="খ) প্রশ্ন" class="w-full p-2 border rounded-lg text-sm" oninput="updateLivePreview()">
-                        <input type="text" id="partC" placeholder="গ) প্রশ্ন" class="w-full p-2 border rounded-lg text-sm" oninput="updateLivePreview()">
-                    </div>
-
-                    <div id="mcqFields" class="hidden grid grid-cols-2 gap-2">
-                        <input type="text" id="opt1" placeholder="ক" class="p-2 border rounded-lg text-sm" oninput="updateLivePreview()">
-                        <input type="text" id="opt2" placeholder="খ" class="p-2 border rounded-lg text-sm" oninput="updateLivePreview()">
-                        <input type="text" id="opt3" placeholder="গ" class="p-2 border rounded-lg text-sm" oninput="updateLivePreview()">
-                        <input type="text" id="opt4" placeholder="ঘ" class="p-2 border rounded-lg text-sm" oninput="updateLivePreview()">
-                    </div>
-
-                    <div class="pt-2">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase">সমাধান (ঐচ্ছিক)</label>
-                        <textarea id="solutionInput" placeholder="সঠিক উত্তর..." class="w-full border p-2 rounded-xl h-12 text-sm outline-none bg-emerald-50 focus:ring-2 ring-emerald-400" oninput="updateLivePreview()"></textarea>
-                    </div>
-                </div>
-
-                <div id="live-preview-container">
-                    <span class="live-badge">LIVE PREVIEW</span>
-                    <div id="live-render-area" class="text-[13px]">
-                        <p class="text-slate-400 italic">প্রশ্ন টাইপ করা শুরু করুন...</p>
-                    </div>
-                </div>
-
-                <button onclick="addQuestion()" class="w-full mt-4 bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg">➕ প্রশ্ন যুক্ত করুন</button>
-            </div>
-        </div>
-
-        <div class="lg:col-span-8">
-            <div id="paper" class="print-area">
-                <div class="text-center border-b-2 border-black pb-4 mb-6">
-                    <h1 id="schoolName" class="text-3xl font-black">প্রতিষ্ঠানের নাম</h1>
-                    <p class="font-bold text-lg">বার্ষিক পরীক্ষা - ২০২৬</p>
-                    <div class="flex justify-between mt-4 px-10 text-sm font-bold">
-                        <span>শ্রেণি: <span id="className">---</span></span>
-                        <span>বিষয়: <span id="subjectName">---</span></span>
-                        <span>পূর্ণমান: ১০০</span>
-                    </div>
-                </div>
-
-                <div class="columns-container">
-                    <div id="creativeSection" class="hidden mb-4">
-                        <h4 class="font-bold border-b border-black mb-2 text-sm uppercase italic underline">সৃজনশীল অংশ:</h4>
-                        <div id="creativeList"></div>
-                    </div>
-
-                    <div id="shortSection" class="hidden mb-4">
-                        <h4 class="font-bold border-b border-black mb-2 text-sm uppercase italic underline">সংক্ষিপ্ত প্রশ্ন:</h4>
-                        <div id="shortList"></div>
-                    </div>
-
-                    <div id="mcqSection" class="hidden mb-4">
-                        <h4 class="font-bold border-b border-black mb-2 text-sm uppercase italic underline">বহুনির্বাচনী:</h4>
-                        <div id="mcqList"></div>
-                    </div>
-                </div>
-            </div>
+            <input id="adminNoticeInput" type="text" placeholder="Type new scrolling notice..." class="flex-grow border p-3 rounded-lg outline-none focus:ring-2 ring-blue-300">
+            <button onclick="updateNotice()" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700 transition">Update Notice</button>
         </div>
     </div>
 
-    <script>
-        let mode = 'creative';
-        let counts = { creative: 1, short: 1, mcq: 1 };
-        let showSols = false;
+    <div class="mb-6 p-4 bg-orange-50 border border-orange-200 rounded">
+        <h3 class="font-bold text-orange-800 mb-2">Active Unused Tokens:</h3>
+        <div id="tokenList" class="flex flex-wrap gap-2 text-xs font-mono"></div>
+    </div>
+    
+    <div class="bg-gray-50 p-6 rounded-xl border-2 border-dashed border-gray-300">
+        <h3 class="font-bold mb-4 text-lg">Add New Question to Bank</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <input id="newQuestion" type="text" placeholder="Question Text" class="md:col-span-2 border p-3 rounded-lg">
+            <select id="newQuestionCat" class="border p-3 rounded-lg bg-white">
+                <option value="Medical Admission">Medical Admission</option>
+                <option value="Engineering (BUET/CKRUET)">Engineering</option>
+                <option value="University Admission (A-Unit)">University Admission</option>
+                <option value="BCS Preliminary">BCS Preliminary</option>
+            </select>
+            <input id="correctIndex" type="number" placeholder="Correct Index (0-3)" class="border p-3 rounded-lg">
+        </div>
+        <div class="grid grid-cols-2 gap-3 mb-4">
+            <input class="border p-2 rounded-lg optionInput" placeholder="Option 0">
+            <input class="border p-2 rounded-lg optionInput" placeholder="Option 1">
+            <input class="border p-2 rounded-lg optionInput" placeholder="Option 2">
+            <input class="border p-2 rounded-lg optionInput" placeholder="Option 3">
+        </div>
+        <textarea id="explanation" placeholder="Explanation for students" class="border p-3 rounded-lg w-full mb-4"></textarea>
+        <div class="flex gap-2">
+            <button onclick="addQuestion()" class="bg-indigo-600 text-white px-8 py-2 rounded-lg font-bold">Save Question</button>
+            <button onclick="clearAllQuestions()" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg font-bold hover:bg-red-200">Reset Bank</button>
+        </div>
+    </div>
+</div>
 
-        function setMode(m) {
-            mode = m;
-            document.getElementById('creativeFields').classList.toggle('hidden', m !== 'creative');
-            document.getElementById('mcqFields').classList.toggle('hidden', m !== 'mcq');
-            ['creative', 'short', 'mcq'].forEach(i => {
-                document.getElementById('m-'+i).className = i === m ? 'flex-1 py-2 rounded-lg bg-white shadow text-indigo-600' : 'flex-1 py-2 rounded-lg text-slate-500';
-            });
-            updateLivePreview();
-        }
+<div id="loginModal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+    <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-black">
+        <h3 class="text-2xl font-bold mb-4 text-indigo-700">Student Login</h3>
+        <input id="loginPhone" type="text" placeholder="Phone Number" class="w-full border p-3 rounded-lg mb-3 outline-none focus:ring-2 ring-indigo-200">
+        <input id="loginPass" type="password" placeholder="Password" class="w-full border p-3 rounded-lg mb-4 outline-none focus:ring-2 ring-indigo-200">
+        <button onclick="handleLogin()" class="bg-indigo-600 text-white w-full py-3 rounded-lg font-bold hover:bg-indigo-700">Login</button>
+        <p class="text-sm text-center mt-4">New student? <a href="#" onclick="openRegister()" class="text-indigo-600 font-bold underline">Register Account</a></p>
+    </div>
+</div>
 
-        function syncData() {
-            document.getElementById('schoolName').innerText = document.getElementById('schoolInput').value || "প্রতিষ্ঠানের নাম";
-            document.getElementById('subjectName').innerText = document.getElementById('subjectInput').value || "---";
-            document.getElementById('className').innerText = document.getElementById('classInput').value || "---";
-        }
+<div id="registerModal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+    <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-sm text-black">
+        <h3 class="text-2xl font-bold mb-4">Create Account</h3>
+        <input id="regPhone" type="text" placeholder="Phone Number" class="w-full border p-3 rounded-lg mb-3">
+        <input id="regPass" type="password" placeholder="Password" class="w-full border p-3 rounded-lg mb-4">
+        <button onclick="handleRegister()" class="bg-green-600 text-white w-full py-3 rounded-lg font-bold">Register Now</button>
+        <button onclick="closeRegister()" class="text-sm text-gray-500 w-full mt-4 underline">Back to Login</button>
+    </div>
+</div>
 
-        function generateGeoSVG(type, labels) {
-            if (!type) return "";
-            const lab = labels ? labels.split(',').map(s => s.trim()) : [];
-            let svg = "";
-            const style = `fill="none" stroke="black" stroke-width="2"`;
-            const labelStyle = `class="geo-label-text" style="font-size: 10px; font-style: italic;"`;
+<script>
+// --- CORE DATA ---
+let masterQuestions = JSON.parse(localStorage.getItem("questions")) || [
+    { q: "Which organ is affected by Hepatitis?", options: ["Heart", "Liver", "Lungs", "Kidney"], correct: 1, explanation: "Hepatitis is an inflammation of the liver.", category: "Medical Admission" },
+    { q: "Value of gravity 'g' in m/s²?", options: ["9.8", "10", "8.9", "7.5"], correct: 0, explanation: "The standard acceleration due to gravity is 9.8.", category: "Engineering (BUET/CKRUET)" }
+];
 
-            if (type === 'triangle') svg = `<svg width="80" height="60" viewBox="0 0 100 70"><polygon points="50,10 90,60 10,60" ${style}/><text x="45" y="10" ${labelStyle}>${lab[0]||'A'}</text><text x="2" y="65" ${labelStyle}>${lab[1]||'B'}</text><text x="92" y="65" ${labelStyle}>${lab[2]||'C'}</text></svg>`;
-            else if (type === 'circle') svg = `<svg width="60" height="60" viewBox="0 0 70 70"><circle cx="35" cy="35" r="25" ${style}/><circle cx="35" cy="35" r="1.5" fill="black"/><text x="38" y="38" ${labelStyle}>${lab[0]||'O'}</text></svg>`;
-            else if (type === 'rectangle') svg = `<svg width="80" height="50" viewBox="0 0 100 60"><rect x="10" y="10" width="80" height="40" ${style}/><text x="5" y="10" ${labelStyle}>${lab[0]||'A'}</text><text x="90" y="10" ${labelStyle}>${lab[1]||'B'}</text></svg>`;
-            else if (type === 'parallelogram') svg = `<svg width="80" height="50" viewBox="0 0 100 60"><polygon points="25,10 95,10 75,50 5,50" ${style}/></svg>`;
+let activeTokens = JSON.parse(localStorage.getItem("activeTokens")) || ["DEMO123"]; 
+let currentUser = JSON.parse(sessionStorage.getItem("loggedInUser")) || null;
+let registeredUsers = JSON.parse(localStorage.getItem("users")) || [];
+let liveNotice = localStorage.getItem("siteNotice") || "Welcome to ProExam Premium! Contact admin for your exam tokens via WhatsApp.";
 
-            return `<div class="geo-display">${svg}</div>`;
-        }
+// Exam State
+let questions = []; 
+let current = 0;
+let answers = [];
+let timeLeft = 300;
+let timerInterval;
+let activeRoll = "";
+let activeTestType = "";
+const ADMIN_PASSWORD = "admin123";
 
-        function updateLivePreview() {
-            const text = document.getElementById('mainText').value;
-            const geoHTML = generateGeoSVG(document.getElementById('geoSelect').value, document.getElementById('geoLabels').value);
-            let liveHTML = "";
+// --- INITIALIZATION ---
+function init() {
+    document.getElementById("noticeText").innerText = liveNotice;
+    updateUI();
+}
 
-            if (!text && !geoHTML) {
-                document.getElementById('live-render-area').innerHTML = `<p class="text-slate-400 italic">টাইপ শুরু করুন...</p>`;
-                return;
-            }
+// --- NOTICE LOGIC ---
+function updateNotice() {
+    const input = document.getElementById("adminNoticeInput").value;
+    if(!input) return alert("Notice cannot be empty");
+    liveNotice = input;
+    localStorage.setItem("siteNotice", liveNotice);
+    document.getElementById("noticeText").innerText = liveNotice;
+    alert("Notice updated!");
+}
 
-            if (mode === 'creative') {
-                liveHTML = `<div><b>${counts.creative}। ${text}</b>${geoHTML}
-                <div class="ml-4 opacity-70">ক) ${document.getElementById('partA').value}<br>খ) ${document.getElementById('partB').value}<br>গ) ${document.getElementById('partC').value}</div></div>`;
-            } else if (mode === 'short') {
-                liveHTML = `<div><b>${counts.short}। ${text}</b>${geoHTML}</div>`;
-            } else {
-                liveHTML = `<div><b>${counts.mcq}। ${text}</b>${geoHTML}
-                <div class="grid grid-cols-2 text-xs opacity-70"><span>(ক) ${document.getElementById('opt1').value}</span><span>(খ) ${document.getElementById('opt2').value}</span></div></div>`;
-            }
+// --- SYSTEM LOGIC ---
+function startExam() {
+    if (!currentUser) return openLogin();
+    activeTestType = document.getElementById("examTypeSelect").value;
+    questions = masterQuestions.filter(q => q.category === activeTestType);
+    if(questions.length === 0) {
+        alert("No questions available for this category yet.");
+        return;
+    }
+    document.getElementById("selectedExamDisplay").innerText = "Target: " + activeTestType;
+    document.getElementById("tokenModal").classList.remove("hidden");
+}
 
-            const area = document.getElementById('live-render-area');
-            area.innerHTML = liveHTML;
-            renderMathInElement(area, { delimiters: [{left: '$', right: '$', display: false}], throwOnError: false });
-        }
+function closeTokenModal() { document.getElementById("tokenModal").classList.add("hidden"); }
 
-        function addQuestion() {
-            const text = document.getElementById('mainText').value.trim();
-            const solution = document.getElementById('solutionInput').value.trim();
-            if (!text) return;
+function validateToken() {
+    const inputToken = document.getElementById("examTokenInput").value.trim().toUpperCase();
+    const roll = document.getElementById("studentRoll").value.trim();
+    if(!roll) return alert("Enter Roll Number");
+    const tokenIdx = activeTokens.indexOf(inputToken);
+    if(tokenIdx !== -1) {
+        activeTokens.splice(tokenIdx, 1);
+        localStorage.setItem("activeTokens", JSON.stringify(activeTokens));
+        activeRoll = roll;
+        document.getElementById("tokenModal").classList.add("hidden");
+        initExam();
+    } else {
+        alert("Invalid Token! Contact Admin on WhatsApp.");
+    }
+}
 
-            const geoHTML = generateGeoSVG(document.getElementById('geoSelect').value, document.getElementById('geoLabels').value);
-            const solHTML = solution ? `<div class="solution-box"><b>উত্তর:</b> ${solution}</div>` : "";
-            
-            let html = `<div class="question-item">
-                        <button onclick="this.parentElement.remove()" class="no-print absolute -right-6 top-0 text-red-400 hover:text-red-600">×</button>`;
-            
-            if (mode === 'creative') {
-                html += `<div class="q-main">${counts.creative}। ${text}</div>${geoHTML}
-                         <div class="ml-4 text-sm">
-                            <div class="flex justify-between"><span>ক) ${document.getElementById('partA').value}</span><b>২</b></div>
-                            <div class="flex justify-between"><span>খ) ${document.getElementById('partB').value}</span><b>৪</b></div>
-                            <div class="flex justify-between"><span>গ) ${document.getElementById('partC').value}</span><b>৪</b></div>
-                         </div>${solHTML}</div>`;
-                document.getElementById('creativeList').insertAdjacentHTML('beforeend', html);
-                document.getElementById('creativeSection').classList.remove('hidden');
-                counts.creative++;
-            } else if (mode === 'short') {
-                html += `<div class="q-main">${counts.short}। ${text}</div>${geoHTML}${solHTML}</div>`;
-                document.getElementById('shortList').insertAdjacentHTML('beforeend', html);
-                document.getElementById('shortSection').classList.remove('hidden');
-                counts.short++;
-            } else {
-                html += `<div class="q-main">${counts.mcq}। ${text}</div>${geoHTML}
-                         <div class="mcq-grid">
-                            <span>(ক) ${document.getElementById('opt1').value}</span><span>(খ) ${document.getElementById('opt2').value}</span>
-                            <span>(গ) ${document.getElementById('opt3').value}</span><span>(ঘ) ${document.getElementById('opt4').value}</span>
-                         </div>${solHTML}</div>`;
-                document.getElementById('mcqList').insertAdjacentHTML('beforeend', html);
-                document.getElementById('mcqSection').classList.remove('hidden');
-                counts.mcq++;
-            }
+function initExam() {
+    document.getElementById("examSection").classList.remove("hidden");
+    document.getElementById("timer").classList.remove("hidden");
+    answers = new Array(questions.length).fill(null);
+    current = 0;
+    buildNav();
+    loadQuestion();
+    startTimer();
+    window.scrollTo(0,0);
+}
 
-            renderMathInElement(document.getElementById('paper'), { 
-                delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}],
-                throwOnError: false 
-            });
-            
-            // Clear inputs & Reset Live
-            document.getElementById('mainText').value = "";
-            document.getElementById('solutionInput').value = "";
-            updateLivePreview();
-        }
+function loadQuestion() {
+    let q = questions[current];
+    document.getElementById("progressText").innerText = `Question ${current + 1} of ${questions.length}`;
+    let html = `<h3 class="text-2xl font-bold mb-6 text-indigo-900">${current + 1}. ${q.q}</h3>`;
+    q.options.forEach((opt, i) => {
+        html += `
+        <label class="flex items-center border-2 ${answers[current] === i ? 'border-indigo-500 bg-indigo-50' : 'border-gray-100'} p-4 rounded-xl mb-3 cursor-pointer hover:border-indigo-300 transition">
+            <input type="radio" name="option" value="${i}" class="w-5 h-5 accent-indigo-600" ${answers[current] == i ? "checked" : ""}> 
+            <span class="ml-4 text-lg font-medium">${opt}</span>
+        </label>`;
+    });
+    document.getElementById("questionBox").innerHTML = html;
+    highlightNav();
+}
 
-        function toggleSolutions() {
-            showSols = !showSols;
-            document.getElementById('paper').classList.toggle('show-solutions', showSols);
-            document.getElementById('solBtn').innerText = showSols ? "উত্তরপত্র লুকুান" : "উত্তরপত্র দেখুন";
-        }
+function saveAnswer() {
+    let selected = document.querySelector('input[name="option"]:checked');
+    if (selected) answers[current] = parseInt(selected.value);
+}
 
-        function exportToPDF() {
-            const element = document.getElementById('paper');
-            html2pdf().set({ margin: 0, filename: 'Question_Paper.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(element).save();
-        }
+function nextQuestion() { saveAnswer(); if (current < questions.length - 1) { current++; loadQuestion(); } }
+function prevQuestion() { saveAnswer(); if (current > 0) { current--; loadQuestion(); } }
 
-        function clearAllData() { if(confirm("সব ডাটা মুছে যাবে?")) location.reload(); }
-    </script>
+function buildNav() {
+    let nav = "";
+    questions.forEach((_, i) => {
+        nav += `<button onclick="goTo(${i})" id="nav${i}" class="border-2 px-3 py-2 rounded-lg bg-white font-bold transition"> ${i + 1} </button>`;
+    });
+    document.getElementById("navGrid").innerHTML = nav;
+}
+
+function highlightNav() {
+    document.querySelectorAll("#navGrid button").forEach(btn => {
+        const idx = parseInt(btn.id.replace('nav',''));
+        if(idx === current) btn.className = "border-2 px-3 py-2 rounded-lg bg-indigo-600 text-white font-bold";
+        else if(answers[idx] !== null) btn.className = "border-2 px-3 py-2 rounded-lg bg-green-100 text-green-700 border-green-200 font-bold";
+        else btn.className = "border-2 px-3 py-2 rounded-lg bg-white font-bold";
+    });
+}
+
+function goTo(i) { saveAnswer(); current = i; loadQuestion(); }
+
+function submitExam() {
+    saveAnswer();
+    if(!confirm("Are you sure you want to submit?")) return;
+    clearInterval(timerInterval);
+    let correct = 0;
+    let reviewHTML = "";
+    questions.forEach((q, i) => {
+        const isCorrect = answers[i] === q.correct;
+        if (isCorrect) correct++;
+        reviewHTML += `<div class="bg-white p-6 rounded-xl shadow border-l-8 ${isCorrect ? 'border-green-500' : 'border-red-500'}">...</div>`;
+    });
+    document.getElementById("studentDetail").innerText = `Student Roll: ${activeRoll} | ID: ${currentUser.phone}`;
+    document.getElementById("resultText").innerText = `Total Score: ${correct} / ${questions.length}`;
+    document.getElementById("examSection").classList.add("hidden");
+    document.getElementById("resultSection").classList.remove("hidden");
+}
+
+function startTimer() {
+    timeLeft = 300; 
+    timerInterval = setInterval(() => {
+        if (timeLeft <= 0) { clearInterval(timerInterval); submitExam(); }
+        let m = Math.floor(timeLeft / 60); let s = timeLeft % 60;
+        document.getElementById("timer").innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+        timeLeft--;
+    }, 1000);
+}
+
+// --- ADMIN FUNCTIONS ---
+function addQuestion() {
+    const qText = document.getElementById("newQuestion").value;
+    const cat = document.getElementById("newQuestionCat").value;
+    const corr = parseInt(document.getElementById("correctIndex").value);
+    const expl = document.getElementById("explanation").value;
+    const opts = Array.from(document.querySelectorAll(".optionInput")).map(i => i.value);
+    if(!qText || isNaN(corr)) return alert("Fill all fields");
+    masterQuestions.push({ q: qText, options: opts, correct: corr, explanation: expl, category: cat });
+    localStorage.setItem("questions", JSON.stringify(masterQuestions));
+    alert("Question added!");
+    location.reload();
+}
+
+function generateToken() {
+    const code = "EXAM-" + Math.random().toString(36).substr(2, 6).toUpperCase();
+    activeTokens.push(code);
+    localStorage.setItem("activeTokens", JSON.stringify(activeTokens));
+    renderTokenList();
+}
+
+function renderTokenList() {
+    const container = document.getElementById("tokenList");
+    container.innerHTML = activeTokens.map(t => `<span class="bg-orange-200 text-orange-800 px-2 py-1 rounded border border-orange-300">${t}</span>`).join("");
+}
+
+function showAdmin() {
+    if(prompt("Admin Password?") === ADMIN_PASSWORD) {
+        document.getElementById("adminPanel").classList.toggle("hidden");
+        renderTokenList();
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+}
+
+// --- AUTH ---
+function openLogin() { document.getElementById("loginModal").classList.remove("hidden"); }
+function openRegister() { document.getElementById("loginModal").classList.add("hidden"); document.getElementById("registerModal").classList.remove("hidden"); }
+function closeRegister() { document.getElementById("registerModal").classList.add("hidden"); openLogin(); }
+
+function handleRegister() {
+    const phone = document.getElementById("regPhone").value;
+    const pass = document.getElementById("regPass").value;
+    if(!phone || !pass) return alert("Fill fields");
+    registeredUsers.push({phone, pass});
+    localStorage.setItem("users", JSON.stringify(registeredUsers));
+    alert("Registration Successful!");
+    closeRegister();
+}
+
+function handleLogin() {
+    const phone = document.getElementById("loginPhone").value;
+    const pass = document.getElementById("loginPass").value;
+    const user = registeredUsers.find(u => u.phone === phone && u.pass === pass);
+    if(user) {
+        currentUser = user;
+        sessionStorage.setItem("loggedInUser", JSON.stringify(user));
+        location.reload();
+    } else alert("Invalid Credentials");
+}
+
+function updateUI() {
+    if(currentUser) {
+        document.getElementById("userInfo").classList.remove("hidden");
+        document.getElementById("userPhone").innerText = currentUser.phone;
+        document.getElementById("authBtn").innerText = "Logout";
+        document.getElementById("authBtn").onclick = () => { sessionStorage.clear(); location.reload(); };
+    }
+}
+
+function toggleDark() { 
+    document.getElementById("body").classList.toggle("bg-gray-900"); 
+    document.getElementById("body").classList.toggle("text-white");
+    document.querySelectorAll('.bg-white').forEach(el => {
+        el.classList.toggle('bg-gray-800');
+        el.classList.toggle('text-white');
+    });
+}
+
+init();
+</script>
 </body>
 </html>
